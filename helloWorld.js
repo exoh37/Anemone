@@ -1,30 +1,52 @@
+// Import required modules
 const express = require('express');
+const bodyParser = require('body-parser');
+
+// Create an Express application
 const app = express();
-const PORT = 8080;
 
-app.use( express.json() );
+const fs = require('fs');
+// Read the usernames file
+const usernames = JSON.parse(fs.readFileSync('user/userName.json'));
 
-app.listen(
-  PORT,
-  () => console.log('it\'s alive on http://localhost:${PORT}')
-);
+// Middleware to parse JSON and URL-encoded request bodies
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('/tshirt', (req, res) => {
-  res.status(200).send({
-    tshirt: 'Its a t shirt',
-    size: 'large'
-  })
+// Define a route for the root URL ('/')
+app.get('/', (req, res) => {
+  res.send(`
+    <h1> Welcome to Anemone Invoice Storage!</h1>
+    <h2> Register new user </h2>
+    <form method="POST" action="/check-username">
+      <label for="username">Enter your username:</label><br>
+      <input type="text" id="username" name="username"><br>
+      <button type="submit">Submit</button>
+    </form>
+  `);
 });
 
-app.post('/tshirt/:id', (req, res) => {
-  const { id } = req.params;
-  const { logo } = req.body;
-
-  if (!logo) {
-    res.status(418).send({ message: 'We need a logo!'})
+// Define a route for handling form submissions
+app.post('/check-username', (req, res) => {
+  const { username } = req.body;
+  if (!username) {
+    res.status(400).send('Username is required');
+    return;
   }
 
-  res.send({
-    tshirt: '👕 with your ${logo} and ID of ${id}',
-  });
+  if (isUsernameTaken(username)) {
+    res.send(`${username} is already taken`);
+  } else {
+    res.send(`${username} is available`);
+  }
+});
+
+function isUsernameTaken(username) {
+  return usernames.includes(username);
+}
+
+// Start the Express server and listen on port 3000
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
