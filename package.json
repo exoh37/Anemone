@@ -2,14 +2,15 @@
   "name": "anemone",
   "version": "1.0.0",
   "description": "",
-  "main": "helloWorld.js",
+  "main": "user/helloWorld.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "jest": "^29.7.0"
   }
 }
