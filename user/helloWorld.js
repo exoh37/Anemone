@@ -67,8 +67,13 @@ app.post('/register', (req, res) => {
     res.status(400).send('Username already exists');
     return;
   }
-
-  // Add new user to the list of usernames and passwords
+  /*
+  // check if password is valid conditions (SECURITY PURPOSES)
+  if (!validPassword(password)) {
+    res.status(400).send('Password must be: greater than 8 characters, include special characters');
+  }
+  */
+  // Add new user to the list of users
   usernames.push({ username, password });
 
   // Redirect to page 2 (login page)
@@ -114,3 +119,11 @@ const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+function validPassword(password) {
+  return !(password.length < 8 || password.includes("123") || 
+  !password.includes("/" | "^" | "[" | "!" | "@" | "#" | "$" | "%" | "^" | "&" | "*" |
+   "(" | ")" | "_" | "+" | "\-" | "=" | "\[" | "\]" | "{" | "}" | ";" | "'" | ":" | "\"" |
+    "\\" | "|" | "," | "." | "<" | ">" | "\/" | "?" | "]" | "*" | "$" | "/<" | "/>" | ""));
+}
+
