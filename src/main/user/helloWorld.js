@@ -1,28 +1,28 @@
 // Import required modules
-const express = require('express');
-const bodyParser = require('body-parser');
+const express = require("express");
+const bodyParser = require("body-parser");
 
 // Create an Express application
 const app = express();
 
-const fs = require('fs');
+const fs = require("fs");
 // Read the users file
-const users = JSON.parse(fs.readFileSync('src/main/user/TEMP_userStorage.json'));
+const users = JSON.parse(fs.readFileSync("src/main/user/TEMP_userStorage.json"));
 
 // Middleware to parse JSON and URL-encoded request bodies
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Define a route for the root URL ('/')
-app.get('/', (req, res) => {
-  res.send(`
+app.get("/", (req, res) => {
+    res.send(`
     <p> Welcome! Click here to get started  <a href="/Register">Register</a>.</p>
   `);
 });
 
 // Define a route for page 1
-app.get('/register', (req, res) => {
-  res.send(`
+app.get("/register", (req, res) => {
+    res.send(`
   <html>
   <head>
     <title>E-Invoice Storage - Registration</title>
@@ -55,36 +55,36 @@ app.get('/register', (req, res) => {
 
 
 // Handle registration form submission
-app.post('/register', (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    res.status(400).send('Username and password are required');
-    return;
-  }
-
-  // Check if username already exists
-  for (const user of users) {
-    if (user.username == username) {
-      res.status(400).send('Username already exists');
-      return;
+app.post("/register", (req, res) => {
+    const { username, password } = req.body;
+    if (!username || !password) {
+        res.status(400).send("Username and password are required");
+        return;
     }
-  }
-  /*
+
+    // Check if username already exists
+    for (const user of users) {
+        if (user.username == username) {
+            res.status(400).send("Username already exists");
+            return;
+        }
+    }
+    /*
   // check if password is valid conditions (SECURITY PURPOSES)
   if (!validPassword(password)) {
     res.status(400).send('Password must be: greater than 8 characters, include special characters');
   }
   */
-  // Add new user to the list of users
-  users.push({ username, password });
+    // Add new user to the list of users
+    users.push({ username, password });
 
-  // Redirect to page 2 (login page)
-  res.redirect('/login');
+    // Redirect to page 2 (login page)
+    res.redirect("/login");
 });
 
 // Define a route for page 2
-app.get('/login', (req, res) => {
-  res.send(`
+app.get("/login", (req, res) => {
+    res.send(`
     <h1>Login</h1>
     <form method="POST" action="/login">
       <label for="username">Username:</label><br>
@@ -98,38 +98,40 @@ app.get('/login', (req, res) => {
 });
 
 // Handle login form submission
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    res.status(400).send('Username and password are required');
-    return;
-  }
-
-  // Find user in the list of users and passwords
-  //const user = users.find(user => user.username === username && user.password === password);
-  for (const user of users) {
-    if (user.username == username && user.password == password) {
-      res.send(`Welcome back, ${username}!`);
-      return;
+app.post("/login", (req, res) => {
+    const { username, password } = req.body;
+    if (!username || !password) {
+        res.status(400).send("Username and password are required");
+        return;
     }
-  }
 
-  res.status(401).send('Invalid username or password');
+    // Find user in the list of users and passwords
+    //const user = users.find(user => user.username === username && user.password === password);
+    for (const user of users) {
+        if (user.username == username && user.password == password) {
+            res.send(`Welcome back, ${username}!`);
+            return;
+        }
+    }
 
-  return;
+    res.status(401).send("Invalid username or password");
+
+    return;
 });
 
+/*
 function validPassword(password) {
-  return !(password.length < 8 || password.includes("123") || 
+    return !(password.length < 8 || password.includes("123") || 
   !password.includes("/" | "^" | "[" | "!" | "@" | "#" | "$" | "%" | "^" | "&" | "*" |
    "(" | ")" | "_" | "+" | "\-" | "=" | "\[" | "\]" | "{" | "}" | ";" | "'" | ":" | "\"" |
     "\\" | "|" | "," | "." | "<" | ">" | "\/" | "?" | "]" | "*" | "$" | "/<" | "/>" | ""));
 }
+*/
 
 // Start the Express server and listen on port 3000
 const PORT = 3001;
 const server = app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });
 
 module.exports = server;
