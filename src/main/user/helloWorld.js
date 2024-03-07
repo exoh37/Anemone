@@ -6,8 +6,8 @@ const bodyParser = require('body-parser');
 const app = express();
 
 const fs = require('fs');
-// Read the usernames file
-const usernames = JSON.parse(fs.readFileSync('user/TEMP_userStorage.json'));
+// Read the users file
+const users = JSON.parse(fs.readFileSync('src/main/user/TEMP_userStorage.json'));
 
 // Middleware to parse JSON and URL-encoded request bodies
 app.use(bodyParser.json());
@@ -63,9 +63,11 @@ app.post('/register', (req, res) => {
   }
 
   // Check if username already exists
-  if (usernames.includes(username)) {
-    res.status(400).send('Username already exists');
-    return;
+  for (const user of users) {
+    if (user.username == username) {
+      res.status(400).send('Username already exists');
+      return;
+    }
   }
   /*
   // check if password is valid conditions (SECURITY PURPOSES)
@@ -74,7 +76,7 @@ app.post('/register', (req, res) => {
   }
   */
   // Add new user to the list of users
-  usernames.push({ username, password });
+  users.push({ username, password });
 
   // Redirect to page 2 (login page)
   res.redirect('/login');
@@ -103,21 +105,18 @@ app.post('/login', (req, res) => {
     return;
   }
 
-  // Find user in the list of usernames and passwords
-  const user = usernames.find(user => user.username === username && user.password === password);
-  if (!user) {
-    res.status(401).send('Invalid username or password');
-    return;
+  // Find user in the list of users and passwords
+  //const user = users.find(user => user.username === username && user.password === password);
+  for (const user of users) {
+    if (user.username == username && user.password == password) {
+      res.send(`Welcome back, ${username}!`);
+      return;
+    }
   }
 
-  // Redirect to a page indicating successful login
-  res.send(`Welcome back, ${username}!`);
-});
+  res.status(401).send('Invalid username or password');
 
-// Start the Express server and listen on port 3000
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  return;
 });
 
 function validPassword(password) {
@@ -126,4 +125,17 @@ function validPassword(password) {
    "(" | ")" | "_" | "+" | "\-" | "=" | "\[" | "\]" | "{" | "}" | ";" | "'" | ":" | "\"" |
     "\\" | "|" | "," | "." | "<" | ">" | "\/" | "?" | "]" | "*" | "$" | "/<" | "/>" | ""));
 }
+
+// Start the Express server and listen on port 3000
+const PORT = 3001;
+const server = app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
+module.exports = server;
+// module.exports = PORT;
+
+
+
+
 
