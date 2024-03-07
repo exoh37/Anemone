@@ -1,0 +1,851 @@
+openapi: 3.0.3
+info:
+  title: Anemone Invoice Storage API 3.0
+  description: |-
+    API description for Team Anemone's Invoice Storage.
+    All error strings are placeholders for more detailed messages.
+  version: 1.0.11
+externalDocs:
+  description: Anemone's Confluence Pages
+  url: https://unswcse.atlassian.net/wiki/spaces/W09AANEMON/overview?homepageId=363987217
+servers:
+  - url: https://example.com/
+tags:
+  - name: users
+    description: Operations about users
+  - name: invoices
+    description: Operations about invoice storage, modification and viewing
+  - name: trash
+    description: Operations about invoice trash and deletion
+  - name: testing
+    description: For testing purposes
+components:
+  schemas:
+    invoiceUploadRequestBody:
+      type: object
+      properties:
+        invoice:
+          type: string
+          example: invoice.xml
+    success_true:
+      type: boolean
+      example: true
+    success_false:
+      type: boolean
+      example: false
+    error:
+      type: object
+      properties:
+        success:
+          $ref: '#/components/schemas/success_false'
+        error:
+          type: string
+          example: error message
+    invoiceId:
+      type: integer
+      example: 42
+    invoiceName:
+      type: string
+      example: anemone
+    amount:
+      type: number
+      example: 123.45
+    date:
+      type: string
+      example: 2012-04-23T18:25:43.511Z
+    invoice:
+      type: object
+      properties:
+        invoiceId:
+          $ref: '#/components/schemas/invoiceId'
+        invoiceName:
+          $ref: '#/components/schemas/invoiceName'
+        amount:
+          $ref: '#/components/schemas/amount'
+        date:
+          $ref: '#/components/schemas/date'
+        trashed:
+          $ref: '#/components/schemas/success_false'
+    invoiceUploadReturnObject:
+      type: object
+      properties:
+        success:
+          $ref: '#/components/schemas/success_true'
+        invoice:
+          $ref: '#/components/schemas/invoice'
+    listReturnObject:
+      type: object
+      properties:
+        success:
+          $ref: '#/components/schemas/success_true'
+        invoices:
+          type: array
+          items:
+            $ref: '#/components/schemas/invoice'
+    trashedInvoice:
+      type: object
+      properties:
+        invoiceId:
+          $ref: '#/components/schemas/invoiceId'
+        invoiceName:
+          $ref: '#/components/schemas/invoiceName'
+        amount:
+          $ref: '#/components/schemas/amount'
+        date:
+          $ref: '#/components/schemas/date'
+        trashed:
+          $ref: '#/components/schemas/success_true'
+    trashListReturnObject:
+      type: object
+      properties:
+        success:
+          $ref: '#/components/schemas/success_true'
+        invoices:
+          type: array
+          items:
+            $ref: '#/components/schemas/trashedInvoice'
+    username:
+      type: string
+      example: user1
+    email:
+      type: string
+      example: email@example.com
+    password:
+      type: string
+      example: Abc123!?
+    createUserRequestBody:
+      type: object
+      properties:
+        username:
+          $ref: '#/components/schemas/username'
+        email:
+          $ref: '#/components/schemas/email'
+        password:
+          $ref: '#/components/schemas/password'
+    userId:
+      type: integer
+      example: 42
+    createUserReturnObject:
+      type: object
+      properties:
+        success:
+          $ref: '#/components/schemas/success_true'
+        userId:
+          $ref: '#/components/schemas/userId'
+    userLoginRequestBody:
+      type: object
+      properties:
+        username:
+          $ref: '#/components/schemas/username'
+        password:
+          $ref: '#/components/schemas/password'
+    token:
+      type: string
+      example: 123456
+    userLoginReturnObject:
+      type: object
+      properties:
+        success:
+          $ref: '#/components/schemas/success_true'
+        token:
+          $ref: '#/components/schemas/token'
+    newInvoiceName:
+      type: string
+      example: anemone but different
+    newAmount:
+      type: number
+      example: 543.21
+    newDate:
+      type: string
+      example: 2022-04-23T18:25:43.511Z
+    invoiceModifyRequestBody:
+      type: object
+      properties:
+        newInvoiceName:
+          $ref: '#/components/schemas/newInvoiceName'
+        newAmount:
+          $ref: '#/components/schemas/newAmount'
+        newDate:
+          $ref: '#/components/schemas/newDate'
+    okReturnObject:
+      type: object
+      properties:
+        success:
+          $ref: '#/components/schemas/success_true'
+    invoiceFilterReturnObject:
+      type: object
+      properties:
+        success:
+          $ref: '#/components/schemas/success_true'
+        invoices:
+          type: array
+          items:
+            $ref: '#/components/schemas/invoice'
+paths:
+  /api/v1/invoices:
+    post:
+      tags:
+        - invoices
+      summary: Upload a new invoice
+      description: Upload a new invoice, returning a server-generated invoiceId
+      parameters:
+        - name: token
+          in: header
+          description: The token used for user login
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/invoiceUploadRequestBody'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invoiceUploadReturnObject'
+        '400':
+          description: If invoice is an empty string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Token is empty or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    get:
+      tags:
+        - invoices
+      summary: Get a list of all invoices
+      description: Lists all existing invoices for the currently logged in user that are not trashed
+      parameters:
+        - name: token
+          in: header
+          description: The token used for user login
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listReturnObject'
+        '401':
+          description: Token is empty or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v1/invoices/{invoiceId}:
+    get:
+      tags:
+        - invoices
+      summary: Retrieve an invoice
+      description: Retrive an invoice based on a provided invoiceId
+      parameters:
+        - name: token
+          in: header
+          description: The token used for user login
+          required: true
+          schema:
+            type: string
+        - name: invoiceId
+          in: path
+          description: The specified invoiceId to retrieve
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invoice'
+        '400':
+          description: |-
+            If any of the following is true:
+            - invoiceId does not refer to an existing invoice
+            - invoiceId refers to an invoice in the trash
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Token is empty or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '403':
+          description: Valid token and invoiceId are provided, but user is not owner of this invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    put:
+      tags:
+        - invoices
+      summary: Modify an existing invoice
+      description: Allows the user to modify an invoice that has already been stored. If any of the fields are left empty, this will not edit the existing information of that field. For example, an empty string for newInvoiceName would mean that the existing invoiceName is not edited.
+      parameters:
+        - name: token
+          in: header
+          description: The token used for user login
+          required: true
+          schema:
+            type: string
+        - name: invoiceId
+          in: path
+          description: The specified invoiceId to modify
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Modifying name
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/invoiceModifyRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invoice'
+        '400':
+          description: |-
+            If any of the following is true:
+            - invoiceId does not refer to an existing invoice
+            - invoiceId refers to an invoice in the trash
+            - newAmount is not a positive number and not an empty string
+            - newDate is an invalid date and not an empty string
+            - newDate refers to a time in the future
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Token is empty or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '403':
+          description: Valid token and invoiceId are provided, but user is not owner of this invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    delete:
+      tags:
+        - trash
+      summary: Moves an existing invoice into the trash
+      description: Moves an existing invoice into the trash
+      parameters:
+        - name: token
+          in: header
+          description: The token used for user login
+          required: true
+          schema:
+            type: string
+        - name: invoiceId
+          in: path
+          description: The specified invoiceId to retrieve
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/okReturnObject'
+        '400':
+          description: |-
+            If any of the following is true:
+            - invoiceId does not refer to an existing invoice
+            - invoiceId refers to an invoice in the trash
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Token is empty or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '403':
+          description: Valid token and invoiceId are provided, but user is not owner of this invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v1/users:
+    post:
+      tags:
+        - users
+      summary: Create a new user
+      description: Creates a new user, with a username, email and password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createUserRequestBody'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createUserReturnObject'
+        '400':
+          description: |-
+            If any of the following is true:
+            - username is not between 3-20 characters long
+            - username contains empty space " "
+            - password does not contain at least 1 uppercase letter
+            - password does not contain at least 1 lowercase letter
+            - password does not contain at least 1 number
+            - password does not contain at least 1 special character
+            - email does not satisfy this: https://www.npmjs.com/package/validator (validator.isEmail)
+            - email is currently used by another user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '403':
+          description: If username was taken by another user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v1/users/login:
+    post:
+      tags:
+        - users
+      summary: Login a user
+      description: Allows a user to login to the system and returns a valid token session given username and password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userLoginRequestBody'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userLoginReturnObject'
+        '401':
+          description: |-
+            If any of the following is true:
+            - username does not refer to an existing user
+            - password does not match username
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v1/trash/{invoiceId}:
+    delete:
+      tags:
+        - trash
+      summary: Deletes a trashed invoice
+      description: Deletes an invoice completely
+      parameters:
+        - name: token
+          in: header
+          description: The token used for user login
+          required: true
+          schema:
+            type: string
+        - name: invoiceId
+          in: path
+          description: The specified invoiceId to retrieve
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/okReturnObject'
+        '400':
+          description: |-
+            If any of the following is true:
+            - invoiceId does not refer to an existing invoice
+            - invoiceId refers to an invoice not in the trash
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Token is empty or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '403':
+          description: Valid token and invoiceId are provided, but user is not owner of this invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v1/trash/{invoiceId}/restore:
+    post:
+      tags:
+        - trash
+      summary: Restores a trashed invoice
+      description: Moves an invoice from the trash back to normal storage
+      parameters:
+        - name: token
+          in: header
+          description: The token used for user login
+          required: true
+          schema:
+            type: string
+        - name: invoiceId
+          in: path
+          description: The specified invoiceId to retrieve
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/okReturnObject'
+        '400':
+          description: |-
+            If any of the following is true:
+            - invoiceId does not refer to an existing invoice
+            - invoiceId refers to an invoice not in the trash
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Token is empty or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '403':
+          description: Valid token and invoiceId are provided, but user is not owner of this invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v1/trash:
+    get:
+      tags:
+        - trash
+      summary: Lists trash items
+      description: Lists all the invoices that are currently in the trash, in the order that each invoice was deleted; so the latest deleted invoice will be at the bottom of the returned invoices array.
+      parameters:
+        - name: token
+          in: header
+          description: The token used for user login
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/trashListReturnObject'
+        '401':
+          description: Token is empty or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v1/clear:
+    delete:
+      tags:
+        - testing
+      summary: Clears database
+      description: Clear the entire database, as if it were brand new. This route is for testing purposes.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/okReturnObject'
+  /api/v1/invoices/search/{filteredWord}:
+    get:
+      tags:
+        - invoices
+      summary: Filters invoices on search
+      description: This will provide the user with all invoices that match their filter word exactly. The invoices appearing when searched needs to exist outside of the trash, and must be their own.
+      parameters:
+        - name: token
+          in: header
+          description: The token used for user login
+          required: true
+          schema:
+            type: string
+        - name: filteredWord
+          in: path
+          description: The word to filter for
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invoiceFilterReturnObject'
+        '400':
+          description: filteredWord is an empty string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Token is empty or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v1/invoices/{invoiceIds}:
+    put:
+      tags:
+        - invoices
+      summary: Updates a batch of invoices
+      description: Given a set of invoiceIds, update each of them to the corresponding fields. If any of the fields are left empty, this will not edit the existing information of that field. For example, an empty string for newInvoiceName would mean that the existing invoiceName is not edited, across all invoices that were specified to be modified.
+      parameters:
+        - name: token
+          in: header
+          description: The token used for user login
+          required: true
+          schema:
+            type: string
+        - name: invoiceIds
+          in: path
+          description: The invoiceIds to be trashed
+          required: true
+          schema:
+            type: array
+            items:
+              type: number
+              example: 42
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/invoiceModifyRequestBody'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/okReturnObject'
+        '400':
+          description: |-
+            If any of the following is true:
+            - invoiceIds is an empty array
+            - invoiceIds contains a duplicate invoiceId
+            - at least 1 invoiceId in invoiceIds does not refer to an existing invoice
+            - at least 1 invoiceId in invoiceIds refers to an invoice in the trash
+            - newAmount is not a positive number and not an empty string
+            - newDate is an invalid date and not an empty string
+            - newDate refers to a time in the future
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Token is empty or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '403':
+          description: Valid token and invoiceId are provided, but user is not owner of at least 1 invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v1/invoices/{invoiceIds}/trash:
+    delete:
+      tags:
+        - trash
+      summary: Moves a batch of invoices into the trash
+      description: Moves a batch of invoices into the trash
+      parameters:
+        - name: token
+          in: header
+          description: The token used for user login
+          required: true
+          schema:
+            type: string
+        - name: invoiceIds
+          in: path
+          description: The invoiceIds to be trashed
+          required: true
+          schema:
+            type: array
+            items:
+              type: number
+              example: 42
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/okReturnObject'
+        '400':
+          description: |-
+            If any of the following is true:
+            - invoiceIds is an empty array
+            - invoiceIds contains a duplicate invoiceId
+            - at least 1 invoiceId in invoiceIds does not refer to an existing invoice
+            - at least 1 invoiceId in invoiceIds refers to an invoice in the trash
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Token is empty or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '403':
+          description: Valid token and invoiceId are provided, but user is not owner of at least 1 invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v1/trash/{invoiceIds}:
+    delete:
+      tags:
+        - trash
+      summary: Deletes a batch of trashed invoices
+      description: Deletes a batch of trashed invoices
+      parameters:
+        - name: token
+          in: header
+          description: The token used for user login
+          required: true
+          schema:
+            type: string
+        - name: invoiceIds
+          in: path
+          description: The invoiceIds to be trashed
+          required: true
+          schema:
+            type: array
+            items:
+              type: number
+              example: 42
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/okReturnObject'
+        '400':
+          description: |-
+            If any of the following is true:
+            - invoiceIds is an empty array
+            - invoiceIds contains a duplicate invoiceId
+            - at least 1 invoiceId in invoiceIds does not refer to an existing invoice
+            - at least 1 invoiceId in invoiceIds refers to an invoice not in the trash
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Token is empty or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '403':
+          description: Valid token and invoiceId are provided, but user is not owner of at least 1 invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v1/trash/{invoiceIds}/restore:
+    put:
+      tags:
+        - trash
+      summary: Restores a batch of trashed invoices
+      description: Restores a batch of trashed invoices
+      parameters:
+        - name: token
+          in: header
+          description: The token used for user login
+          required: true
+          schema:
+            type: string
+        - name: invoiceIds
+          in: path
+          description: The invoiceIds to be trashed
+          required: true
+          schema:
+            type: array
+            items:
+              type: number
+              example: 42
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/okReturnObject'
+        '400':
+          description: |-
+            If any of the following is true:
+            - invoiceIds is an empty array
+            - invoiceIds contains a duplicate invoiceId
+            - at least 1 invoiceId in invoiceIds does not refer to an existing invoice
+            - at least 1 invoiceId in invoiceIds refers to an invoice not in the trash
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Token is empty or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '403':
+          description: Valid token and invoiceId are provided, but user is not owner of at least 1 invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
