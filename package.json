@@ -2,7 +2,7 @@
   "name": "anemone",
   "version": "1.0.0",
   "description": "",
-  "main": "user/helloWorld.js",
+  "main": "src/main/user/index.js",
   "scripts": {
     "test": "jest",
     "lint": "eslint src/**/*.{ts,js}",
