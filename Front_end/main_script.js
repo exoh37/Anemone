@@ -1,21 +1,26 @@
-function othername() {
-    var input = document.getElementById("user").value;  
-    var jah = document.createElement("LI");
-    var newButton = document.createElement("button");
-    var create = document.createTextNode(input);
-    //jah.addEventListener('onclick', boo());
-    jah.onclick =  boo;
-    newButton.onclick = boo;
-    jah.appendChild(create);
-    document.getElementById("list").appendChild(jah);
-    document.getElementById("list").appendChild(newButton);
+function addItem() {
+
+  var userInput = document.getElementById('user').value.trim();
+
+  if(userInput.endsWith('.xml')){
+
+    var listItem = document.createElement('li');
+    listItem.textContent = userInput;
+
+    var deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.onclick = function() {
+        listItem.remove();
+    };
+
+    listItem.appendChild(deleteButton);
+    document.getElementById('list').appendChild(listItem);
+    document.getElementById('user').value = '';
   }
-  
-  function boo(event)
-  {
-    //alert(event.target);
-    event.target.parentNode.removeChild(event.target);
-    
+
+  else{
+    alert('Input must end with ".xml"');
+    document.getElementById('user').value = '';
   }
-  
-  
+  return false;
+}

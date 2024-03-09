@@ -25,3 +25,21 @@ form,ul {
 #list {
     list-style: none;
 }
+
+li {
+    position: relative;
+    margin-bottom: 1em;
+}
+
+button {
+    position: absolute;
+    right: 0;
+}
+
+#list-container {
+    width: 700px;
+    margin: 0 auto;
+    padding: 1em;
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+}
