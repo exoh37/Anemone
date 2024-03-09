@@ -9,14 +9,15 @@
         <body>
                 <h1>Registration Form</h1>
                 <p>Title</p>
-                <form method="post" action='https://#'>
+                <form method="POST" action='/register'>
                         <fieldset>
-                                <label for="first-name">Enter Your Username: <input id="first-name" name="first-name" type="text" required /></label>
-                                <label for="email">Enter Your Email: <input id="email" name="email" type="email" required /></label>
-                                <label for="new-password">Enter Password: <input id="new-password" name="new-password" type="password" pattern="[a-z0-5]{8,}" required /></label>
+                                <label for="username">Enter Your Username: <input id="username" name="username" type="text" required /></label>
+                                <!-- <label for="email">Enter Your Email: <input id="email" name="email" type="email" required /></label>-->
+                                <label for="password">Enter Password: <input id="password" name="password" type="password" pattern="[a-z0-5]{8,}" required /></label>
+                                <button type="submit">Register</button>
                         </fieldset>
                 </form>
 
-                <a href="main.html"><input type="submit" value="Submit" /></a>
+                <!-- <a href="login"><input type="submit" value="Submit" /></a>-->
         </body>
 </html>

@@ -1,6 +1,8 @@
 // Import required modules
 const express = require("express");
 const bodyParser = require("body-parser");
+const path = require("path"); 
+
 
 // Create an Express application
 const app = express();
@@ -12,6 +14,7 @@ const users = JSON.parse(fs.readFileSync("src/main/user/TEMP_userStorage.json"))
 // Middleware to parse JSON and URL-encoded request bodies
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "../../../Front_end")));
 
 // Define a route for the root URL ('/')
 app.get("/", (req, res) => {
@@ -20,37 +23,10 @@ app.get("/", (req, res) => {
   `);
 });
 
-// Define a route for page 1
+// Define a route for the registration form
 app.get("/register", (req, res) => {
-    res.send(`
-  <html>
-  <head>
-    <title>E-Invoice Storage - Registration</title>
-    <style>
-      body {
-        text-align: center;
-        font-family: Arial, sans-serif;
-      }
-      .title {
-        font-size: 32px;
-        margin-bottom: 20px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="title">Anemone's E-Invoice Storage</div>
-    <h1>Registration</h1>
-    <form method="POST" action="/register">
-      <label for="username">Username:</label><br>
-      <input type="text" id="username" name="username" required><br>
-      <label for="password">Password:</label><br>
-      <input type="password" id="password" name="password" required><br>
-      <button type="submit">Register</button>
-    </form>
-    <p>Already have an account? <a href="/login">Login here</a>.</p>
-  </body>
-  </html>
-  `);
+  const filePath = path.join(__dirname, "../../../Front_end/Register.html");
+  res.sendFile(filePath);
 });
 
 
@@ -76,6 +52,7 @@ app.post("/register", (req, res) => {
   }
   */
     // Add new user to the list of users
+    console.log('The username and password are being added');
     users.push({ username, password });
 
     // Redirect to page 2 (login page)
@@ -84,17 +61,7 @@ app.post("/register", (req, res) => {
 
 // Define a route for page 2
 app.get("/login", (req, res) => {
-    res.send(`
-    <h1>Login</h1>
-    <form method="POST" action="/login">
-      <label for="username">Username:</label><br>
-      <input type="text" id="username" name="username" required><br>
-      <label for="password">Password:</label><br>
-      <input type="password" id="password" name="password" required><br>
-      <button type="submit">Login</button>
-    </form>
-    <p> Haven't signed up yet? <a href="/register">Register here!</a>.</p>
-  `);
+  res.sendFile(path.join(__dirname, "../../../Front_end/Login.html"));
 });
 
 // Handle login form submission
@@ -117,6 +84,13 @@ app.post("/login", (req, res) => {
     res.status(401).send("Invalid username or password");
 
     return;
+});
+
+// Define a route for the root URL ('/')
+app.get("/main.html", (req, res) => {
+  res.send(`
+  <p> Welcome!</p>
+`);
 });
 
 /*
