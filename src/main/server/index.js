@@ -8,8 +8,10 @@ const path = require("path");
 const app = express();
 
 const fs = require("fs");
-// Read the users file
-const users = JSON.parse(fs.readFileSync("src/main/user/TEMP_userStorage.json"));
+// Read the  files
+const users = JSON.parse(fs.readFileSync("src/main/server/TEMP_userStorage.json"));
+const invoices = JSON.parse(fs.readFileSync("src/main/server/TEMP_invoiceStorage.json")); 
+
 
 // Middleware to parse JSON and URL-encoded request bodies
 app.use(bodyParser.json());
@@ -45,12 +47,6 @@ app.post("/register", (req, res) => {
             return;
         }
     }
-    /*
-  // check if password is valid conditions (SECURITY PURPOSES)
-  if (!validPassword(password)) {
-    res.status(400).send('Password must be: greater than 8 characters, include special characters');
-  }
-  */
     // Add new user to the list of users
     console.log("The username and password are being added");
     users.push({ username, password });
@@ -76,9 +72,7 @@ app.post("/login", (req, res) => {
     //const user = users.find(user => user.username === username && user.password === password);
     for (const user of users) {
         if (user.username == username && user.password == password) {
-            res.send(`Welcome back, ${username}!`);
             res.redirect("/main.html");
-            // return;
         }
     }
 
@@ -87,21 +81,21 @@ app.post("/login", (req, res) => {
     return;
 });
 
-// Define a route for the root URL ('/')
-app.get("/main.html", (req, res) => {
-    res.send(`
-  <p> Welcome!</p>
-`);
+// Define a route for retrieving invoices
+app.get("/retrieve/:invoiceId", (req, res) => {
+    const { invoiceId } = req.params;
+
+    for (const invoice of invoices) {
+        if (invoiceId == invoice.invoiceId) {
+            res.json(invoice);
+            break;
+        }
+    }
+
+    res.status(404).send("Invoice not found");
+
 });
 
-/*
-function validPassword(password) {
-    return !(password.length < 8 || password.includes("123") || 
-  !password.includes("/" | "^" | "[" | "!" | "@" | "#" | "$" | "%" | "^" | "&" | "*" |
-   "(" | ")" | "_" | "+" | "\-" | "=" | "\[" | "\]" | "{" | "}" | ";" | "'" | ":" | "\"" |
-    "\\" | "|" | "," | "." | "<" | ">" | "\/" | "?" | "]" | "*" | "$" | "/<" | "/>" | ""));
-}
-*/
 
 // Start the Express server and listen on port 3000
 const PORT = 3001;
@@ -109,10 +103,6 @@ const server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
+
 module.exports = server;
 // module.exports = PORT;
-
-
-
-
-

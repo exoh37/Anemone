@@ -1,21 +1,52 @@
 <!DOCTYPE html>
 <html>
-        <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1">
-                <title>main_page</title>
-                <link rel="stylesheet" href="main_style.css" />
-                <script src="main_script.js"></script>
-        </head>
-        <body>
-                <h1>Anemone File storage</h1>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>main_page</title>
+    <link rel="stylesheet" href="main_style.css" />
+    <script src="main_script.js"></script>
+</head>
+<body>
+    <h1>Anemone File storage</h1>
 
+    <form id="form" onsubmit="return false;">
+        <input type="text" id="user" />
+        <input type="submit" value="Upload" onclick="addItem();" />
+    </form>
+    
+    <div id="list-container">
+        <input type="text" id="search" placeholder="Search..." />
+        <button id="retrieveButton">Retrieve</button>
+        <ul id="list"></ul>
+    </div>
 
-                <form id="form" onsubmit="return false;">
-                    <input type="text" id="user" />
-                     <input type="submit" value="Upload" onclick="addItem(); " />
-                  </form>
-                  <div id="list-container"><ul id="list"></ul></div>
-                  
-        </body>
+    <script> 
+        const retrieveButton = document.getElementById('retrieveButton');
+
+        retrieveButton.addEventListener('click', retrieveInvoice);
+
+        // Partially AI generated
+        function retrieveInvoice() {
+            // Get the invoiceId from the input field
+            const invoiceId = document.getElementById('search').value.trim();
+
+            fetch(`/retrieve/${invoiceId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Invoice not found');
+                    }
+                    return response.json();
+                })
+                .then(invoice => {
+                    const listContainer = document.getElementById('list');
+                    listContainer.innerHTML = `<li>Invoice ID: ${invoice.invoiceId}, Amount: ${invoice.amount}</li>`;
+                })
+                .catch(error => {
+                    const listContainer = document.getElementById('list');
+                    listContainer.innerHTML = `<li>${error.message}</li>`;
+                });
+        }
+    </script>
+</body>
 </html>
