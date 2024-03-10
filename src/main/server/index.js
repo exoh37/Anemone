@@ -85,7 +85,6 @@ app.post("/login", (req, res) => {
 app.get("/retrieve/:invoiceId", (req, res) => {
     const { invoiceId } = req.params;
 
-    let found = false;
     for (const invoice of invoices) {
         if (invoiceId == invoice.invoiceId) {
             res.json(invoice);
@@ -93,9 +92,8 @@ app.get("/retrieve/:invoiceId", (req, res) => {
         }
     }
 
-    if (!found) {
-        res.status(404).send("Invoice not found");
-    }
+    res.status(404).send("Invoice not found");
+
 });
 
 
