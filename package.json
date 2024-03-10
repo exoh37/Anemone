@@ -9,7 +9,7 @@
     "lint-fix": "eslint --fix src/**/*.{ts,js}"
   },
   "keywords": [],
-  "author": "chris park",
+  "author": "Anemone",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
