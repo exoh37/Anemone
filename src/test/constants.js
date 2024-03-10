@@ -1,0 +1,15 @@
+export const emptyString = "";
+export const validUsername1 = "validUsername1!";
+export const validUsername2 = "thisIsAValidName";
+export const validEmail1 = "test123@email.com";
+export const validEmail2 = "123test@email.com"
+export const validPassword1 = "ThisIsSecure!123";
+export const validPassword2 = "lessSecure2?";
+export const invalidUsername1 = "name with space";
+export const invalidUsername2 = "thisuernameiswaytoolongover20chars";
+export const invalidUsername3 = "1c";
+export const invalidPassword1 = "password!1";
+export const invalidPassword2 = "PASSWORD!1";
+export const invalidPassword3 = "Password!";
+export const invalidPassword4 = "Password1";
+export const invalidEmail = "notanemail.com";
