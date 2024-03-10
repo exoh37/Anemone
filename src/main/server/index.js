@@ -97,6 +97,12 @@ app.get("/retrieve/:invoiceId", (req, res) => {
 });
 
 
+app.post("/upload", (req, res) => {
+    const { file } = req.body;
+    const response = uploadfile(file); 
+    return res.json(result);
+});
+
 // Start the Express server and listen on port 3000
 const PORT = 3001;
 const server = app.listen(PORT, () => {
