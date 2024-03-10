@@ -13,27 +13,29 @@ const invoices = JSON.parse(fs.readFileSync("src/main/server/TEMP_invoiceStorage
 
 // import Invoice Upload
 const invoiceUpload = require("./invoiceUpload.js");
+const userHelpers = require("./../userHelpers.js");
+// const invoiceRetrieve = require("./../invoiceRetrieve.js");
 
-// Middleware to parse JSON and URL-encoded request bodies
+// Middleware ( AI-Generated )
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../../../Front_end")));
 
-// Define a route for the root URL ('/')
+// root URL
 app.get("/", (req, res) => {
     res.send(`
     <p> Welcome! Click here to get started  <a href="/Register">Register</a>.</p>
   `);
 });
 
-// Define a route for the registration form
+// route for the registration form
 app.get("/register", (req, res) => {
     const filePath = path.join(__dirname, "../../../Front_end/Register.html");
     res.sendFile(filePath);
 });
 
 
-// Handle registration form submission
+// registration form submission
 app.post("/register", (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -42,17 +44,13 @@ app.post("/register", (req, res) => {
     }
 
     // Check if username already exists
-    for (const user of users) {
-        if (user.username == username) {
-            res.status(400).send("Username already exists");
-            return;
-        }
+    if (!userHelpers.checkUserDoesntExist(username, users)) {
+        res.status(400).send("Username already exists");
+        return;
     }
     // Add new user to the list of users
-    console.log("The username and password are being added");
     users.push({ username, password });
 
-    // Redirect to page 2 (login page)
     res.redirect("/login");
 });
 
@@ -70,15 +68,11 @@ app.post("/login", (req, res) => {
     }
 
     // Find user in the list of users and passwords
-    //const user = users.find(user => user.username === username && user.password === password);
-    for (const user of users) {
-        if (user.username == username && user.password == password) {
-            res.redirect("/main.html");
-        }
+    if (userHelpers.checkUserInDataBase(username, password, users)) {
+        res.redirect("/main.html");
+        return;
     }
-
     res.status(401).send("Invalid username or password");
-
     return;
 });
 

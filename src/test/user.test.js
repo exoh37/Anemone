@@ -5,6 +5,7 @@ const server = require("../main/server");
 
 
 describe("User Registration", () => {
+    // FIRST TEST IS AI-GENERATED
     it("should register a new user with valid username and password", async () => {
         const response = await request(app)
             .post("/register")
@@ -33,8 +34,6 @@ describe("User Registration", () => {
             .send({ username: "thestiiiig2", password: "testpassword#567" }); // Existing username
         expect(response.statusCode).toBe(302); 
     });
-
-  
 });
 
 describe("User Login Page", () => {
@@ -90,7 +89,6 @@ describe("User full Registration and Login Process", () => {
             .send({ username: "newuser2", password: "ultrapassword" });
         expect(response.statusCode).toBe(302); // Expecting a redirection to main.html
     });
-
 
     // close server
     server.close();
