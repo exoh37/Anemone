@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path"); 
 
+import { uploadfile } from "./invoiceUpload";
 
 // Create an Express application
 const app = express();
@@ -100,7 +101,7 @@ app.get("/retrieve/:invoiceId", (req, res) => {
 app.post("/upload", (req, res) => {
     const { file } = req.body;
     const response = uploadfile(file); 
-    return res.json(result);
+    return res.json(response);
 });
 
 // Start the Express server and listen on port 3000
