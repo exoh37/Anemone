@@ -3,8 +3,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path"); 
 
-import { uploadfile } from "./invoiceUpload";
-
 // Create an Express application
 const app = express();
 
@@ -12,6 +10,9 @@ const fs = require("fs");
 // Read the  files
 const users = JSON.parse(fs.readFileSync("src/main/server/TEMP_userStorage.json"));
 const invoices = JSON.parse(fs.readFileSync("src/main/server/TEMP_invoiceStorage.json")); 
+
+// import Invoice Upload
+const invoiceUpload = require("./invoiceUpload.js");
 
 // Middleware to parse JSON and URL-encoded request bodies
 app.use(bodyParser.json());
@@ -99,12 +100,12 @@ app.get("/retrieve/:invoiceId", (req, res) => {
 
 app.post("/upload", (req, res) => {
     const { file } = req.body;
-    const response = uploadfile(file); 
+    const response = invoiceUpload.uploadfile(file); 
     return res.json(response);
 });
 
 // Start the Express server and listen on port 3000
-const PORT = 3001;
+const PORT = 3000;
 const server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
