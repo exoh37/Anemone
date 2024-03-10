@@ -31,7 +31,13 @@ jobs:
       run: chmod -R a+x node_modules
 
     - name: Run tests
-      run: npm run test
+      run: npm test -- --coverage
+
+    - name: Upload coverage report
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage-report
+          path: coverage
 
   linting:
     runs-on: ubuntu-latest
@@ -53,3 +59,4 @@ jobs:
 
     - name: Run linting
       run: npm run lint
+      
