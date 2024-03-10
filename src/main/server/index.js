@@ -32,7 +32,6 @@ app.get("/register", (req, res) => {
     res.sendFile(filePath);
 });
 
-
 // Handle registration form submission
 app.post("/register", (req, res) => {
     const { username, password } = req.body;
@@ -61,6 +60,9 @@ app.get("/login", (req, res) => {
     res.sendFile(path.join(__dirname, "../../../Front_end/Login.html"));
 });
 
+
+
+
 // Handle login form submission
 app.post("/login", (req, res) => {
     const { username, password } = req.body;
@@ -73,7 +75,7 @@ app.post("/login", (req, res) => {
     //const user = users.find(user => user.username === username && user.password === password);
     for (const user of users) {
         if (user.username == username && user.password == password) {
-            res.redirect("/main.html");
+            res.redirect("/main");
         }
     }
 
@@ -81,6 +83,12 @@ app.post("/login", (req, res) => {
 
     return;
 });
+
+app.get("/main", (req, res) => {
+    const filePath = path.join(__dirname, "../../../Front_end/main.html");
+    res.sendFile(filePath);
+});
+
 
 // Define a route for retrieving invoices
 app.get("/retrieve/:invoiceId", (req, res) => {
@@ -100,8 +108,15 @@ app.get("/retrieve/:invoiceId", (req, res) => {
 
 app.post("/upload", (req, res) => {
     const { file } = req.body;
-    const response = uploadfile(file); 
-    return res.json(response);
+
+    try{
+
+        const response = uploadfile(file); 
+        return res.json(response);
+    }
+    catch (error) {
+        return res.status(500).json({success: false, message: error.message});
+    }
 });
 
 // Start the Express server and listen on port 3000
