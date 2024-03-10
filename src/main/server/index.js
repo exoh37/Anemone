@@ -9,7 +9,7 @@ const app = express();
 
 const fs = require("fs");
 // Read the users file
-const users = JSON.parse(fs.readFileSync("src/main/user/TEMP_userStorage.json"));
+const users = JSON.parse(fs.readFileSync("src/main/server/TEMP_userStorage.json"));
 
 // Middleware to parse JSON and URL-encoded request bodies
 app.use(bodyParser.json());
@@ -76,7 +76,7 @@ app.post("/login", (req, res) => {
     //const user = users.find(user => user.username === username && user.password === password);
     for (const user of users) {
         if (user.username == username && user.password == password) {
-            res.send(`Welcome back, ${username}!`);
+            // res.send(`Welcome back, ${username}!`);
             res.redirect("/main.html");
             // return;
         }

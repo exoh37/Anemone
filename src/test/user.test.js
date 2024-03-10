@@ -1,6 +1,6 @@
 const request = require("supertest");
-const app = require("../main/user"); 
-const server = require("../main/user");
+const app = require("../main/server"); 
+const server = require("../main/server");
 
 
 
@@ -43,7 +43,7 @@ describe("User Login Page", () => {
         const response = await request(app)
             .post("/login")
             .send({ username: "thestiiiig", password: "gigglemobile" });
-        expect(response.statusCode).toBe(200); // Expecting a login
+        expect(response.statusCode).toBe(302); // Expecting a redirection to main
     });
 
     it("should NOT login an UNregistered user", async () => {
@@ -88,7 +88,7 @@ describe("User full Registration and Login Process", () => {
         const response = await request(app)
             .post("/login")
             .send({ username: "newuser2", password: "ultrapassword" });
-        expect(response.statusCode).toBe(200); // Expecting a login
+        expect(response.statusCode).toBe(302); // Expecting a redirection to main.html
     });
 
     // close server
