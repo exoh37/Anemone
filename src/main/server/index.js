@@ -3,7 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path"); 
 
-import { uploadfile } from "./invoiceUpload";
+const uploadfile = require("./invoiceUpload");
 
 // Create an Express application
 const app = express();
