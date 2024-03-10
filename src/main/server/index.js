@@ -100,14 +100,10 @@ app.get("/retrieve/:invoiceId", (req, res) => {
 
 
 // Start the Express server and listen on port 3000
-let PORT = 3001;
-let server = app.listen(PORT, () => {
+const PORT = 3001;
+const server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
 module.exports = server;
 // module.exports = PORT;
-
-
-
-
