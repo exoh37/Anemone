@@ -30,7 +30,7 @@ jobs:
     - name: Run tests
       run: npm run test
 
-  tests:
+  linting:
     runs-on: ubuntu-latest
 
     strategy:
