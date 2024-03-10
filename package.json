@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "src/main/user/index.js",
   "scripts": {
-    "start": "node src/main/user/index.js",	
+    "start": "node src/main/user/index.js",
     "test": "jest",
     "lint": "eslint src/**/*.{ts,js}",
     "lint-fix": "eslint --fix src/**/*.{ts,js}"
