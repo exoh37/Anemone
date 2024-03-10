@@ -27,6 +27,9 @@ jobs:
     - name: Install npm
       run: npm install
 
+    - name: Fix node_modules
+      run: chmod -R a+x node_modules
+
     - name: Run tests
       run: npm run test
 
