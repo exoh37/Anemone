@@ -22,19 +22,15 @@
     </div>
 
     <script> 
-        // Get a reference to the retrieve button
         const retrieveButton = document.getElementById('retrieveButton');
 
-        // Add an event listener to the button
         retrieveButton.addEventListener('click', retrieveInvoice);
 
         // Partially AI generated
-        // Function to handle retrieval of invoice
         function retrieveInvoice() {
             // Get the invoiceId from the input field
             const invoiceId = document.getElementById('search').value.trim();
 
-            // Send a GET request to retrieve the invoice
             fetch(`/retrieve/${invoiceId}`)
                 .then(response => {
                     if (!response.ok) {

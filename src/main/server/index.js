@@ -84,19 +84,24 @@ app.post("/login", (req, res) => {
 // Define a route for retrieving invoices
 app.get("/retrieve/:invoiceId", (req, res) => {
     const { invoiceId } = req.params;
+
+    let found = false;
     for (const invoice of invoices) {
-        if (invoice.invoiceId == invoice.invoiceId) {
+        if (invoiceId == invoice.invoiceId) {
             res.json(invoice);
+            break;
         }
     }
 
-    res.status(404).send("Invoice not found");
+    if (!found) {
+        res.status(404).send("Invoice not found");
+    }
 });
 
 
 // Start the Express server and listen on port 3000
-const PORT = 3001;
-const server = app.listen(PORT, () => {
+let PORT = 3001;
+let server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
