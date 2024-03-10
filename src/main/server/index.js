@@ -13,7 +13,6 @@ const fs = require("fs");
 const users = JSON.parse(fs.readFileSync("src/main/server/TEMP_userStorage.json"));
 const invoices = JSON.parse(fs.readFileSync("src/main/server/TEMP_invoiceStorage.json")); 
 
-
 // Middleware to parse JSON and URL-encoded request bodies
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
