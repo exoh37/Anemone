@@ -1,6 +1,6 @@
 const request = require("supertest");
-const app = require("../main/user/helloWorld"); 
-const server = require("../main/user/helloWorld");
+const app = require("../main/user"); 
+const server = require("../main/user");
 
 
 
@@ -44,7 +44,51 @@ describe("User Login Page", () => {
             .post("/login")
             .send({ username: "thestiiiig", password: "gigglemobile" });
         expect(response.statusCode).toBe(200); // Expecting a login
-        //expect(response.header.location).toBe('/login'); // Expecting redirection to login page
+    });
+
+    it("should NOT login an UNregistered user", async () => {
+        const response = await request(app)
+            .post("/login")
+            .send({ username: "notREAL", password: "notreal" });
+        expect(response.statusCode).toBe(401); // Expecting a login FAILURE
+    });
+
+    it("should NOT login a Valid Username BUT Invalid Password", async () => {
+        const response = await request(app)
+            .post("/login")
+            .send({ username: "thestiiiig", password: "leCar" });
+        expect(response.statusCode).toBe(401); // Expecting a login FAILURE
+    });
+});
+
+describe("User full Registration and Login Process", () => {
+    it("should register a new user with valid username and password", async () => {
+        const response = await request(app)
+            .post("/register")
+            .send({ username: "newuser2", password: "ultrapassword" });
+        expect(response.statusCode).toBe(302); // Expecting a redirect
+        expect(response.header.location).toBe("/login"); // Expecting redirection to login page
+    });
+
+    it("should NOT login if mispelling in username", async () => {
+        const response = await request(app)
+            .post("/login")
+            .send({ username: "newusr2", password: "ultrapassword" });
+        expect(response.statusCode).toBe(401); // Expecting a login FAILURE
+    });
+
+    it("should NOT login if mispelling in password", async () => {
+        const response = await request(app)
+            .post("/login")
+            .send({ username: "newuser2", password: "ultrapasword" });
+        expect(response.statusCode).toBe(401); // Expecting a login FAILURE
+    });
+    
+    it("should login a registered user", async () => {
+        const response = await request(app)
+            .post("/login")
+            .send({ username: "newuser2", password: "ultrapassword" });
+        expect(response.statusCode).toBe(200); // Expecting a login
     });
 
     // close server
