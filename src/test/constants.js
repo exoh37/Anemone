@@ -1,8 +1,8 @@
 export const emptyString = "";
 export const validUsername1 = "validUsername1!";
 export const validUsername2 = "thisIsAValidName";
-export const validEmail1 = "test123@email.com";
-export const validEmail2 = "123test@email.com"
+export const validEmail1 = "test123@gmail.com";
+export const validEmail2 = "123test@gmail.com"
 export const validPassword1 = "ThisIsSecure!123";
 export const validPassword2 = "lessSecure2?";
 export const invalidUsername1 = "name with space";
