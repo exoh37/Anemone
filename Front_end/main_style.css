@@ -8,22 +8,40 @@ body {
     font-size: 16px;
 }
 
-
 h1, p {
     margin: 1em auto;
     text-align: center;
 }
-  
-form,ul {
+
+form, #search-container, #list-container {
     width: 60vw;
     max-width: 500px;
     min-width: 300px;
     margin: 0 auto;
     padding-bottom: 2em;
 }
-  
+
 #list {
     list-style: none;
+    padding: 0;
+}
+
+#search-container input[type="text"] {
+    width: calc(100% - 80px);
+    margin-right: 10px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+#search-container button {
+    width: 70px;
+    padding: 5px;
+    border: none;
+    border-radius: 3px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
 }
 
 li {
@@ -42,4 +60,23 @@ button {
     padding: 1em;
     border: 1px solid #ccc; 
     border-radius: 5px; 
+}
+
+#list-container {
+    width: 60vw;
+    max-width: 500px;
+    min-width: 300px;
+    margin: 0 auto;
+    padding-bottom: 2em;
+    position: relative; /* Make the container relative */
+}
+
+#search {
+    width: calc(100% - 90px); /* Adjusted width for input */
+}
+
+button {
+    position: absolute;
+    top: 0;
+    right: 0;
 }

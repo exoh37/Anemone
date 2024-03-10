@@ -1,0 +1,18 @@
+[
+    {
+        "invoiceId": "1234532",
+        "amount": "500"
+    },
+    {
+        "invoiceId": "3120987",
+        "amount": "123"
+    },
+    {
+        "invoiceId": "1",
+        "amount": "13289"
+    },
+    {
+        "invoiceId": "1209343249048",
+        "amount": "0001"
+    }
+]
