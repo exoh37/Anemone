@@ -110,12 +110,11 @@ app.post("/upload", (req, res) => {
     const { file } = req.body;
 
     try{
-
         const response = uploadfile(file); 
         return res.json(response);
     }
     catch (error) {
-        return res.status(500).json({success: false, message: error.message});
+        return res.status(400).json({success: false, message: error.message});
     }
 });
 

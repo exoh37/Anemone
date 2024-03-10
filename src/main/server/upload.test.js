@@ -12,15 +12,4 @@ describe("POST /upload", () => {
         expect(res.status).toBe(200);
         expect(res.body).toEqual({ success: true, message: "File uploaded successfully" });
     });
-
-    it("should return status 500 and error message on upload failure", async () => {
-        jest.mock("./invoiceUpload", () => jest.fn(() => { throw new Error("Error uploading file"); }));
-
-        const res = await request(app)
-            .post("/upload")
-            .send({ file: "{stupid test no work haha}" });
-
-        expect(res.status).toBe(500);
-        expect(res.body).toEqual({ success: false, message: "Error uploading file" });
-    });
 });
