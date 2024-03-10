@@ -25,8 +25,8 @@ app.get("/", (req, res) => {
 
 // Define a route for the registration form
 app.get("/register", (req, res) => {
-  const filePath = path.join(__dirname, "../../../Front_end/Register.html");
-  res.sendFile(filePath);
+    const filePath = path.join(__dirname, "../../../Front_end/Register.html");
+    res.sendFile(filePath);
 });
 
 
@@ -52,7 +52,7 @@ app.post("/register", (req, res) => {
   }
   */
     // Add new user to the list of users
-    console.log('The username and password are being added');
+    console.log("The username and password are being added");
     users.push({ username, password });
 
     // Redirect to page 2 (login page)
@@ -61,7 +61,7 @@ app.post("/register", (req, res) => {
 
 // Define a route for page 2
 app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../../Front_end/Login.html"));
+    res.sendFile(path.join(__dirname, "../../../Front_end/Login.html"));
 });
 
 // Handle login form submission
@@ -77,7 +77,8 @@ app.post("/login", (req, res) => {
     for (const user of users) {
         if (user.username == username && user.password == password) {
             res.send(`Welcome back, ${username}!`);
-            return;
+            res.redirect("/main.html");
+            // return;
         }
     }
 
@@ -88,7 +89,7 @@ app.post("/login", (req, res) => {
 
 // Define a route for the root URL ('/')
 app.get("/main.html", (req, res) => {
-  res.send(`
+    res.send(`
   <p> Welcome!</p>
 `);
 });
