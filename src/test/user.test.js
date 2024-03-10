@@ -91,6 +91,7 @@ describe("User full Registration and Login Process", () => {
         expect(response.statusCode).toBe(302); // Expecting a redirection to main.html
     });
 
+
     // close server
     server.close();
 });
