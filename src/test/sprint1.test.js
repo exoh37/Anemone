@@ -133,7 +133,7 @@ describe("Sprint 1 system tests", () => {
         // 403: Valid token + invoice but doesn't own
         response = await request(app)
             .get("/invoices/" + invoiceId1.invoice.invoiceId)
-            .set("header", token2.token)
+            .set("header", token2.token);
         expect(response.statusCode).toBe(403);
         expect(response).toStrictEqual({
             success: false,
@@ -142,7 +142,7 @@ describe("Sprint 1 system tests", () => {
 
         response = await request(app)
             .get("/invoices/" + invoiceId2.invoice.invoiceId)
-            .set("header", token1.token)
+            .set("header", token1.token);
         expect(response.statusCode).toBe(403);
         expect(response).toStrictEqual({
             success: false,
@@ -152,7 +152,7 @@ describe("Sprint 1 system tests", () => {
         // Valid retrievals
         response = await request(app)
             .get("/invoices/" + invoiceId1.invoice.invoiceId)
-            .set("header", token1.token)
+            .set("header", token1.token);
         expect(response.statusCode).toBe(200);
         expect(response).toStrictEqual({
             invoiceId: invoiceId1.invoice.invoiceId,
@@ -164,7 +164,7 @@ describe("Sprint 1 system tests", () => {
 
         response = await request(app)
             .get("/invoices/" + invoiceId2.invoice.invoiceId)
-            .set("header", token2.token)
+            .set("header", token2.token);
         expect(response.statusCode).toBe(200);
         expect(response).toStrictEqual({
             invoiceId: invoiceId2.invoice.invoiceId,
@@ -177,7 +177,7 @@ describe("Sprint 1 system tests", () => {
         // Fake token retrieval
         response = await request(app)
             .get("/invoices/" + invoiceId1.invoice.invoiceId)
-            .set("header", invalidToken)
+            .set("header", invalidToken);
         expect(response.statusCode).toBe(401);
         expect(response).toStrictEqual({
             success: false,
