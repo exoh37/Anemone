@@ -1,18 +1,48 @@
 const fs = require("fs");
 
 
+const JSON_PATH = "src/main/server/TEMP_invoiceStorage.json";
+
+function getData() {
+    const jsonData = fs.readFileSync(JSON_PATH);
+
+    const data = JSON.parse(String(jsonData));
+    return data;
+}
+function setData(newData) {
+    const jsonData = JSON.stringify(newData);
+    fs.writeFileSync(JSON_PATH, jsonData);
+}
+
+function clear() {
+    let data = getData();
+    
+    data = [];
+
+    setData(data);
+
+    return;
+}
+
 function uploadfile(file) {
 
     // this is for merging data
     try{
         const data = JSON.parse(file);
         const invoiceId = Date.now();
-        const jsonData = fs.readFileSync("TEMP_invoiceStorage.json");
-        const existingData = JSON.parse(jsonData);
         
-        existingData.push(data);
+        const jsonData = getData();
+
         
-        fs.writeFileSync("TEMP_invoiceStorage.json", JSON.stringify(existingData, null, 2));
+        jsonData.push({
+            invoiceId: invoiceId,
+            amount: data
+        });
+
+        
+        console.log("CAn read data");
+        
+        setData(jsonData);
 
         return invoiceId;
     }
@@ -22,6 +52,4 @@ function uploadfile(file) {
     }      
 }
 
-module.exports = {
-    uploadfile
-};
+module.exports = { uploadfile, clear };

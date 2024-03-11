@@ -3,7 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path"); 
 
-const uploadfile = require("./invoiceUpload");
+const uploadfile = require("./invoiceUpload.js");
 
 // Create an Express application
 const app = express();
@@ -108,9 +108,11 @@ app.get("/retrieve/:invoiceId", (req, res) => {
 
 app.post("/upload", (req, res) => {
     const { file } = req.body;
+    console.log(file);
 
     try{
-        const response = uploadfile(file); 
+        const response = uploadfile.uploadfile(file); 
+        console.log("hello"); 
         return res.json(response);
     }
     catch (error) {
