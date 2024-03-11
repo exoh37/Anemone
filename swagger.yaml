@@ -208,12 +208,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/invoiceUploadReturnObject'
-        '400':
-          description: If invoice is an empty string
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
         '401':
           description: Token is empty or invalid
           content:
