@@ -3,6 +3,9 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path"); 
 
+
+const uploadfile = require("./invoiceUpload.js");
+
 // Create an Express application
 const app = express();
 
@@ -12,7 +15,6 @@ const users = JSON.parse(fs.readFileSync("src/main/server/TEMP_userStorage.json"
 const invoices = JSON.parse(fs.readFileSync("src/main/server/TEMP_invoiceStorage.json")); 
 
 // import Invoice Upload
-const invoiceUpload = require("./invoiceUpload.js");
 const userHelpers = require("./../userHelpers.js");
 // const invoiceRetrieve = require("./../invoiceRetrieve.js");
 
@@ -61,6 +63,9 @@ app.get("/login", (req, res) => {
     res.sendFile(path.join(__dirname, "../../../Front_end/Login.html"));
 });
 
+
+
+
 // Handle login form submission
 app.post("/login", (req, res) => {
     const { username, password } = req.body;
@@ -78,6 +83,12 @@ app.post("/login", (req, res) => {
     return;
 });
 
+app.get("/main", (req, res) => {
+    const filePath = path.join(__dirname, "../../../Front_end/main.html");
+    res.sendFile(filePath);
+});
+
+
 // Define a route for retrieving invoices
 app.get("/invoices/:invoiceId", (req, res) => {
     const { invoiceId } = req.params;
@@ -94,10 +105,18 @@ app.get("/invoices/:invoiceId", (req, res) => {
 });
 
 
-app.post("/upload", (req, res) => {
+app.post("/invoices", (req, res) => {
     const { file } = req.body;
-    const response = invoiceUpload.uploadfile(file); 
-    return res.json(response);
+    console.log(file);
+
+    try{
+        const response = uploadfile.uploadfile(file); 
+        console.log("hello"); 
+        return res.json(response);
+    }
+    catch (error) {
+        return res.status(400).json({success: false, message: error.message});
+    }
 });
 
 // Start the Express server and listen on port 3000
