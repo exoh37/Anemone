@@ -21,7 +21,7 @@ function clear() {
 
     setData(data);
 
-    return;
+    return {success: true};
 }
 
 function uploadfile(file) {

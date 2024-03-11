@@ -111,7 +111,6 @@ app.post("/invoices", (req, res) => {
 
     try{
         const response = uploadfile.uploadfile(file); 
-        console.log("hello"); 
         return res.json(response);
     }
     catch (error) {
@@ -119,8 +118,15 @@ app.post("/invoices", (req, res) => {
     }
 });
 
+app.delete("/clear", (req, res) => {
+    const response = uploadfile.clear();
+    return res.json(response);
+});
+
+
+
 // Start the Express server and listen on port 3000
-const PORT = 3000;
+const PORT = 3103;
 const server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
