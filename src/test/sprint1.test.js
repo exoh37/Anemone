@@ -10,7 +10,8 @@ const mockInvoice2 = "invoice2.xml";
 const invalidToken = "thisIsAnInvalidToken";
 
 const request = require("supertest");
-const app = require("../main/server"); 
+const app = require("../main/server");
+const server = require("../main/server"); 
 
 describe("Sprint 1 system test(s)", () => {
     it("System Test", async () => {
@@ -176,4 +177,6 @@ describe("Sprint 1 system test(s)", () => {
             error: expect.any(String)
         });
     });
+
+    server.close();
 });
