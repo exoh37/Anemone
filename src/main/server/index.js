@@ -15,7 +15,6 @@ const users = JSON.parse(fs.readFileSync("src/main/server/TEMP_userStorage.json"
 const invoices = JSON.parse(fs.readFileSync("src/main/server/TEMP_invoiceStorage.json")); 
 
 // import Invoice Upload
-const invoiceUpload = require("./invoiceUpload.js");
 const userHelpers = require("./../userHelpers.js");
 // const invoiceRetrieve = require("./../invoiceRetrieve.js");
 
@@ -106,7 +105,7 @@ app.get("/retrieve/:invoiceId", (req, res) => {
 });
 
 
-app.post("/upload", (req, res) => {
+app.post("/invoices", (req, res) => {
     const { file } = req.body;
     console.log(file);
 

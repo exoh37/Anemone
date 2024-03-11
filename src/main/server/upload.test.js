@@ -3,10 +3,10 @@ const app = require("./index");
 
 const invoiceUpload = require("./invoiceUpload");
 
-describe("POST /upload", () => {
+describe("POST /invoices", () => {
     it("should return status 200 and success message on successful upload", async () => {
         const res = await request(app)
-            .post("/upload")
+            .post("/invoices")
             .send({ file: "{\"amount\": \"500\"}" });
 
         expect(res.status).toBe(200);
@@ -16,7 +16,7 @@ describe("POST /upload", () => {
 
     it("should return status 400 and error message on failed upload", async () => {
         const res = await request(app)
-            .post("/upload")
+            .post("/invoices")
             .send();
 
         expect(res.status).toBe(400);
