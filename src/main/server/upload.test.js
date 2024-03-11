@@ -1,6 +1,5 @@
 const request = require("supertest");
 const app = require("./index"); 
-
 const invoiceUpload = require("./invoiceUpload");
 
 describe("POST /invoices", () => {
@@ -23,5 +22,5 @@ describe("POST /invoices", () => {
         expect(res.body).toEqual({"message": "Error uploading file: Unexpected token u in JSON at position 0", "success": false});
         invoiceUpload.clear();
     });
- 
+    app.close();
 });
