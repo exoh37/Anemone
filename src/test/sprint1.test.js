@@ -19,7 +19,7 @@ describe("Sprint 1 system test(s)", () => {
         let response = await request(app)
             .delete("/clear");
         expect(response.statusCode).toBe(200);
-        expect(respones).toContain({
+        expect(response).toStrictEqual({
             success: true
         });
 
