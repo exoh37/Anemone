@@ -3,6 +3,9 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path"); 
 
+
+const uploadfile = require("./invoiceUpload.js");
+
 // Create an Express application
 const app = express();
 
@@ -12,47 +15,46 @@ const users = JSON.parse(fs.readFileSync("src/main/server/TEMP_userStorage.json"
 const invoices = JSON.parse(fs.readFileSync("src/main/server/TEMP_invoiceStorage.json")); 
 
 // import Invoice Upload
-const invoiceUpload = require("./invoiceUpload.js");
+const userHelpers = require("./../userHelpers.js");
+// const invoiceRetrieve = require("./../invoiceRetrieve.js");
 
-// Middleware to parse JSON and URL-encoded request bodies
+// Middleware ( AI-Generated )
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../../../Front_end")));
 
-// Define a route for the root URL ('/')
-app.get("/", (req, res) => {
+// root URL
+app.get("/v1", (req, res) => {
     res.send(`
-    <p> Welcome! Click here to get started  <a href="/Register">Register</a>.</p>
+    <p> Welcome! Click here to get started  <a href="/users">Register</a>.</p>
   `);
 });
 
-// Define a route for the registration form
-app.get("/register", (req, res) => {
+// route for the registration form
+app.get("/users", (req, res) => {
     const filePath = path.join(__dirname, "../../../Front_end/Register.html");
     res.sendFile(filePath);
 });
 
 
-// Handle registration form submission
-app.post("/register", (req, res) => {
+// registration form submission
+app.post("/users", (req, res) => {
     const { username, password } = req.body;
-    if (!username || !password) {
-        res.status(400).send("Username and password are required");
+    const usernamePattern = /^(?!\s)(?!.*\s)[^\s]{3,20}$/;
+    const passwordPattern = /(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*])(?=.*[0-9])[A-Za-z0-9!@#$%^&*]{8,}/; 
+    if (!username || !password || !usernamePattern.test(username) || !passwordPattern.test(password)) {
+        res.status(400).send("Username and password are invalid");
         return;
     }
 
     // Check if username already exists
-    for (const user of users) {
-        if (user.username == username) {
-            res.status(400).send("Username already exists");
-            return;
-        }
+    if (!userHelpers.checkUserDoesntExist(username, users)) {
+        res.status(400).send("Username already exists");
+        return;
     }
     // Add new user to the list of users
-    console.log("The username and password are being added");
     users.push({ username, password });
 
-    // Redirect to page 2 (login page)
     res.redirect("/login");
 });
 
@@ -60,6 +62,9 @@ app.post("/register", (req, res) => {
 app.get("/login", (req, res) => {
     res.sendFile(path.join(__dirname, "../../../Front_end/Login.html"));
 });
+
+
+
 
 // Handle login form submission
 app.post("/login", (req, res) => {
@@ -70,20 +75,22 @@ app.post("/login", (req, res) => {
     }
 
     // Find user in the list of users and passwords
-    //const user = users.find(user => user.username === username && user.password === password);
-    for (const user of users) {
-        if (user.username == username && user.password == password) {
-            res.redirect("/main.html");
-        }
+    if (userHelpers.checkUserInDataBase(username, password, users)) {
+        res.redirect("/main.html");
+        return;
     }
-
     res.status(401).send("Invalid username or password");
-
     return;
 });
 
+app.get("/main", (req, res) => {
+    const filePath = path.join(__dirname, "../../../Front_end/main.html");
+    res.sendFile(filePath);
+});
+
+
 // Define a route for retrieving invoices
-app.get("/retrieve/:invoiceId", (req, res) => {
+app.get("/invoices/:invoiceId", (req, res) => {
     const { invoiceId } = req.params;
 
     for (const invoice of invoices) {
@@ -98,10 +105,18 @@ app.get("/retrieve/:invoiceId", (req, res) => {
 });
 
 
-app.post("/upload", (req, res) => {
+app.post("/invoices", (req, res) => {
     const { file } = req.body;
-    const response = invoiceUpload.uploadfile(file); 
-    return res.json(response);
+    console.log(file);
+
+    try{
+        const response = uploadfile.uploadfile(file); 
+        console.log("hello"); 
+        return res.json(response);
+    }
+    catch (error) {
+        return res.status(400).json({success: false, message: error.message});
+    }
 });
 
 // Start the Express server and listen on port 3000
