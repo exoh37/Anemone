@@ -79,7 +79,7 @@ app.post("/login", (req, res) => {
 });
 
 // Define a route for retrieving invoices
-app.get("/retrieve/:invoiceId", (req, res) => {
+app.get("/invoices/:invoiceId", (req, res) => {
     const { invoiceId } = req.params;
 
     for (const invoice of invoices) {
