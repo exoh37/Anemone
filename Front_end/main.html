@@ -31,7 +31,7 @@
             // Get the invoiceId from the input field
             const invoiceId = document.getElementById('search').value.trim();
 
-            fetch(`/retrieve/${invoiceId}`)
+            fetch(`/invoices/${invoiceId}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Invoice not found');
