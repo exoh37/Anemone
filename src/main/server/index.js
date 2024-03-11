@@ -22,24 +22,26 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../../../Front_end")));
 
 // root URL
-app.get("/", (req, res) => {
+app.get("/v1", (req, res) => {
     res.send(`
-    <p> Welcome! Click here to get started  <a href="/Register">Register</a>.</p>
+    <p> Welcome! Click here to get started  <a href="/users">Register</a>.</p>
   `);
 });
 
 // route for the registration form
-app.get("/register", (req, res) => {
+app.get("/users", (req, res) => {
     const filePath = path.join(__dirname, "../../../Front_end/Register.html");
     res.sendFile(filePath);
 });
 
 
 // registration form submission
-app.post("/register", (req, res) => {
+app.post("/users", (req, res) => {
     const { username, password } = req.body;
-    if (!username || !password) {
-        res.status(400).send("Username and password are required");
+    const usernamePattern = /^(?!\s)(?!.*\s)[^\s]{3,20}$/;
+    const passwordPattern = /(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*])(?=.*[0-9])[A-Za-z0-9!@#$%^&*]{8,}/; 
+    if (!username || !password || !usernamePattern.test(username) || !passwordPattern.test(password)) {
+        res.status(400).send("Username and password are invalid");
         return;
     }
 

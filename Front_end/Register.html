@@ -9,11 +9,11 @@
         <body>
                 <h1>Registration Form</h1>
                 <p>Title</p>
-                <form method="POST" action='/register'>
+                <form method="POST" action='/users'>
                         <fieldset>
-                                <label for="username">Enter Your Username: <input id="username" name="username" type="text" required /></label>
+                                <label for="username">Enter Your Username: <input id="username" name="username" type="text" pattern="^(?!\s)(?!.*\s)[^\s]{3,20}$" required /></label>
                                 <!-- <label for="email">Enter Your Email: <input id="email" name="email" type="email" required /></label>-->
-                                <label for="password">Enter Password: <input id="password" name="password" type="password" pattern="[a-z0-5]{8,}" required /></label>
+                                <label for="password">Enter Password: <input id="password" name="password" type="password" pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*])(?=.*[0-9])[A-Za-z0-9!@#$%^&*]{8,}" required /></label>
                                 <button type="submit">Register</button>
                         </fieldset>
                 </form>
