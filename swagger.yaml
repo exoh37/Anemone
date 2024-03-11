@@ -415,6 +415,7 @@ paths:
             - password does not contain at least 1 lowercase letter
             - password does not contain at least 1 number
             - password does not contain at least 1 special character
+            - password does not contain at least 8 characters
             - email does not satisfy this: https://www.npmjs.com/package/validator (validator.isEmail)
             - email is currently used by another user
           content:
