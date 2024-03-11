@@ -1,7 +1,7 @@
 const validUsername1 = "validUsername1!";
 const validUsername2 = "thisIsAValidName";
 const validEmail1 = "test123@gmail.com";
-const validEmail2 = "123test@gmail.com"
+const validEmail2 = "123test@gmail.com";
 const validPassword1 = "ThisIsSecure!123";
 const validPassword2 = "lessSecure2?";
 const invalidUsername = "name with space";
@@ -11,7 +11,6 @@ const invalidToken = "thisIsAnInvalidToken";
 
 const request = require("supertest");
 const app = require("../main/server"); 
-const server = require("../main/server");
 
 describe("Sprint 1 system tests", () => {
     // System Test Flowchart
@@ -99,7 +98,7 @@ describe("Sprint 1 system tests", () => {
         });
 
         // Upload invoices
-        invoiceId1 = await request(app)
+        const invoiceId1 = await request(app)
             .post("/invoices")
             .set("header", token1.token)
             .send({ invoice: mockInvoice1 });
@@ -115,7 +114,7 @@ describe("Sprint 1 system tests", () => {
             }
         });
 
-        invoiceId2 = await request(app)
+        const invoiceId2 = await request(app)
             .post("/invoices")
             .set("header", token2.token)
             .send({ invoice: mockInvoice2 });
