@@ -10,7 +10,7 @@ describe("POST /upload", () => {
             .send({ file: "{\"amount\": \"500\"}" });
 
         expect(res.status).toBe(200);
-        expect(res.body).toEqual(expect.any(Number));
+        expect(res.body).toEqual({"invoice": {"amount": expect.any(String), "date": expect.any(Number), "invoiceId": expect.any(Number), "invoiceName": "Name", "trashed": false}, "success": true});
         invoiceUpload.clear();
     });
 

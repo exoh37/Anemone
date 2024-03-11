@@ -36,7 +36,7 @@ function uploadfile(file) {
         
         jsonData.push({
             invoiceId: invoiceId,
-            amount: data
+            amount: data.amount
         });
 
         
@@ -44,7 +44,13 @@ function uploadfile(file) {
         
         setData(jsonData);
 
-        return invoiceId;
+        return {success: true, invoice: {
+            invoiceId: invoiceId,
+            invoiceName: "Name",
+            amount: data.amount,
+            date: Date.now(),
+            trashed: false
+        }};
     }
 
     catch (error) {
