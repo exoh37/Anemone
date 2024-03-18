@@ -124,7 +124,7 @@ describe("Sprint 2 system test(s)", function() {
             .get(`/invoices/${invoice2.body.invoiceId}`)
             .set("token", user2.body.token)
             .expect(200)
-            .expect("Content-Type", /application\/json/)
+            .expect("Content-Type", /application\/json/);
         
         assert.strictEqual(returnedInvoice2.body.success, true);
         assert.strictEqual(returnedInvoice2.body.invoice.invoiceId, invoice2.body.invoiceId);
