@@ -31,7 +31,7 @@ jobs:
       run: chmod -R a+x node_modules
 
     - name: Run tests
-      run: npm test -- --coverage
+      run: npm test
 
   linting:
     runs-on: ubuntu-latest
