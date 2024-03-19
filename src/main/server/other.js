@@ -3,6 +3,7 @@ const fs = require("fs");
 const JSON_INVOICE_PATH = "src/main/server/TEMP_invoiceStorage.json";
 const JSON_USER_PATH = "src/main/server/TEMP_userStorage.json";
 const JSON_TOKENS_PATH = "src/main/server/TEMP_tokenStorage.json";
+const JSON_TRASH_PATH = "src/main/server/TEMP_trashStorage.json";
 
 function getInvoiceData() {
     const jsonData = fs.readFileSync(JSON_INVOICE_PATH);
@@ -37,6 +38,17 @@ function setTokenData(newData) {
     fs.writeFileSync(JSON_TOKENS_PATH, jsonData);
 }
 
+function getTrashData() {
+    const jsonData = fs.readFileSync(JSON_TRASH_PATH);
+    const data = JSON.parse(String(jsonData));
+    return data;
+}
+
+function setTrashData(newData) {
+    const jsonData = JSON.stringify(newData);
+    fs.writeFileSync(JSON_TRASH_PATH, jsonData);
+}
+
 function clear() {
     let invoiceData = getInvoiceData();
     invoiceData = [];
@@ -50,6 +62,10 @@ function clear() {
     tokenData = [];
     setTokenData(tokenData);
 
+    let trashData = getTrashData();
+    trashData = [];
+    setTokenData(trashData);
+
     return {
         code: 200,
         ret: {
@@ -58,4 +74,4 @@ function clear() {
     };
 }
 
-module.exports = { getInvoiceData, setInvoiceData, getUserData, setUserData, getTokenData, setTokenData, clear };
+module.exports = { getInvoiceData, setInvoiceData, getUserData, setUserData, getTokenData, setTokenData, getTrashData, setTrashData, clear };
