@@ -71,8 +71,8 @@ components:
       properties:
         success:
           $ref: '#/components/schemas/success_true'
-        invoice:
-          $ref: '#/components/schemas/invoice'
+        invoiceId:
+          $ref: '#/components/schemas/invoiceId'
     listReturnObject:
       type: object
       properties:
@@ -122,16 +122,11 @@ components:
           $ref: '#/components/schemas/email'
         password:
           $ref: '#/components/schemas/password'
-    userId:
-      type: integer
-      example: 42
     createUserReturnObject:
       type: object
       properties:
         success:
           $ref: '#/components/schemas/success_true'
-        userId:
-          $ref: '#/components/schemas/userId'
     userLoginRequestBody:
       type: object
       properties:
@@ -411,6 +406,7 @@ paths:
             If any of the following is true:
             - username is not between 3-20 characters long
             - username contains empty space " "
+            - username is currently used by another user
             - password does not contain at least 1 uppercase letter
             - password does not contain at least 1 lowercase letter
             - password does not contain at least 1 number

@@ -3,13 +3,13 @@ module.exports = {
         "browser": true,
         "commonjs": true,
         "es2021": true,
-        "jest": true, // Added this line
+        "mocha": true, // Added this line
         "node": true,
     },
     "extends": [
         "eslint:recommended",
         "plugin:react/recommended",
-        "plugin:jest/recommended"
+        "plugin:mocha/recommended"
     ],
     "overrides": [
         {
@@ -29,7 +29,7 @@ module.exports = {
     },
     "plugins": [
         "react",
-        "jest"
+        "mocha"
     ],
     "rules": {
         "indent": [
