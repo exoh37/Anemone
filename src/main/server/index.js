@@ -76,10 +76,12 @@ app.delete("/clear", (req, res) => {
 });
 
 // Start the Express server and listen on port 3000
-const PORT = 3000;
+const PORT = 3103;
 const server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
 module.exports = server;
 // module.exports = PORT;
+
+console.log("random commit");
