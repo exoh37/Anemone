@@ -1,51 +1,115 @@
-// const request = require("supertest");
-// const app = require("../main/server"); 
-// const server = require("../main/server");
-// const fs = require("fs");
+const validUsername1 = "validUsername1";
+const validEmail1 = "test123@gmail.com";
+const validPassword1 = "ThisIsSecure!123";
+const mockInvoice1 = { file: { amount: 1987.45 } };
+const mockInvoice2 = { "file": "{\"amount\": \"123.45\"}" };
+const invalidToken = "thisIsAnInvalidToken";
 
-// const invoices = JSON.parse(fs.readFileSync("src/main/server/TEMP_invoiceStorage.json")); 
+const request = require("supertest");
+const assert = require("assert");
+const app = require("../main/server");
+const server = require("../main/server"); 
 
-
-// describe("Retrieve Invoices", () => {
-//     invoices.push({
-//         "invoiceId": "1234",
-//         "amount": "500"
-//     },
-//     {
-//         "invoiceId": "3120987",
-//         "amount": "123"
-//     },
-//     {
-//         "invoiceId": "1",
-//         "amount": "13289"
-//     },
-//     {
-//         "invoiceId": "1209343249048",
-//         "amount": "0001"
-//     });
-
-//     it("should not retrieve anything when given an invalid invoiceId", async () => {
+describe("Sprint 2 system test(s)", function() {
+    it("System Test", async function() {
+        await request(app)
+            .delete("/clear")
+            .expect(200)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": true});
         
-//         const response = await request(app)
-//             .get("/invoices/0") // Send a GET request to the correct route with the invoiceId
-//             .send();
-//         expect(response.statusCode).toBe(404); // Expect an error 404
-//     });
+        await request(app)
+            .post("/users")
+            .send({ username: validUsername1, email: validEmail1, password: validPassword1 })
+            .expect(200)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": true});
 
-//     it("should retrieve the correct invoice when given a valid invoiceId '1234'", async () => {
-//         const response = await request(app)
-//             .get("/invoices/1234") // Send a GET request to the correct route with the invoiceId
-//             .send();
-//         expect(response.statusCode).toBe(404); // Expect OK
-//     });
+        await request(app)
+            .post("/users")
+            .send({ username: validUsername2, email: validEmail2, password: validPassword2 })
+            .expect(200)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": true});
 
-//     it("should retrieve the correct invoice when given a valid invoiceId '1209343249048'", async () => {
-//         const response = await request(app)
-//             .get("/invoices/1209343249048") // Send a GET request to the correct route with the invoiceId
-//             .send();
-//         expect(response.statusCode).toBe(404); // Expect OK
-//     });
+        await request(app)
+            .post("/users/login")
+            .send({ username: validUsername1, password: validPassword2 })
+            .expect(401)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": `Password does not match username '${validUsername1}'`});
 
+        const user1 = await request(app)
+            .post("/users/login")
+            .send({ username: validUsername1, password: validPassword1 })
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+        
+        // Using assert to check for each type
+        assert.strictEqual(user1.body.success, true);
+        assert.strictEqual(typeof user1.body.token, "string");
 
-//     server.close();
-// });
+        const invoice1 = await request(app)
+            .post("/invoices")
+            .set("token", user1.body.token)
+            .send({ invoice: mockInvoice1 })
+            .expect(200);
+
+        assert.strictEqual(invoice1.body.success, true);
+        assert.strictEqual(typeof invoice1.body.invoiceId, "number");
+
+        const invoice2 = await request(app)
+            .post("/invoices")
+            .set("token", user2.body.token)
+            .send({ invoice: mockInvoice2 })
+            .expect(200);
+
+        assert.strictEqual(invoice2.body.success, true);
+        assert.strictEqual(typeof invoice2.body.invoiceId, "number");
+
+        await request(app)
+            .get(`/invoices/${invoice1.body.invoiceId}`)
+            .set("token", user2.body.token)
+            .expect(403)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": `Not owner of this invoice '${invoice1.body.invoiceId}'`});
+
+        await request(app)
+            .get(`/invoices/${invoice2.body.invoiceId}`)
+            .set("token", user1.body.token)
+            .expect(403)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": `Not owner of this invoice '${invoice2.body.invoiceId}'`});
+
+        const returnedInvoice1 = await request(app)
+            .get(`/invoices/${invoice1.body.invoiceId}`)
+            .set("token", user1.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+        
+        assert.strictEqual(returnedInvoice1.body.success, true);
+        assert.strictEqual(returnedInvoice1.body.invoice.invoiceId, invoice1.body.invoiceId);
+        assert.strictEqual(returnedInvoice1.body.invoice.amount, mockInvoice1.file.amount);
+        assert.strictEqual(returnedInvoice1.body.invoice.trashed, false);
+
+        const returnedInvoice2 = await request(app)
+            .get(`/invoices/${invoice2.body.invoiceId}`)
+            .set("token", user2.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+        
+        assert.strictEqual(returnedInvoice2.body.success, true);
+        assert.strictEqual(returnedInvoice2.body.invoice.invoiceId, invoice2.body.invoiceId);
+        assert.strictEqual(returnedInvoice2.body.invoice.amount, mockInvoice2.file.amount);
+        assert.strictEqual(returnedInvoice2.body.invoice.trashed, false);
+
+        await request(app)
+            .get(`/invoices/${invoice1.body.invoiceId}`)
+            .set("token", invalidToken)
+            .expect(401)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": "Token is empty or invalid"});
+    });
+});
+
+server.close();
