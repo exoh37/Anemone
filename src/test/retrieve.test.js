@@ -8,6 +8,7 @@ const validPassword2 = "lessSecure2@";
 
 const mockInvoice1 = { file: { amount: 125.45 } };
 const mockInvoice2 = { "file": "{\"amount\": \"123.45\"}" };
+const falseId = 0;
 
 
 const request = require("supertest");
@@ -71,6 +72,22 @@ describe("Retrieve system tests V2", function() {
             .expect(403)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": `Not owner of this invoice '${invoice1.body.invoiceId}'`});
+
+        // unsuccessful retrieve as no such ID
+        await request(app)
+            .get(`/invoices/${falseId}`)
+            .set("token", user2.body.token)
+            .expect(400)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": `invoiceId '${falseId}' does not refer to an existing invoice`});
+
+        // unsuccessful retrieve as no such Token
+        await request(app)
+            .get(`/invoices/${invoice1.body.invoiceId}`)
+            .set("token", falseId)
+            .expect(401)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": "Token is empty or invalid"});
 
         // check successful retrieve
         const returnedInvoice1 = await request(app)
