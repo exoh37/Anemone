@@ -28,6 +28,17 @@ function registerUser(username, email, password) {
         };
     }
 
+    // Check if the username is 3-20 characters long
+    if (username.length < 3 || username.length > 20) {
+        return {
+            code: 400,
+            ret: {
+                success: false,
+                error: `Username '${username}' is not between 3-20 characters long`
+            }
+        };
+    }
+
     // Check if email is valid
     if (!validator.isEmail(email)) {
         return {
