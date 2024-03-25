@@ -144,11 +144,10 @@ function modifyFile(invoiceId, token, newAmount, newDate) {
         };
     // Modifying logic here
     } else {
-        // modify the entries
+        // modify the entries as requied
         if (newAmount > 0 && newAmount !== invoice.amount) {
             invoice.amount = newAmount;
         }
-        // Check if newDate is provided and valid
         if (newDate) {
             invoice.date = newDate;
         }
@@ -170,18 +169,13 @@ function modifyFile(invoiceId, token, newAmount, newDate) {
 }
 
 function AreValidEntries(newAmount, newDate) {
-    if (!((newAmount === null && newDate === null) || (new Date(newDate)) > Date.now()
-    || newDate === null || newDate.toString().trim().length === 0 )) {
-        if (newAmount.toString().trim().length === 0) {
-            return true;
-        } else if (newAmount <= 0) {
-            return false;
-        }
-        return true;
+    if (!((newAmount === null && newDate === null)
+    || (new Date(newDate)) > Date.now()
+    || newDate === null
+    || newDate.toString().trim().length === 0 )) {
+        return !(newAmount.toString().trim().length !== 0 && newAmount <= 0);
     }
     return false;
-    //return !((newAmount === null && newDate === null) || (new Date(newDate)) > Date.now()
-    //|| newDate === null || newDate.toString().trim().length === 0 || newAmount <= 0);
 }
 
 module.exports = { uploadFile, retrieveFile, modifyFile };
