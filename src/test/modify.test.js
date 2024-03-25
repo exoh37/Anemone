@@ -5,8 +5,15 @@ const validEmail2 = "123test@gmail.com";
 const validPassword1 = "ThisIsSecure!123";
 const validPassword2 = "lessSecure2@";
 
+const validAmount = 5;
+const validDate = new Date(); 
+validDate.setDate(validDate.getDate() - 2);
+const futureDate = new Date();
+futureDate.setDate(futureDate.getDate() + 2);
+
 
 const mockInvoice1 = { file: { amount: 125.45 } };
+const falseId = 0;
 
 
 const request = require("supertest");
@@ -74,7 +81,104 @@ describe("Modifying - Unit tests V1", function() {
         assert.strictEqual(returnedInvoice1.body.invoice.amount, mockInvoice1.file.amount);
         assert.strictEqual(returnedInvoice1.body.invoice.trashed, false);
 
-        // modifying logic here
+        // modify testing here
+        // what to test:
+        /**
+         * error 400 invalid invoice - added
+         * error 401 wrong token - added
+         * error 403 unauthorised - added
+         * error 400 empty entries - added
+         * error 400 empty newDate string - added
+         * error 400 future newDate string - added
+         * error 400 amount NOT positive - added
+         * sucess 200 amount positive, newDate valid
+         * success 200, no modification to amount, newDate valid
+         */
+
+        // error 400 invoiceId not found
+        await request(app)
+            .put(`/invoices/${falseId}`)
+            .set("token", user1.body.token)
+            .send({ newAmount: validAmount, newDate: validDate })
+            .expect(400)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": `invoiceId '${falseId}' does not refer to an existing invoice`});
+
+        // error 401 bad token
+        await request(app)
+            .put(`/invoices/${invoice1.body.invoiceId}`)
+            .set("token", falseId)
+            .send({ newAmount: validAmount, newDate: validDate })
+            .expect(401)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": `Token is empty or invalid`});
+
+        // error 403 unauthorised
+        await request(app)
+            .put(`/invoices/${invoice1.body.invoiceId}`)
+            .set("token", user2.body.token)
+            .send({ newAmount: validAmount, newDate: validDate })
+            .expect(403)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": `Not owner of this invoice '${invoice1.body.invoiceId}'`});
+        
+        // error 400 empty entries
+        await request(app)
+            .put(`/invoices/${invoice1.body.invoiceId}`)
+            .set("token", user1.body.token)
+            .send({ newAmount: "", newDate: "" })
+            .expect(400)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": `Invalid date or amount provided; could not modify`});
+        
+        // error 400 bad date but OK amount
+        await request(app)
+            .put(`/invoices/${invoice1.body.invoiceId}`)
+            .set("token", user1.body.token)
+            .send({ newAmount: validAmount, newDate: null })
+            .expect(400)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": `Invalid date or amount provided; could not modify`});
+        
+        // error 400 bad date but OK amount
+        await request(app)
+            .put(`/invoices/${invoice1.body.invoiceId}`)
+            .set("token", user1.body.token)
+            .send({ newAmount: validAmount, newDate: "" })
+            .expect(400)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": `Invalid date or amount provided; could not modify`});
+
+        // error 400 date in future
+        await request(app)
+            .put(`/invoices/${invoice1.body.invoiceId}`)
+            .set("token", user1.body.token)
+            .send({ newAmount: validAmount, newDate: futureDate })
+            .expect(400)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": `Invalid date or amount provided; could not modify`});
+    
+        // error 400 amount not positive
+        await request(app)
+            .put(`/invoices/${invoice1.body.invoiceId}`)
+            .set("token", user1.body.token)
+            .send({ newAmount: "0", newDate: validDate })
+            .expect(400)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": `Invalid date or amount provided; could not modify`});
+        
+        const modifiedInvoice1 = await request(app)
+            .put(`/invoices/${invoice1.body.invoiceId}`)
+            .set("token", user1.body.token)
+            .send({ newAmount: validAmount, newDate: validDate })
+            .expect(200)
+            .expect("Content-Type", /application\/json/)
+        
+        assert.strictEqual(modifiedInvoice1.body.success, true);
+        assert.strictEqual(modifiedInvoice1.body.invoice.invoiceId, invoice1.body.invoiceId);
+        assert.strictEqual(modifiedInvoice1.body.invoice.amount, validAmount);
+        assert.strictEqual(modifiedInvoice1.body.date, validDate);
+        assert.strictEqual(modifiedInvoice1.body.invoice.trashed, false);
     });
 });
 
