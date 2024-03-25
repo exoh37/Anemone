@@ -69,6 +69,15 @@ app.get("/invoices/:invoiceId", (req, res) => {
     return res.status(response.code).json(response.ret);
 });
 
+// Modify invoice
+app.put("/invoices/:invoiceId", (req, res) => {
+    const { invoiceId } = req.params;
+    const { newAmount, newDate } = req.body;
+    const token = req.headers.token;
+    const response = invoices.modifyFile(invoiceId, token, newAmount, newDate);
+    return res.status(response.code).json(response.ret);
+});
+
 // Clear function for testing purposes
 app.delete("/clear", (req, res) => {
     const response = other.clear();

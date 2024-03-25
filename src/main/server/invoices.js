@@ -104,4 +104,42 @@ function retrieveFile(invoiceId, token) {
     }
 }
 
+function modifyFile(invoiceId, token, newAmount, newDate) {
+    const tokenValidation = auth.tokenIsValid(token);
+    if (!tokenValidation.valid) {
+        return {
+            code: 401,
+            ret: {
+                success: false,
+                error: "Token is empty or invalid"
+            }
+        };
+    }
+
+    // notes
+    // if both params empty should not modify, return error
+
+    const jsonData = other.getInvoiceData();
+    const invoice = jsonData.find(invoice => invoice.invoiceId === parseInt(invoiceId));
+    if (invoice === undefined) {
+        return {
+            code: 400,
+            ret: {
+                success: false,
+                error: `invoiceId '${invoiceId}' does not refer to an existing invoice`
+            }
+        };
+    } else if (invoice.owner !== tokenValidation.username) {
+        return {
+            code: 403,
+            ret: {
+                success: false,
+                error: `Not owner of this invoice '${invoiceId}'`
+            }
+        };
+    } else { // modify logic should be here
+
+    }
+}
+
 module.exports = { uploadFile, retrieveFile };
