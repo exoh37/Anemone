@@ -16,7 +16,7 @@ const assert = require("assert");
 const app = require("../main/server");
 const server = require("../main/server"); 
 
-describe("Retrieving - Unit tests V2", function() {
+describe("Retrieve system tests V2", function() {
     it("tests for Retrieving Invoices", async function() {
         // setup user and login process
         await request(app)
@@ -31,7 +31,7 @@ describe("Retrieving - Unit tests V2", function() {
             .expect(200)
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
-
+        
         await request(app)
             .post("/users")
             .send({ username: validUsername2, email: validEmail2, password: validPassword2 })
@@ -44,7 +44,7 @@ describe("Retrieving - Unit tests V2", function() {
             .send({ username: validUsername1, password: validPassword1 })
             .expect(200)
             .expect("Content-Type", /application\/json/);
-
+        
         const user2 = await request(app)
             .post("/users/login")
             .send({ username: validUsername2, password: validPassword2 })
@@ -95,11 +95,12 @@ describe("Retrieving - Unit tests V2", function() {
             .set("token", user1.body.token)
             .expect(200)
             .expect("Content-Type", /application\/json/);
+        
         assert.strictEqual(returnedInvoice1.body.success, true);
         assert.strictEqual(returnedInvoice1.body.invoice.invoiceId, invoice1.body.invoiceId);
         assert.strictEqual(returnedInvoice1.body.invoice.amount, mockInvoice1.file.amount);
         assert.strictEqual(returnedInvoice1.body.invoice.trashed, false);
-
+    
         // 2: test another invoice
         const invoice2 = await request(app)
             .post("/invoices")
@@ -124,7 +125,7 @@ describe("Retrieving - Unit tests V2", function() {
             .set("token", user2.body.token)
             .expect(200)
             .expect("Content-Type", /application\/json/);
-
+        
         assert.strictEqual(returnedInvoice2.body.success, true);
         assert.strictEqual(returnedInvoice2.body.invoice.invoiceId, invoice2.body.invoiceId);
         assert.strictEqual(returnedInvoice2.body.invoice.amount, mockInvoice2.file.amount);
