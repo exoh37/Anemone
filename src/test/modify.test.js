@@ -13,6 +13,7 @@ futureDate.setDate(futureDate.getDate() + 2);
 
 
 const mockInvoice1 = { file: { amount: 125.45 } };
+const mockInvoice2 = { "file": "{\"amount\": \"123.45\"}" };
 const falseId = 0;
 
 
@@ -70,6 +71,15 @@ describe("Modifying - Unit tests V1", function() {
         assert.strictEqual(invoice1.body.success, true);
         assert.strictEqual(typeof invoice1.body.invoiceId, "number");
 
+        const invoice2 = await request(app)
+            .post("/invoices")
+            .set("token", user2.body.token)
+            .send({ invoice: mockInvoice2 })
+            .expect(200);
+
+        assert.strictEqual(invoice2.body.success, true);
+        assert.strictEqual(typeof invoice2.body.invoiceId, "number");
+
         // check successful retrieve
         const returnedInvoice1 = await request(app)
             .get(`/invoices/${invoice1.body.invoiceId}`)
@@ -82,7 +92,7 @@ describe("Modifying - Unit tests V1", function() {
         assert.strictEqual(returnedInvoice1.body.invoice.trashed, false);
 
         // modify testing here
-        // what to test:
+        // what is being tested:
         /**
          * error 400 invalid invoice - added
          * error 401 wrong token - added
@@ -91,8 +101,8 @@ describe("Modifying - Unit tests V1", function() {
          * error 400 empty newDate string - added
          * error 400 future newDate string - added
          * error 400 amount NOT positive - added
-         * sucess 200 amount positive, newDate valid
-         * success 200, no modification to amount, newDate valid
+         * sucess 200 amount positive, newDate valid - added
+         * success 200, no modification to amount, newDate valid - added
          */
 
         // error 400 invoiceId not found
@@ -111,7 +121,7 @@ describe("Modifying - Unit tests V1", function() {
             .send({ newAmount: validAmount, newDate: validDate })
             .expect(401)
             .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": `Token is empty or invalid`});
+            .expect({"success": false, "error": "Token is empty or invalid"});
 
         // error 403 unauthorised
         await request(app)
@@ -129,7 +139,7 @@ describe("Modifying - Unit tests V1", function() {
             .send({ newAmount: "", newDate: "" })
             .expect(400)
             .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": `Invalid date or amount provided; could not modify`});
+            .expect({"success": false, "error": "Invalid date or amount provided; could not modify"});
         
         // error 400 bad date but OK amount
         await request(app)
@@ -138,7 +148,7 @@ describe("Modifying - Unit tests V1", function() {
             .send({ newAmount: validAmount, newDate: null })
             .expect(400)
             .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": `Invalid date or amount provided; could not modify`});
+            .expect({"success": false, "error": "Invalid date or amount provided; could not modify"});
         
         // error 400 bad date but OK amount
         await request(app)
@@ -147,7 +157,7 @@ describe("Modifying - Unit tests V1", function() {
             .send({ newAmount: validAmount, newDate: "" })
             .expect(400)
             .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": `Invalid date or amount provided; could not modify`});
+            .expect({"success": false, "error": "Invalid date or amount provided; could not modify"});
 
         // error 400 date in future
         await request(app)
@@ -156,7 +166,7 @@ describe("Modifying - Unit tests V1", function() {
             .send({ newAmount: validAmount, newDate: futureDate })
             .expect(400)
             .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": `Invalid date or amount provided; could not modify`});
+            .expect({"success": false, "error": "Invalid date or amount provided; could not modify"});
     
         // error 400 amount not positive
         await request(app)
@@ -165,20 +175,35 @@ describe("Modifying - Unit tests V1", function() {
             .send({ newAmount: "0", newDate: validDate })
             .expect(400)
             .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": `Invalid date or amount provided; could not modify`});
+            .expect({"success": false, "error": "Invalid date or amount provided; could not modify"});
         
+        // success 200, params OK
         const modifiedInvoice1 = await request(app)
             .put(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", user1.body.token)
             .send({ newAmount: validAmount, newDate: validDate })
             .expect(200)
-            .expect("Content-Type", /application\/json/)
-        
+            .expect("Content-Type", /application\/json/);
+
         assert.strictEqual(modifiedInvoice1.body.success, true);
         assert.strictEqual(modifiedInvoice1.body.invoice.invoiceId, invoice1.body.invoiceId);
         assert.strictEqual(modifiedInvoice1.body.invoice.amount, validAmount);
-        assert.strictEqual(modifiedInvoice1.body.date, validDate);
+        assert.strictEqual(modifiedInvoice1.body.invoice.date, validDate.toJSON());
         assert.strictEqual(modifiedInvoice1.body.invoice.trashed, false);
+
+        // success 200, amount NOT changed but date changed
+        const modifiedInvoice2 = await request(app)
+            .put(`/invoices/${invoice2.body.invoiceId}`)
+            .set("token", user2.body.token)
+            .send({ newAmount: " ", newDate: validDate })
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        assert.strictEqual(modifiedInvoice2.body.success, true);
+        assert.strictEqual(modifiedInvoice2.body.invoice.invoiceId, invoice2.body.invoiceId);
+        assert.strictEqual(modifiedInvoice2.body.invoice.amount, invoice2.body.amount);
+        assert.strictEqual(modifiedInvoice2.body.invoice.date, validDate.toJSON());
+        assert.strictEqual(modifiedInvoice2.body.invoice.trashed, false);
     });
 });
 

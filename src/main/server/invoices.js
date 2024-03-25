@@ -139,16 +139,19 @@ function modifyFile(invoiceId, token, newAmount, newDate) {
             code: 400,
             ret: {
                 success: false,
-                error: `Invalid date or amount provided; could not modify`
+                error: "Invalid date or amount provided; could not modify"
             }
         };
     // Modifying logic here
     } else {
         // modify the entries
-        if (newAmount > 0 && newAmount !== invoiceId.amount) {
-            invoiceId.amount = newAmount;
+        if (newAmount > 0 && newAmount !== invoice.amount) {
+            invoice.amount = newAmount;
         }
-        invoiceId.date = newDate;
+        // Check if newDate is provided and valid
+        if (newDate) {
+            invoice.date = newDate;
+        }
         // return invoice
         return {
             code: 200,
@@ -162,13 +165,23 @@ function modifyFile(invoiceId, token, newAmount, newDate) {
                     trashed: invoice.trashed
                 }
             }
-        }
+        };
     }
 }
 
 function AreValidEntries(newAmount, newDate) {
-    return !((newAmount === null && newDate === null) || (newAmount.toString().trim().length === 0 && newDate.trim().length === 0)
-    || (new Date(newDate)) > Date.now() || newDate === null || newDate.toString().trim().length === 0 || newAmount <= 0);
+    if (!((newAmount === null && newDate === null) || (new Date(newDate)) > Date.now()
+    || newDate === null || newDate.toString().trim().length === 0 )) {
+        if (newAmount.toString().trim().length === 0) {
+            return true;
+        } else if (newAmount <= 0) {
+            return false;
+        }
+        return true;
+    }
+    return false;
+    //return !((newAmount === null && newDate === null) || (new Date(newDate)) > Date.now()
+    //|| newDate === null || newDate.toString().trim().length === 0 || newAmount <= 0);
 }
 
 module.exports = { uploadFile, retrieveFile, modifyFile };
