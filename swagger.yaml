@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Anemone Invoice Storage API 3.0
+  title: Anemone Invoice Storage API 3.1
   description: |-
     API description for Team Anemone's Invoice Storage.
     All error strings are placeholders for more detailed messages.
@@ -285,7 +285,7 @@ paths:
       tags:
         - invoices
       summary: Modify an existing invoice
-      description: Allows the user to modify an invoice that has already been stored. If any of the fields are left empty, this will not edit the existing information of that field. For example, an empty string for newInvoiceName would mean that the existing invoiceName is not edited.
+      description: Allows the user to modify an invoice that has already been stored. If any of the fields are left empty, this will not edit the existing information of that field. For example, an empty string for newInvoiceName would mean that the existing invoiceName is not edited. Any field may be left empty to not edit it, except for all fields being empty which is an error case.
       parameters:
         - name: token
           in: header
@@ -317,9 +317,10 @@ paths:
             If any of the following is true:
             - invoiceId does not refer to an existing invoice
             - invoiceId refers to an invoice in the trash
-            - newAmount is not a positive number and not an empty string
-            - newDate is an invalid date and not an empty string
+            - newAmount is not a positive number and not an empty string ""
+            - newDate is an invalid date and not an empty string ""
             - newDate refers to a time in the future
+            - all 3 newInvoiceName, newAmount and newDate are empty strings ""
           content:
             application/json:
               schema:
@@ -668,6 +669,7 @@ paths:
             - newAmount is not a positive number and not an empty string
             - newDate is an invalid date and not an empty string
             - newDate refers to a time in the future
+            - all 3 newInvoiceName, newAmount and newDate are empty strings ""
           content:
             application/json:
               schema:
