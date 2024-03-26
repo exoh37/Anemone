@@ -164,4 +164,5 @@ function moveInvoiceToTrash(invoiceId, token) {
 
 }
 
+
 module.exports = { uploadFile, retrieveFile, moveInvoiceToTrash };

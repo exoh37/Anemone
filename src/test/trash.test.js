@@ -41,6 +41,14 @@ describe("moveToTrash system tests", function() {
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
         
+            
+        await request(app)
+        .post("/users")
+        .send({ username: validUsername2, email: validEmail2, password: validPassword2 })
+        .expect(200)
+        .expect("Content-Type", /application\/json/)
+        .expect({"success": true});
+
         // user logged in
         const user1 = await request(app)
             .post("/users/login")
@@ -48,9 +56,16 @@ describe("moveToTrash system tests", function() {
             .expect(200)
             .expect("Content-Type", /application\/json/);
 
+        
+        const user2 = await request(app)
+            .post("/users/login")
+            .send({ username: validUsername2, password: validPassword2 })
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+        
         assert.strictEqual(user1.body.success, true);
         assert.strictEqual(typeof user1.body.token, "string");
-
+    
         // invoice created
         const invoice1 = await request(app)
             .post("/invoices")
@@ -61,36 +76,49 @@ describe("moveToTrash system tests", function() {
         assert.strictEqual(invoice1.body.success, true);
         assert.strictEqual(typeof invoice1.body.invoiceId, "number");
 
-        // retrieve invoice
-        const returnedInvoice1 = await request(app)
+
+        // unsuccessful move to trash as user is incorrect
+        await request(app)
+            .put(`/invoices/${invoice1.body.invoiceId}`)
+            .set("token", user2.body.token)
+            .expect(403)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": `Not owner of this invoice '${invoice1.body.invoiceId}'`})
+
+        // unsucessful move to trash as invoiceId is incorrect
+        await request(app)
+            .get(`/invoices/${falseId}`)
+            .set("token", user1.body.token)
+            .expect(400)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": `invoiceId '${falseId}' does not refer to an existing invoice`});
+
+        // unsuccessful retrieve as no such Token
+        await request(app)
             .get(`/invoices/${invoice1.body.invoiceId}`)
+            .set("token", falseId)
+            .expect(401)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": "Token is empty or invalid"});
+
+        // actually move invoice to trash
+        const moveToTrashResult = await request(app)
+            .put(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", user1.body.token)
             .expect(200)
             .expect("Content-Type", /application\/json/);
-    
-        assert.strictEqual(returnedInvoice1.body.success, true);
-        assert.strictEqual(returnedInvoice1.body.invoice.invoiceId, invoice1.body.invoiceId);
-        assert.strictEqual(returnedInvoice1.body.invoice.amount, mockInvoice1.file.amount);
-        assert.strictEqual(returnedInvoice1.body.invoice.trashed, false);
 
-        // move invoice to trash
-        const moveToTrashResult = await request(app)
-            .delete(`/invoices/${invoice1.body.invoiceId}`)
+            assert.strictEqual(moveToTrashResult.body.success, true);
+        // move invoice to trash successfully
+        const invoiceAfterTrash = await request(app)
+            .get(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", user1.body.token)
-            .expect(200);
+            .expect(400)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": `invoiceId '${invoice1.body.invoiceId}' does not refer to an existing invoice`});
 
-        assert.strictEqual(moveToTrashResult.body.success = true);
-
-        const trashedInvoices = await request(app)
-            .get(`/trash/${invoice1.body.invoiceId}`)
-            .set("token", user1.body.token)
-            .expect(200)
-
-
-        assert.strictEqual(trashedInvoices.body.success, true);
-        assert.strictEqual(trashedInvoices.body.invoice.invoiceId, invoice1.body.invoiceId);
-        assert.strictEqual(trashedInvoices.body.invoice.amount, mockInvoice1.file.amount);
-        assert.strictEqual(trashedInvoices.body.invoice.trashed, true);
+        // invoice wont be found since it has been moved (via put req) to trash file
+       
 
     });
 });
