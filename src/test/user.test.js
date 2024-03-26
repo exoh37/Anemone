@@ -148,58 +148,72 @@ describe("User Registration", function() {
     });
 });
 
-// describe("User Login Page", () => {
+// Describe("User Login Page", () => {
 
-//     it("should login a registered user", async () => {
-//         const response = await request(app)
-//             .post("/login")
-//             .send({ username: "thestiiiig", password: "gigglemobile" });
-//         expect(response.statusCode).toBe(302); // Expecting a redirection to main
-//     });
+/*
+ *     It("should login a registered user", async () => {
+ *         const response = await request(app)
+ *             .post("/login")
+ *             .send({ username: "thestiiiig", password: "gigglemobile" });
+ *         expect(response.statusCode).toBe(302); // Expecting a redirection to main
+ *     });
+ */
 
-//     it("should NOT login an UNregistered user", async () => {
-//         const response = await request(app)
-//             .post("/login")
-//             .send({ username: "notREAL", password: "notreal" });
-//         expect(response.statusCode).toBe(401); // Expecting a login FAILURE
-//     });
+/*
+ *     It("should NOT login an UNregistered user", async () => {
+ *         const response = await request(app)
+ *             .post("/login")
+ *             .send({ username: "notREAL", password: "notreal" });
+ *         expect(response.statusCode).toBe(401); // Expecting a login FAILURE
+ *     });
+ */
 
-//     it("should NOT login a Valid Username BUT Invalid Password", async () => {
-//         const response = await request(app)
-//             .post("/login")
-//             .send({ username: "thestiiiig", password: "leCar" });
-//         expect(response.statusCode).toBe(401); // Expecting a login FAILURE
-//     });
-// });
+/*
+ *     It("should NOT login a Valid Username BUT Invalid Password", async () => {
+ *         const response = await request(app)
+ *             .post("/login")
+ *             .send({ username: "thestiiiig", password: "leCar" });
+ *         expect(response.statusCode).toBe(401); // Expecting a login FAILURE
+ *     });
+ * });
+ */
 
-// describe("User full Registration and Login Process", () => {
-//     it("should register a new user with valid username and password", async () => {
-//         const response = await request(app)
-//             .post("/users")
-//             .send({ username: "newuser2", password: "Password#123" });
-//         expect(response.statusCode).toBe(302); // Expecting a redirect
-//     });
+/*
+ * Describe("User full Registration and Login Process", () => {
+ *     it("should register a new user with valid username and password", async () => {
+ *         const response = await request(app)
+ *             .post("/users")
+ *             .send({ username: "newuser2", password: "Password#123" });
+ *         expect(response.statusCode).toBe(302); // Expecting a redirect
+ *     });
+ */
 
-//     it("should NOT login if mispelling in username", async () => {
-//         const response = await request(app)
-//             .post("/login")
-//             .send({ username: "newusr2", password: "Password#123" });
-//         expect(response.statusCode).toBe(401); // Expecting a login FAILURE
-//     });
+/*
+ *     It("should NOT login if mispelling in username", async () => {
+ *         const response = await request(app)
+ *             .post("/login")
+ *             .send({ username: "newusr2", password: "Password#123" });
+ *         expect(response.statusCode).toBe(401); // Expecting a login FAILURE
+ *     });
+ */
 
-//     it("should NOT login if mispelling in password", async () => {
-//         const response = await request(app)
-//             .post("/login")
-//             .send({ username: "newuser2", password: "ultrapasword" });
-//         expect(response.statusCode).toBe(401); // Expecting a login FAILURE
-//     });
+/*
+ *     It("should NOT login if mispelling in password", async () => {
+ *         const response = await request(app)
+ *             .post("/login")
+ *             .send({ username: "newuser2", password: "ultrapasword" });
+ *         expect(response.statusCode).toBe(401); // Expecting a login FAILURE
+ *     });
+ */
     
-//     it("should login a registered user", async () => {
-//         const response = await request(app)
-//             .post("/login")
-//             .send({ username: "newuser2", password: "Password#123" });
-//         expect(response.statusCode).toBe(302); // Expecting a redirection to main.html
-//     });
+/*
+ *     It("should login a registered user", async () => {
+ *         const response = await request(app)
+ *             .post("/login")
+ *             .send({ username: "newuser2", password: "Password#123" });
+ *         expect(response.statusCode).toBe(302); // Expecting a redirection to main.html
+ *     });
+ */
 
 //    
 // });

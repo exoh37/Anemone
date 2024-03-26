@@ -15,8 +15,10 @@ function registerUser(username, email, password) {
         };
     }
 
-    // If password does not conform to regex
-    // Regex taken from stackoverflow
+    /*
+     * If password does not conform to regex
+     * Regex taken from stackoverflow
+     */
     const regex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
     if (!regex.test(password)) {
         return {
@@ -76,9 +78,9 @@ function registerUser(username, email, password) {
 
     // Checks complete, add user
     jsonData.push({
-        username: username,
-        email: email,
-        password: password
+        username,
+        email,
+        password
     });
 
     other.setUserData(jsonData);
@@ -92,9 +94,9 @@ function registerUser(username, email, password) {
 }
 
 function loginUser (username, password) {
-    const jsonData = other.getUserData();
+    const jsonData = other.getUserData(),
 
-    const user = jsonData.find(user => user.username === username);
+        user = jsonData.find(user => user.username === username);
 
     if (user === undefined) {
         return {
