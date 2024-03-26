@@ -5,7 +5,8 @@ const path = require("path");
 
 const users = require("./users.js");
 const invoices = require("./invoices.js");
-const other = require("./other.js"),
+const other = require("./other.js");
+const trash = require("./trash.js");
 
     // Create an Express application
     app = express();
@@ -69,6 +70,13 @@ app.get("/invoices/:invoiceId", (req, res) => {
     return res.status(response.code).json(response.ret);
 });
 
+app.delete("/invoices/trash/:invoiceId", (req, res) => {
+    const { invoiceId } = req.params,
+        {token} = req.headers,
+        response = trash.deleteTrash(invoiceId,token);
+    return res.status(response.code).json(response.ret);
+    
+});
 
 // Clear function for testing purposes
 app.delete("/clear", (req, res) => {
