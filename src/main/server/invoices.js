@@ -169,6 +169,11 @@ function modifyFile(invoiceId, token, newAmount, newDate) {
 }
 
 function AreValidEntries(newAmount, newDate) {
+    // amount and date cant both be null
+    // if only amount is null, and date valid, OR date null but amount VALID
+    // return true
+    //
+
     if (!((newAmount === null && newDate === null)
     || (new Date(newDate)) > Date.now()
     || newDate === null
