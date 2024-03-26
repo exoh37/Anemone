@@ -1,13 +1,13 @@
-const validUsername1 = "validUsername1",
-    validUsername2 = "thisIsAValidName",
-    validEmail1 = "test123@gmail.com",
-    validEmail2 = "123test@gmail.com",
-    validPassword1 = "ThisIsSecure!123",
-    validPassword2 = "lessSecure2@",
-    invalidUsername = "name with space",
-    mockInvoice1 = { file: { amount: 123.45 } },
-    mockInvoice2 = { "file": "{\"amount\": \"123.45\"}" },
-    invalidToken = "thisIsAnInvalidToken";
+const validUsername1 = "validUsername1";
+const validUsername2 = "thisIsAValidName";
+const validEmail1 = "test123@gmail.com";
+const validEmail2 = "123test@gmail.com";
+const validPassword1 = "ThisIsSecure!123";
+const validPassword2 = "lessSecure2@";
+const invalidUsername = "name with space";
+const mockInvoice1 = { file: { amount: 123.45 } };
+const mockInvoice2 = { "file": "{\"amount\": \"123.45\"}" };
+const invalidToken = "thisIsAnInvalidToken";
 
 const request = require("supertest");
 const assert = require("assert");

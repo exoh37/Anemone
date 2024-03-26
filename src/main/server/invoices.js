@@ -32,15 +32,15 @@ function uploadFile(invoice, token) {
         };
     }
 
-    const invoiceId = Date.now(),
-        jsonData = other.getInvoiceData(),
-        // Only 2 decimal places
-        {amount} = data.file;
+    const invoiceId = Date.now();
+    const jsonData = other.getInvoiceData();
+    // Only 2 decimal places
+    const amount = data.file.amount;
 
     jsonData.push({
-        invoiceId,
+        invoiceId: invoiceId,
         invoiceName: "PLACEHOLDER_NAME",
-        amount,
+        amount: amount,
         date: Date.now(),
         trashed: false,
         owner: tokenValidation.username
@@ -52,7 +52,7 @@ function uploadFile(invoice, token) {
         code: 200,
         ret: {
             success: true,
-            invoiceId
+            invoiceId: invoiceId
         }
     };    
 }
@@ -69,8 +69,8 @@ function retrieveFile(invoiceId, token) {
         };
     }
 
-    const jsonData = other.getInvoiceData(),
-        invoice = jsonData.find(invoice => invoice.invoiceId === parseInt(invoiceId));
+    const jsonData = other.getInvoiceData();
+    const invoice = jsonData.find(invoice => invoice.invoiceId === parseInt(invoiceId));
     if (invoice === undefined) {
         return {
             code: 400,
@@ -87,21 +87,21 @@ function retrieveFile(invoiceId, token) {
                 error: `Not owner of this invoice '${invoiceId}'`
             }
         };
-    } 
-    return {
-        code: 200,
-        ret: {
-            success: true,
-            invoice: {
-                invoiceId: invoice.invoiceId,
-                invoiceName: invoice.invoiceName,
-                amount: invoice.amount,
-                date: invoice.date,
-                trashed: invoice.trashed
+    } else {
+        return {
+            code: 200,
+            ret: {
+                success: true,
+                invoice: {
+                    invoiceId: invoice.invoiceId,
+                    invoiceName: invoice.invoiceName,
+                    amount: invoice.amount,
+                    date: invoice.date,
+                    trashed: invoice.trashed
+                }
             }
-        }
-    };
-    
+        };
+    }
 }
 
 module.exports = { uploadFile, retrieveFile };

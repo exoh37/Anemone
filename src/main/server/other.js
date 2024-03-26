@@ -1,13 +1,13 @@
-const fs = require("fs"),
+const fs = require("fs");
 
-    JSON_INVOICE_PATH = "src/main/server/TEMP_invoiceStorage.json",
-    JSON_USER_PATH = "src/main/server/TEMP_userStorage.json",
-    JSON_TOKENS_PATH = "src/main/server/TEMP_tokenStorage.json",
-    JSON_TRASH_PATH = "src/main/server/TEMP_trashStorage.json";
+const JSON_INVOICE_PATH = "src/main/server/TEMP_invoiceStorage.json";
+const JSON_USER_PATH = "src/main/server/TEMP_userStorage.json";
+const JSON_TOKENS_PATH = "src/main/server/TEMP_tokenStorage.json";
+const JSON_TRASH_PATH = "src/main/server/TEMP_trashStorage.json";
 
 function getInvoiceData() {
-    const jsonData = fs.readFileSync(JSON_INVOICE_PATH),
-        data = JSON.parse(String(jsonData));
+    const jsonData = fs.readFileSync(JSON_INVOICE_PATH);
+    const data = JSON.parse(String(jsonData));
     return data;
 }
 
@@ -17,8 +17,8 @@ function setInvoiceData(newData) {
 }
 
 function getUserData() {
-    const jsonData = fs.readFileSync(JSON_USER_PATH),
-        data = JSON.parse(String(jsonData));
+    const jsonData = fs.readFileSync(JSON_USER_PATH);
+    const data = JSON.parse(String(jsonData));
     return data;
 }
 
@@ -28,8 +28,8 @@ function setUserData(newData) {
 }
 
 function getTokenData() {
-    const jsonData = fs.readFileSync(JSON_TOKENS_PATH),
-        data = JSON.parse(String(jsonData));
+    const jsonData = fs.readFileSync(JSON_TOKENS_PATH);
+    const data = JSON.parse(String(jsonData));
     return data;
 }
 
@@ -39,8 +39,8 @@ function setTokenData(newData) {
 }
 
 function getTrashData() {
-    const jsonData = fs.readFileSync(JSON_TRASH_PATH),
-        data = JSON.parse(String(jsonData));
+    const jsonData = fs.readFileSync(JSON_TRASH_PATH);
+    const data = JSON.parse(String(jsonData));
     return data;
 }
 
