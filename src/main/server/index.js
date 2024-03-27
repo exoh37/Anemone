@@ -75,8 +75,7 @@ app.put("/invoices/:invoiceId", (req, res) => {
     const token = req.headers.token;
     const response = invoices.moveInvoiceToTrash(invoiceId, token);
     return res.status(response.code).json(response.ret);
-})
-
+});
 
 // Clear function for testing purposes
 app.delete("/clear", (req, res) => {

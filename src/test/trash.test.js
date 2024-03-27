@@ -7,7 +7,6 @@ const validPassword2 = "lessSecure2@";
 
 
 const mockInvoice1 = { file: { amount: 125.45 } };
-const mockInvoice2 = { "file": "{\"amount\": \"123.45\"}" };
 const falseId = 0;
 
 
@@ -43,11 +42,11 @@ describe("moveToTrash system tests", function() {
         
             
         await request(app)
-        .post("/users")
-        .send({ username: validUsername2, email: validEmail2, password: validPassword2 })
-        .expect(200)
-        .expect("Content-Type", /application\/json/)
-        .expect({"success": true});
+            .post("/users")
+            .send({ username: validUsername2, email: validEmail2, password: validPassword2 })
+            .expect(200)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": true});
 
         // user logged in
         const user1 = await request(app)
@@ -76,14 +75,13 @@ describe("moveToTrash system tests", function() {
         assert.strictEqual(invoice1.body.success, true);
         assert.strictEqual(typeof invoice1.body.invoiceId, "number");
 
-
         // unsuccessful move to trash as user is incorrect
         await request(app)
             .put(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", user2.body.token)
             .expect(403)
             .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": `Not owner of this invoice '${invoice1.body.invoiceId}'`})
+            .expect({"success": false, "error": `Not owner of this invoice '${invoice1.body.invoiceId}'`});
 
         // unsucessful move to trash as invoiceId is incorrect
         await request(app)
@@ -108,9 +106,9 @@ describe("moveToTrash system tests", function() {
             .expect(200)
             .expect("Content-Type", /application\/json/);
 
-            assert.strictEqual(moveToTrashResult.body.success, true);
+        assert.strictEqual(moveToTrashResult.body.success, true);
         // move invoice to trash successfully
-        const invoiceAfterTrash = await request(app)
+        await request(app)
             .get(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", user1.body.token)
             .expect(400)

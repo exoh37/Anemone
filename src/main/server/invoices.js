@@ -133,7 +133,7 @@ function moveInvoiceToTrash(invoiceId, token) {
             code: 400,
             ret: {
                 success: false,
-                error: `invoiceId refers to an invoice in the trash`
+                error: "invoiceId refers to an invoice in the trash"
             }
         };
     } else if (invoice.owner !== tokenValidation.username) {
