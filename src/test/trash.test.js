@@ -17,13 +17,6 @@ const app = require("../main/server");
 const server = require("../main/server"); 
 
 
-//tests
-//1. successfully in trash
-//2. invalid token, not in trash
-//3. invalid invoiceid, not in trash
-//4. invoiceid already in trash, not trashed
-//5. valid token but invalid invoiceid (user is not owner of the invoice), not trashed
-
 describe("moveToTrash system tests", function() {
     it("test for moving invoice to trash successfully", async function() {
         
@@ -101,7 +94,6 @@ describe("moveToTrash system tests", function() {
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": "Token is empty or invalid"});
 
-        // actually move invoice to trash
         const moveToTrashResult = await request(app)
             .put(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", user1.body.token)
@@ -109,6 +101,7 @@ describe("moveToTrash system tests", function() {
             .expect("Content-Type", /application\/json/);
 
             assert.strictEqual(moveToTrashResult.body.success, true);
+        
         // move invoice to trash successfully
         const invoiceAfterTrash = await request(app)
             .get(`/invoices/${invoice1.body.invoiceId}`)
@@ -117,7 +110,6 @@ describe("moveToTrash system tests", function() {
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": `invoiceId '${invoice1.body.invoiceId}' does not refer to an existing invoice`});
 
-        // invoice wont be found since it has been moved (via put req) to trash file
        
 
     });
