@@ -5,17 +5,17 @@ const path = require("path");
 
 const users = require("./users.js");
 const invoices = require("./invoices.js");
-const other = require("./other.js");
+const other = require("./other.js"),
 
-// Create an Express application
-const app = express();
+    // Create an Express application
+    app = express();
 
 // Middleware ( AI-Generated )
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../../../Front_end")));
 
-// root URL
+// Root URL
 app.get("/v1", (req, res) => {
     res.send(`
     <p> Welcome! Click here to get started  <a href="/users">Register</a>.</p>
@@ -36,8 +36,8 @@ app.get("/users", (req, res) => {
 
 // Register a user
 app.post("/users", (req, res) => {
-    const { username, email, password } = req.body;
-    const response = users.registerUser(username, email, password);
+    const { username, email, password } = req.body,
+        response = users.registerUser(username, email, password);
     return res.status(response.code).json(response.ret);
 });
 
@@ -48,24 +48,24 @@ app.get("/users/login", (req, res) => {
 
 // Login user
 app.post("/users/login", (req, res) => {
-    const { username, password } = req.body;
-    const response = users.loginUser(username, password);
+    const { username, password } = req.body,
+        response = users.loginUser(username, password);
     return res.status(response.code).json(response.ret);
 });
 
 // Upload invoice
 app.post("/invoices", (req, res) => {
-    const { invoice } = req.body;
-    const token = req.headers.token;
-    const response = invoices.uploadFile(invoice, token);
+    const { invoice } = req.body,
+        {token} = req.headers,
+        response = invoices.uploadFile(invoice, token);
     return res.status(response.code).json(response.ret);
 });
 
 // Retrieve invoice
 app.get("/invoices/:invoiceId", (req, res) => {
-    const { invoiceId } = req.params;
-    const token = req.headers.token;
-    const response = invoices.retrieveFile(invoiceId, token);
+    const { invoiceId } = req.params,
+        {token} = req.headers,
+        response = invoices.retrieveFile(invoiceId, token);
     return res.status(response.code).json(response.ret);
 });
 
@@ -84,12 +84,13 @@ app.delete("/clear", (req, res) => {
 });
 
 // Start the Express server and listen on port 3000
-const PORT = 8031;
-const server = app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+
+const PORT = 3103,
+    server = app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
 
 module.exports = server;
-// module.exports = PORT;
+// Module.exports = PORT;
 
 console.log("random commit");
