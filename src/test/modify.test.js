@@ -8,6 +8,8 @@ const validUsername3 = "valid901Username1";
 const validEmail3 = "123901test@gmail.com";
 const validPassword3 = "less901Secure2@";
 
+const emptyString = "";
+
 const validAmount = 5;
 const validDate = new Date(); 
 validDate.setDate(validDate.getDate() - 2);
@@ -162,7 +164,7 @@ describe("Modifying - Unit tests V1", function() {
         await request(app)
             .put(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", user1.body.token)
-            .send({ newAmount: "", newDate: "" })
+            .send({ newAmount: emptyString, newDate: emptyString })
             .expect(400)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": "Invalid date or amount provided; could not modify"});
