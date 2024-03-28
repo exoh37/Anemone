@@ -70,10 +70,19 @@ app.get("/invoices/:invoiceId", (req, res) => {
 });
 
 // Move Invoice to trash
-app.put("/invoices/:invoiceId", (req, res) => {
+app.delete("/invoices/:invoiceId", (req, res) => {
     const { invoiceId } = req.params;
     const token = req.headers.token;
     const response = invoices.moveInvoiceToTrash(invoiceId, token);
+    return res.status(response.code).json(response.ret);
+});
+
+// Modify invoice
+app.put("/invoices/:invoiceId", (req, res) => {
+    const { invoiceId } = req.params;
+    const { newAmount, newDate } = req.body;
+    const token = req.headers.token;
+    const response = invoices.modifyFile(invoiceId, token, newAmount, newDate);
     return res.status(response.code).json(response.ret);
 });
 
