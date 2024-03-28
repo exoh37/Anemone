@@ -75,6 +75,14 @@ app.put("/invoices/:invoiceId", (req, res) => {
     const { newAmount, newDate } = req.body;
     const token = req.headers.token;
     const response = invoices.modifyFile(invoiceId, token, newAmount, newDate);
+
+});
+
+// Move Invoice to trash
+app.put("/invoices/:invoiceId", (req, res) => {
+    const { invoiceId } = req.params;
+    const token = req.headers.token;
+    const response = invoices.moveInvoiceToTrash(invoiceId, token);
     return res.status(response.code).json(response.ret);
 });
 
@@ -85,6 +93,7 @@ app.delete("/clear", (req, res) => {
 });
 
 // Start the Express server and listen on port 3000
+
 const PORT = 3103,
     server = app.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);

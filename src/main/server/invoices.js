@@ -117,7 +117,9 @@ function modifyFile(invoiceId, token, newAmount, newDate) {
     }
 
     const jsonData = other.getInvoiceData();
-    const invoice = jsonData.find(invoice => invoice.invoiceId === parseInt(invoiceId));
+    const invoiceIndex = jsonData.findIndex(invoice => invoice.invoiceId === parseInt(invoiceId));
+    const invoice = jsonData[invoiceIndex];
+    
     if (invoice === undefined) {
         return {
             code: 400,
