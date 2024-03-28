@@ -216,16 +216,19 @@ function modifyFile(invoiceId, token, newAmount, newDate) {
         }
         // return invoice
         return {
-            code: 401,
+            code: 200,
             ret: {
-                success: false,
-                error: "Token is empty or invalid"
+                success: true,
+                invoice: {
+                    invoiceId: invoice.invoiceId,
+                    invoiceName: invoice.invoiceName,
+                    amount: invoice.amount,
+                    date: invoice.date,
+                    trashed: invoice.trashed
+                }
             }
         };
     }
-
-   
-
 }
 
 function AreValidEntries(newAmount, newDate) {
