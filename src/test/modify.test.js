@@ -4,6 +4,9 @@ const validEmail1 = "test123@gmail.com";
 const validEmail2 = "123test@gmail.com";
 const validPassword1 = "ThisIsSecure!123";
 const validPassword2 = "lessSecure2@";
+const validUsername3 = "valid901Username1";
+const validEmail3 = "123901test@gmail.com";
+const validPassword3 = "less901Secure2@";
 
 const validAmount = 5;
 const validDate = new Date(); 
@@ -14,7 +17,7 @@ futureDate.setDate(futureDate.getDate() + 2);
 
 const mockInvoice1 = { file: { amount: 125.45 } };
 const mockInvoice2 = { "file": "{\"amount\": \"123.45\"}" };
-const mockInvoice3 = { file: { amount: 17.90 } };
+const mockInvoice3 = { file: { amount: 17.90, date: validDate } };
 const falseId = 0;
 
 
@@ -46,6 +49,13 @@ describe("Modifying - Unit tests V1", function() {
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
 
+        await request(app)
+            .post("/users")
+            .send({ username: validUsername3, email: validEmail3, password: validPassword3 })
+            .expect(200)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": true});
+
         const user1 = await request(app)
             .post("/users/login")
             .send({ username: validUsername1, password: validPassword1 })
@@ -55,6 +65,12 @@ describe("Modifying - Unit tests V1", function() {
         const user2 = await request(app)
             .post("/users/login")
             .send({ username: validUsername2, password: validPassword2 })
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+        
+        const user3 = await request(app)
+            .post("/users/login")
+            .send({ username: validUsername3, password: validPassword3 })
             .expect(200)
             .expect("Content-Type", /application\/json/);
 
@@ -83,12 +99,12 @@ describe("Modifying - Unit tests V1", function() {
 
         const invoice3 = await request(app)
             .post("/invoices")
-            .set("token", user2.body.token)
+            .set("token", user3.body.token)
             .send({ invoice: mockInvoice3 })
             .expect(200);
 
         assert.strictEqual(invoice3.body.success, true);
-        assert.strictEqual(typeof invoice2.body.invoiceId, "number");
+        assert.strictEqual(typeof invoice3.body.invoiceId, "number");
 
         // check successful retrieve
         const returnedInvoice1 = await request(app)
@@ -200,7 +216,7 @@ describe("Modifying - Unit tests V1", function() {
         // success 200, amount changed but date NOT changed
         const modifiedInvoice3 = await request(app)
             .put(`/invoices/${invoice3.body.invoiceId}`)
-            .set("token", user2.body.token)
+            .set("token", user3.body.token)
             .send({ newAmount: validAmount, newDate: null})
             .expect(200)
             .expect("Content-Type", /application\/json/);

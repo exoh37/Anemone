@@ -145,7 +145,7 @@ function modifyFile(invoiceId, token, newAmount, newDate) {
     // Modifying logic here
     } else {
         // modify the entries as requied
-        if (newAmount > 0 && newAmount !== invoice.amount) {
+        if (newAmount !== invoice.amount) {
             invoice.amount = newAmount;
         }
         if (newDate) {
@@ -173,6 +173,22 @@ function AreValidEntries(newAmount, newDate) {
     // if only amount is null, and date valid, OR date null but amount VALID
     // return true
     //
+    if ((newAmount === null && newDate === null)
+    || ((newAmount.toString().trim().length === 0 && newDate.toString().trim().length === 0))) {
+        return false;
+    }
+
+    if (newAmount === null || newAmount.toString().trim().length === 0) {
+        if ((new Date(newDate)) <= Date.now()) {
+            return true;
+        }
+    } else {
+        if ((new Date(newDate)) <= Date.now() && newAmount > 0) {
+            return true;
+        }
+    }
+
+    return false;
 
     if (!((newAmount === null && newDate === null)
     || (new Date(newDate)) > Date.now()
