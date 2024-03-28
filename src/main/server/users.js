@@ -15,8 +15,10 @@ function registerUser(username, email, password) {
         };
     }
 
-    // If password does not conform to regex
-    // Regex taken from stackoverflow
+    /*
+     * If password does not conform to regex
+     * Regex taken from stackoverflow
+     */
     const regex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
     if (!regex.test(password)) {
         return {
@@ -24,6 +26,17 @@ function registerUser(username, email, password) {
             ret: {
                 success: false,
                 error: "Password does not satisfy minimum requirements (1 lowercase letter, 1 uppercase letter, 1 special character and 1 number)"
+            }
+        };
+    }
+
+    // Check if the username is 3-20 characters long
+    if (username.length < 3 || username.length > 20) {
+        return {
+            code: 400,
+            ret: {
+                success: false,
+                error: `Username '${username}' is not between 3-20 characters long`
             }
         };
     }
@@ -65,9 +78,9 @@ function registerUser(username, email, password) {
 
     // Checks complete, add user
     jsonData.push({
-        username: username,
-        email: email,
-        password: password
+        username,
+        email,
+        password
     });
 
     other.setUserData(jsonData);
@@ -81,9 +94,9 @@ function registerUser(username, email, password) {
 }
 
 function loginUser (username, password) {
-    const jsonData = other.getUserData();
+    const jsonData = other.getUserData(),
 
-    const user = jsonData.find(user => user.username === username);
+        user = jsonData.find(user => user.username === username);
 
     if (user === undefined) {
         return {

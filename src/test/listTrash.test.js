@@ -13,7 +13,7 @@ const invalidToken = "thisIsAnInvalidToken";
 const request = require("supertest");
 const assert = require("assert");
 const app = require("../main/server");
-const server = require("../main/server"); 
+const server = require("../main/server");
 
 describe("List from trash test(s)", function() {
     it("Invalid token", async function() {
@@ -73,7 +73,7 @@ describe("List from trash test(s)", function() {
         
         assert.strictEqual(trashList.body.success, true);
         assert.strictEqual(trashList.body.invoices[0].invoiceId, invoice1.body.invoiceId);
-        assert.strictEqual(trashList.body.invoices[0].amount, invoice1.body.amount);
+        assert.strictEqual(trashList.body.invoices[0].amount, mockInvoice1.file.amount);
         assert.strictEqual(trashList.body.invoices[0].trashed, true);
     });
 
@@ -114,10 +114,10 @@ describe("List from trash test(s)", function() {
         
         assert.strictEqual(trashList.body.success, true);
         assert.strictEqual(trashList.body.invoices[0].invoiceId, invoice1.body.invoiceId);
-        assert.strictEqual(trashList.body.invoices[0].amount, invoice1.body.amount);
+        assert.strictEqual(trashList.body.invoices[0].amount, mockInvoice1.file.amount);
         assert.strictEqual(trashList.body.invoices[0].trashed, true);
         assert.strictEqual(trashList.body.invoices[1].invoiceId, invoice2.body.invoiceId);
-        assert.strictEqual(trashList.body.invoices[1].amount, invoice2.body.amount);
+        assert.strictEqual(trashList.body.invoices[1].amount, mockInvoice2.file.amount);
         assert.strictEqual(trashList.body.invoices[1].trashed, true);
     });
 
@@ -166,7 +166,7 @@ describe("List from trash test(s)", function() {
         
         assert.strictEqual(trashList1.body.success, true);
         assert.strictEqual(trashList1.body.invoices[0].invoiceId, invoice1.body.invoiceId);
-        assert.strictEqual(trashList1.body.invoices[0].amount, invoice1.body.amount);
+        assert.strictEqual(trashList1.body.invoices[0].amount, mockInvoice1.file.amount);
         assert.strictEqual(trashList1.body.invoices[0].trashed, true);
 
         const trashList2 = await request(app)
@@ -176,7 +176,7 @@ describe("List from trash test(s)", function() {
 
         assert.strictEqual(trashList2.body.success, true);
         assert.strictEqual(trashList2.body.invoices[0].invoiceId, invoice2.body.invoiceId);
-        assert.strictEqual(trashList2.body.invoices[0].amount, invoice2.body.amount);
+        assert.strictEqual(trashList2.body.invoices[0].amount, mockInvoice2.file.amount);
         assert.strictEqual(trashList2.body.invoices[0].trashed, true);
 
         const invoice3 = await request(app)
@@ -204,10 +204,10 @@ describe("List from trash test(s)", function() {
         
         assert.strictEqual(trashList3.body.success, true);
         assert.strictEqual(trashList3.body.invoices[0].invoiceId, invoice1.body.invoiceId);
-        assert.strictEqual(trashList3.body.invoices[0].amount, invoice1.body.amount);
+        assert.strictEqual(trashList3.body.invoices[0].amount, mockInvoice1.file.amount);
         assert.strictEqual(trashList3.body.invoices[0].trashed, true);
         assert.strictEqual(trashList3.body.invoices[1].invoiceId, invoice3.body.invoiceId);
-        assert.strictEqual(trashList3.body.invoices[1].amount, invoice3.body.amount);
+        assert.strictEqual(trashList3.body.invoices[1].amount, mockInvoice3.file.amount);
         assert.strictEqual(trashList3.body.invoices[1].trashed, true);
 
         const trashList4 = await request(app)
@@ -217,10 +217,12 @@ describe("List from trash test(s)", function() {
 
         assert.strictEqual(trashList4.body.success, true);
         assert.strictEqual(trashList4.body.invoices[0].invoiceId, invoice2.body.invoiceId);
-        assert.strictEqual(trashList4.body.invoices[0].amount, invoice2.body.amount);
+        assert.strictEqual(trashList4.body.invoices[0].amount, mockInvoice2.file.amount);
         assert.strictEqual(trashList4.body.invoices[0].trashed, true);
         assert.strictEqual(trashList4.body.invoices[1].invoiceId, invoice4.body.invoiceId);
-        assert.strictEqual(trashList4.body.invoices[1].amount, invoice4.body.amount);
+        assert.strictEqual(trashList4.body.invoices[1].amount, mockInvoice4.file.amount);
         assert.strictEqual(trashList4.body.invoices[1].trashed, true);
     });
 });
+
+server.close();
