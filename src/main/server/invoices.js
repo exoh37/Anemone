@@ -179,6 +179,7 @@ function modifyFile(invoiceId, token, newAmount, newDate) {
     const jsonData = other.getInvoiceData();
     const invoiceIndex = jsonData.findIndex(invoice => invoice.invoiceId === parseInt(invoiceId));
     const invoice = jsonData[invoiceIndex];
+    
     if (invoice === undefined) {
         return {
             code: 400,
@@ -209,7 +210,8 @@ function modifyFile(invoiceId, token, newAmount, newDate) {
         if (newAmount !== invoice.amount) {
             invoice.amount = newAmount;
         }
-        if (newDate) {
+        console.log("date is noooooooowwww ", newDate);
+        if (newDate !== null && newDate !== "") {
             invoice.date = newDate;
         }
         // return invoice
@@ -230,23 +232,23 @@ function modifyFile(invoiceId, token, newAmount, newDate) {
 }
 
 function AreValidEntries(newAmount, newDate) {
-    // amount and date cant both be null
-    // if only amount is null, and date valid, OR date null but amount VALID
-    // return true
-    //
     if ((newAmount === null && newDate === null)
     || ((newAmount.toString().trim().length === 0 && newDate.toString().trim().length === 0))) {
         return false;
     }
 
-    if (newAmount === null || newAmount.toString().trim().length === 0) {
-        if ((new Date(newDate)) <= Date.now()) {
-            return true;
+    if (newAmount !== null && newAmount.toString().trim().length !== 0) {
+        if (newDate !== null && newDate.toString().trim().length !== 0) {
+            if (parseInt(newAmount) > 0 && (new Date(newDate)) <= Date.now()) {
+                return true;
+            }
+        } else {
+            if (parseInt(newAmount) > 0) {
+                return true;
+            }
         }
-    } else {
-        if ((new Date(newDate)) <= Date.now() && newAmount > 0) {
-            return true;
-        }
+    } else if ((new Date(newDate)) <= Date.now()) {
+        return true;
     }
 
     return false;

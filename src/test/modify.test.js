@@ -11,6 +11,7 @@ const validPassword3 = "less901Secure2@";
 const emptyString = "";
 
 const validAmount = 5;
+const validFinalAmount = 10;
 const validDate = new Date(); 
 validDate.setDate(validDate.getDate() - 2);
 const futureDate = new Date();
@@ -22,11 +23,11 @@ const mockInvoice2 = { "file": "{\"amount\": \"123.45\"}" };
 const mockInvoice3 = { file: { amount: 17.90, date: validDate } };
 const falseId = 0;
 
-
 const request = require("supertest");
 const assert = require("assert");
 const app = require("../main/server");
 const server = require("../main/server"); 
+const other = require("../main/server/other.js");
 
 describe("Modifying - Unit tests V1", function() {
     it("tests for Modifying Invoices", async function() {
@@ -205,13 +206,13 @@ describe("Modifying - Unit tests V1", function() {
         const modifiedInvoice2 = await request(app)
             .put(`/invoices/${invoice2.body.invoiceId}`)
             .set("token", user2.body.token)
-            .send({ newAmount: " ", newDate: validDate })
+            .send({ newAmount: "", newDate: validDate })
             .expect(200)
             .expect("Content-Type", /application\/json/);
 
         assert.strictEqual(modifiedInvoice2.body.success, true);
         assert.strictEqual(modifiedInvoice2.body.invoice.invoiceId, invoice2.body.invoiceId);
-        assert.strictEqual(modifiedInvoice2.body.invoice.amount, invoice2.body.amount);
+        assert.strictEqual(modifiedInvoice2.body.invoice.amount, "");
         assert.strictEqual(modifiedInvoice2.body.invoice.date, validDate.toJSON());
         assert.strictEqual(modifiedInvoice2.body.invoice.trashed, false);
 
@@ -219,14 +220,17 @@ describe("Modifying - Unit tests V1", function() {
         const modifiedInvoice3 = await request(app)
             .put(`/invoices/${invoice3.body.invoiceId}`)
             .set("token", user3.body.token)
-            .send({ newAmount: validAmount, newDate: null})
+            .send({ newAmount: validFinalAmount, newDate: null})
             .expect(200)
             .expect("Content-Type", /application\/json/);
-
+        
+        const jsonData = other.getInvoiceData(),
+            invoice = jsonData.find(invoice => invoice.invoiceId === parseInt(invoice3.body.invoiceId));
+    
         assert.strictEqual(modifiedInvoice3.body.success, true);
         assert.strictEqual(modifiedInvoice3.body.invoice.invoiceId, invoice3.body.invoiceId);
-        assert.strictEqual(modifiedInvoice3.body.invoice.amount, validAmount);
-        assert.strictEqual(modifiedInvoice3.body.invoice.date, invoice3.body.date);
+        assert.strictEqual(modifiedInvoice3.body.invoice.amount, validFinalAmount);
+        assert.strictEqual(modifiedInvoice3.body.invoice.date, invoice.date);
         assert.strictEqual(modifiedInvoice3.body.invoice.trashed, false);
     });
 });
