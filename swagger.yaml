@@ -613,7 +613,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/invoiceFilterReturnObject'
         '400':
-          description: filteredWord is an empty string
+          description: filteredWord is an empty string ""
           content:
             application/json:
               schema:
@@ -666,8 +666,8 @@ paths:
             - invoiceIds contains a duplicate invoiceId
             - at least 1 invoiceId in invoiceIds does not refer to an existing invoice
             - at least 1 invoiceId in invoiceIds refers to an invoice in the trash
-            - newAmount is not a positive number and not an empty string
-            - newDate is an invalid date and not an empty string
+            - newAmount is not a positive number and not an empty string ""
+            - newDate is an invalid date and not an empty string ""
             - newDate refers to a time in the future
             - all 3 newInvoiceName, newAmount and newDate are empty strings ""
           content:
