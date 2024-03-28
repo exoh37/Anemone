@@ -165,7 +165,6 @@ function moveInvoiceToTrash(invoiceId, token) {
 }
 
 function modifyFile(invoiceId, token, newAmount, newDate) {
-    console.log("The MODFIFY FILE FUNCTION HAS BEEN CALLED");
     const tokenValidation = auth.tokenIsValid(token);
     if (!tokenValidation.valid) {
         return {
@@ -180,7 +179,6 @@ function modifyFile(invoiceId, token, newAmount, newDate) {
     const jsonData = other.getInvoiceData();
     const invoiceIndex = jsonData.findIndex(invoice => invoice.invoiceId === parseInt(invoiceId));
     const invoice = jsonData[invoiceIndex];
-    console.log(newAmount, " looks like that and so does ", newDate);
     if (invoice === undefined) {
         return {
             code: 400,

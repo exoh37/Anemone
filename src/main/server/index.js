@@ -70,7 +70,7 @@ app.get("/invoices/:invoiceId", (req, res) => {
 });
 
 // Move Invoice to trash
-app.put("/invoices/:invoiceId", (req, res) => {
+app.delete("/invoices/:invoiceId", (req, res) => {
     const { invoiceId } = req.params;
     const token = req.headers.token;
     const response = invoices.moveInvoiceToTrash(invoiceId, token);

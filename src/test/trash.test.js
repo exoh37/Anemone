@@ -77,7 +77,7 @@ describe("moveToTrash system tests", function() {
 
         // unsuccessful move to trash as user is incorrect
         await request(app)
-            .put(`/invoices/${invoice1.body.invoiceId}`)
+            .delete(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", user2.body.token)
             .expect(403)
             .expect("Content-Type", /application\/json/)
@@ -85,7 +85,7 @@ describe("moveToTrash system tests", function() {
 
         // unsucessful move to trash as invoiceId is incorrect
         await request(app)
-            .get(`/invoices/${falseId}`)
+            .delete(`/invoices/${falseId}`)
             .set("token", user1.body.token)
             .expect(400)
             .expect("Content-Type", /application\/json/)
@@ -93,7 +93,7 @@ describe("moveToTrash system tests", function() {
 
         // unsuccessful retrieve as no such Token
         await request(app)
-            .get(`/invoices/${invoice1.body.invoiceId}`)
+            .delete(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", falseId)
             .expect(401)
             .expect("Content-Type", /application\/json/)
@@ -101,7 +101,7 @@ describe("moveToTrash system tests", function() {
 
         // actually move invoice to trash
         const moveToTrashResult = await request(app)
-            .put(`/invoices/${invoice1.body.invoiceId}`)
+            .delete(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", user1.body.token)
             .expect(200)
             .expect("Content-Type", /application\/json/);
@@ -109,7 +109,7 @@ describe("moveToTrash system tests", function() {
         assert.strictEqual(moveToTrashResult.body.success, true);
         // move invoice to trash successfully
         await request(app)
-            .get(`/invoices/${invoice1.body.invoiceId}`)
+            .delete(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", user1.body.token)
             .expect(400)
             .expect("Content-Type", /application\/json/)
