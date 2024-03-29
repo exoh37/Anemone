@@ -37,9 +37,18 @@ describe("List from trash test(s)", function() {
             .delete(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", user1.body.token);
 
+        // Invalid token
         await request(app)
             .get("/trash")
             .set("token", invalidToken)
+            .expect(401)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": "Token is empty or invalid"});
+
+        // Empty token
+        await request(app)
+            .get("/trash")
+            .set("token", "")
             .expect(401)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": "Token is empty or invalid"});

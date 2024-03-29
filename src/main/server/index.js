@@ -100,5 +100,3 @@ const PORT = 3103,
 
 module.exports = server;
 // Module.exports = PORT;
-
-console.log("random commit");
