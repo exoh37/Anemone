@@ -16,6 +16,7 @@ const invalidUsername2 = "name with space";
 const request = require("supertest");
 const app = require("../main/server");
 const server = require("../main/server"); 
+const assert = require("assert");
 
 describe("User Registration", function() {
     beforeEach(async function() {
@@ -148,75 +149,77 @@ describe("User Registration", function() {
     });
 });
 
-// Describe("User Login Page", () => {
+describe("User Login", function() {
+    beforeEach(async function() {
+        // Clear data before running any tests
+        await request(app)
+            .delete("/clear")
+            .expect(200)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": true});
+    });
 
-/*
- *     It("should login a registered user", async () => {
- *         const response = await request(app)
- *             .post("/login")
- *             .send({ username: "thestiiiig", password: "gigglemobile" });
- *         expect(response.statusCode).toBe(302); // Expecting a redirection to main
- *     });
- */
+    it("Valid Input: Login successfully", async function() {
+        await request(app)
+            .post("/users")
+            .send({ username: validUsername1, email: validEmail1, password: validPassword1 })
+            .expect(200)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": true});
 
-/*
- *     It("should NOT login an UNregistered user", async () => {
- *         const response = await request(app)
- *             .post("/login")
- *             .send({ username: "notREAL", password: "notreal" });
- *         expect(response.statusCode).toBe(401); // Expecting a login FAILURE
- *     });
- */
+        const user1 = await request(app)
+            .post("/users/login")
+            .send({ username: validUsername1, password: validPassword1 })
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
 
-/*
- *     It("should NOT login a Valid Username BUT Invalid Password", async () => {
- *         const response = await request(app)
- *             .post("/login")
- *             .send({ username: "thestiiiig", password: "leCar" });
- *         expect(response.statusCode).toBe(401); // Expecting a login FAILURE
- *     });
- * });
- */
+        assert.strictEqual(user1.body.success, true);
+        assert.strictEqual(typeof user1.body.token, "string");
+        
+    });
 
-/*
- * Describe("User full Registration and Login Process", () => {
- *     it("should register a new user with valid username and password", async () => {
- *         const response = await request(app)
- *             .post("/users")
- *             .send({ username: "newuser2", password: "Password#123" });
- *         expect(response.statusCode).toBe(302); // Expecting a redirect
- *     });
- */
 
-/*
- *     It("should NOT login if mispelling in username", async () => {
- *         const response = await request(app)
- *             .post("/login")
- *             .send({ username: "newusr2", password: "Password#123" });
- *         expect(response.statusCode).toBe(401); // Expecting a login FAILURE
- *     });
- */
+    it("Invalid Input: Login unsuccessful as password does not match username", async function() {
+        await request(app)
+            .post("/users")
+            .send({ username: validUsername1, email: validEmail1, password: validPassword1 })
+            .expect(200)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": true});
 
-/*
- *     It("should NOT login if mispelling in password", async () => {
- *         const response = await request(app)
- *             .post("/login")
- *             .send({ username: "newuser2", password: "ultrapasword" });
- *         expect(response.statusCode).toBe(401); // Expecting a login FAILURE
- *     });
- */
-    
-/*
- *     It("should login a registered user", async () => {
- *         const response = await request(app)
- *             .post("/login")
- *             .send({ username: "newuser2", password: "Password#123" });
- *         expect(response.statusCode).toBe(302); // Expecting a redirection to main.html
- *     });
- */
+        await request(app)
+            .post("/users")
+            .send({ username: validUsername2, email: validEmail2, password: validPassword2 })
+            .expect(200)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": true});
 
-//    
-// });
+        await request(app)
+            .post("/users/login")
+            .send({ username: validUsername1, password: validPassword2 })
+            .expect(401)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": `Password does not match username '${validUsername1}'`});
+
+        await request(app)
+            .post("/users/login")
+            .send({ username: validUsername2, password: validPassword1 })
+            .expect(401)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": `Password does not match username '${validUsername2}'`});
+    });
+       
+    it("Invalid Input: Username doesn't exist", async function() {
+        await request(app)
+            .post("/users/login")
+            .send({ username: invalidUsername1, password: invalidPassword1 })
+            .expect(401)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": `Username '${invalidUsername1}' does not refer to an existing user`});
+
+    });
+
+});
 
 // close server
 server.close();
