@@ -77,7 +77,7 @@ describe("moveToTrash system tests", function() {
 
         // unsuccessful move to trash as user is incorrect
         await request(app)
-            .put(`/invoices/${invoice1.body.invoiceId}`)
+            .delete(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", user2.body.token)
             .expect(403)
             .expect("Content-Type", /application\/json/)
@@ -101,7 +101,7 @@ describe("moveToTrash system tests", function() {
 
         // actually move invoice to trash
         const moveToTrashResult = await request(app)
-            .put(`/invoices/${invoice1.body.invoiceId}`)
+            .delete(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", user1.body.token)
             .expect(200)
             .expect("Content-Type", /application\/json/);

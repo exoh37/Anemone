@@ -5,6 +5,7 @@ const path = require("path");
 
 const users = require("./users.js");
 const invoices = require("./invoices.js");
+const trash = require("./trash.js");
 const other = require("./other.js"),
 
     // Create an Express application
@@ -70,10 +71,17 @@ app.get("/invoices/:invoiceId", (req, res) => {
 });
 
 // Move Invoice to trash
-app.put("/invoices/:invoiceId", (req, res) => {
+app.delete("/invoices/:invoiceId", (req, res) => {
     const { invoiceId } = req.params;
     const token = req.headers.token;
     const response = invoices.moveInvoiceToTrash(invoiceId, token);
+    return res.status(response.code).json(response.ret);
+});
+
+// List trash items
+app.get("/trash", (req, res) => {
+    const token = req.headers.token;
+    const response = trash.listTrashItems(token);
     return res.status(response.code).json(response.ret);
 });
 
@@ -92,5 +100,3 @@ const PORT = 3103,
 
 module.exports = server;
 // Module.exports = PORT;
-
-console.log("random commit");
