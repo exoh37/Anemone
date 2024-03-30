@@ -1,4 +1,3 @@
-const { json } = require("express");
 const auth = require("./auth.js");
 const other = require("./other.js");
 
