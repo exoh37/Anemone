@@ -5,8 +5,8 @@ const path = require("path");
 
 const users = require("./users.js");
 const invoices = require("./invoices.js");
-const other = require("./other.js");
 const trash = require("./trash.js");
+const other = require("./other.js"),
 
     // Create an Express application
     app = express();
@@ -70,6 +70,20 @@ app.get("/invoices/:invoiceId", (req, res) => {
     return res.status(response.code).json(response.ret);
 });
 
+// Move Invoice to trash
+app.delete("/invoices/:invoiceId", (req, res) => {
+    const { invoiceId } = req.params;
+    const token = req.headers.token;
+    const response = invoices.moveInvoiceToTrash(invoiceId, token);
+    return res.status(response.code).json(response.ret);
+});
+
+// List trash items
+app.get("/trash", (req, res) => {
+    const token = req.headers.token;
+    const response = trash.listTrashItems(token);
+    return res.status(response.code).json(response.ret);
+});
 app.delete("/invoices/trash/:invoiceId", (req, res) => {
     const { invoiceId } = req.params,
         {token} = req.headers,
@@ -85,6 +99,7 @@ app.delete("/clear", (req, res) => {
 });
 
 // Start the Express server and listen on port 3000
+
 const PORT = 3103,
     server = app.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);
@@ -92,5 +107,3 @@ const PORT = 3103,
 
 module.exports = server;
 // Module.exports = PORT;
-
-console.log("random commit");
