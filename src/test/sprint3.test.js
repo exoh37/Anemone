@@ -16,12 +16,25 @@ const app = require("../main/server");
 const server = require("../main/server");
 
 /* Asserts that the nth index of a an invoiceList contains a certain invoice.
- * invoiceList: Must be the unmodified returned body of any get a list endroute
+ * endpoint: Route specified to test
  * index: Number referring to the index in the invoice array
  * invoice: Must be the unmodified returned body of a single invoice retrieval
+ * user: Must be the unmodified returned body of a login, so it contains a token
+ * trashed: Boolean value for whether an invoice should be trashed or not
  */
-function assertListIndexHasInvoice(invoiceList, index, invoice) {
+async function assertListIndexHasInvoice(endpoint, index, invoice, user, trashed) {
+    const list = await request(app)
+        .get(endpoint)
+        .set("token", user.body.token)
+        .expect(200)
+        .expect("Content-Type", /application\/json/);
 
+    assert.strictEqual(list.body.success, true);
+    assert.strictEqual(list.body.invoices[index].invoiceId, invoice.body.invoiceId);
+    assert.strictEqual(list.body.invoices[index].invoiceName, invoice.body.invoiceName);
+    assert.strictEqual(list.body.invoices[index].amount, invoice.body.amount);
+    assert.strictEqual(list.body.invoices[index].date, invoice.body.date);
+    assert.strictEqual(list.body.invoices[index].trashed, trashed);
 }
 
 describe("Sprint 3 system test(s)", function() {
@@ -105,14 +118,32 @@ describe("Sprint 3 system test(s)", function() {
             .expect(200)
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
-        
-        // List invoices outside and inside trash to verify
-        const invoiceList1 = await request(app)
-            .get("/invoices")
+
+        assertListIndexHasInvoice("/trash", 0, returnedInvoice1, user1, true);
+        assertListIndexHasInvoice("/invoices", 0, returnedInvoice2, user1, false);
+        assertListIndexHasInvoice("/trash", 0, returnedInvoice3, user2, true);
+        assertListIndexHasInvoice("/invoices", 0, returnedInvoice4, user2, false);
+
+        // Deleting other invoice from each user
+        await request(app)
+            .delete(`/invoices/${invoice2.body.invoiceId}`)
             .set("token", user1.body.token)
             .expect(200)
-            .expect("Content-Type", /application\/json/);
-        
-        assertListIndexHasInvoice(invoiceList1, 0, returnedInvoice1);
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": true});
+
+        await request(app)
+            .delete(`/invoices/${invoice4.body.invoiceId}`)
+            .set("token", user2.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": true});
+
+        assertListIndexHasInvoice("/trash", 0, returnedInvoice1, user1, true);
+        assertListIndexHasInvoice("/trash", 1, returnedInvoice2, user1, true);
+        assertListIndexHasInvoice("/trash", 0, returnedInvoice3, user2, true);
+        assertListIndexHasInvoice("/trash", 1, returnedInvoice4, user2, true);
+
+        // Restore
     });
 });
