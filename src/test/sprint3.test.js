@@ -12,12 +12,12 @@ const modifyInvoice1 = {
     newInvoiceName: "this is new",
     newAmount: 37,
     newDate: ""
-}
+};
 const modifyInvoice3 = {
     newInvoiceName: "but this is newer",
     newAmount: 1.11,
     newDate: ""
-}
+};
 
 const request = require("supertest");
 const assert = require("assert");
@@ -195,7 +195,7 @@ describe("Sprint 3 system test(s)", function() {
             .set("token", user1.body.token)
             .send(modifyInvoice1)
             .expect(200)
-            .expect("Content-Type", /application\/json/)
+            .expect("Content-Type", /application\/json/);
         
         // Unchanging invoiceId, changed name, changed amount, unchanging date
         assert.strictEqual(modifiedInvoice1.body.success, true);
@@ -210,7 +210,7 @@ describe("Sprint 3 system test(s)", function() {
             .set("token", user2.body.token)
             .send(modifyInvoice3)
             .expect(200)
-            .expect("Content-Type", /application\/json/)
+            .expect("Content-Type", /application\/json/);
 
         // Unchanging invoiceId, changed name, changed amount, unchanging date
         assert.strictEqual(modifiedInvoice3.body.success, true);
@@ -260,3 +260,5 @@ describe("Sprint 3 system test(s)", function() {
         assert.strictEqual(trashList2.body.invoices.length, 0);
     });
 });
+
+server.close();
