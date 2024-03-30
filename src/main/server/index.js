@@ -84,10 +84,13 @@ app.get("/trash", (req, res) => {
     const response = trash.listTrashItems(token);
     return res.status(response.code).json(response.ret);
 });
+
+// Delete from trash
 app.delete("/invoices/trash/:invoiceId", (req, res) => {
     const { invoiceId } = req.params,
         {token} = req.headers,
-        response = trash.deleteTrash(invoiceId,token);
+        response = trash.deleteTrash(invoiceId, token);
+    console.log(response);
     return res.status(response.code).json(response.ret);
     
 });
