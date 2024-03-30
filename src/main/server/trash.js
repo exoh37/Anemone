@@ -89,7 +89,7 @@ function deleteTrash(invoiceId, token) {
         ret: {
             success: true
         }
-    }
+    };
 }
 
 

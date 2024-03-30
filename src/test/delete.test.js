@@ -1,6 +1,6 @@
 const validUsername1 = "validUsername1";
 const validUsername2 = "thisIsAValidName";
-const validUsername3 = "thisIsAValidName123"
+const validUsername3 = "thisIsAValidName123";
 const validEmail1 = "test123@gmail.com";
 const validEmail2 = "123test@gmail.com";
 const validEmail3 = "t1e2s3t@gmail.com";
