@@ -16,10 +16,16 @@ const app = require("../main/server");
 const server = require("../main/server");
 
 describe("List from trash test(s)", function() {
-    it("Invalid token", async function() {
+    beforeEach(async function() {
+        // Clear data before running any tests
         await request(app)
-            .delete("/clear");
+            .delete("/clear")
+            .expect(200)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": true});
+    });
 
+    it("Invalid token", async function() {
         await request(app)
             .post("/users")
             .send({ username: validUsername1, email: validEmail1, password: validPassword1 });
@@ -56,9 +62,6 @@ describe("List from trash test(s)", function() {
 
     it("Valid usage with 1 invoice in trash", async function() {
         await request(app)
-            .delete("/clear");
-
-        await request(app)
             .post("/users")
             .send({ username: validUsername1, email: validEmail1, password: validPassword1 });
 
@@ -87,9 +90,6 @@ describe("List from trash test(s)", function() {
     });
 
     it("Valid usage with 2 invoices in trash (order check)", async function() {
-        await request(app)
-            .delete("/clear");
-
         await request(app)
             .post("/users")
             .send({ username: validUsername1, email: validEmail1, password: validPassword1 });
@@ -131,9 +131,6 @@ describe("List from trash test(s)", function() {
     });
 
     it("Valid usage with invoices deleted for 2 different users", async function() {
-        await request(app)
-            .delete("/clear");
-
         await request(app)
             .post("/users")
             .send({ username: validUsername1, email: validEmail1, password: validPassword1 });
