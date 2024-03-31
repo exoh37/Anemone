@@ -138,7 +138,7 @@ describe("Modifying - Unit tests V1", function() {
         await request(app)
             .put(`/invoices/${falseId}`)
             .set("token", user1.body.token)
-            .send({ newAmount: validAmount, newDate: validDate })
+            .send({ newName: "", newAmount: validAmount, newDate: validDate })
             .expect(400)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": `invoiceId '${falseId}' does not refer to an existing invoice`});
@@ -147,7 +147,7 @@ describe("Modifying - Unit tests V1", function() {
         await request(app)
             .put(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", falseId)
-            .send({ newAmount: validAmount, newDate: validDate })
+            .send({ newName: "", newAmount: validAmount, newDate: validDate })
             .expect(401)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": "Token is empty or invalid"});
@@ -156,7 +156,7 @@ describe("Modifying - Unit tests V1", function() {
         await request(app)
             .put(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", user2.body.token)
-            .send({ newAmount: validAmount, newDate: validDate })
+            .send({ newName: "", newAmount: validAmount, newDate: validDate })
             .expect(403)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": `Not owner of this invoice '${invoice1.body.invoiceId}'`});
@@ -165,7 +165,7 @@ describe("Modifying - Unit tests V1", function() {
         await request(app)
             .put(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", user1.body.token)
-            .send({ newAmount: emptyString, newDate: emptyString })
+            .send({ newName: "", newAmount: emptyString, newDate: emptyString })
             .expect(400)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": "Invalid date or amount provided; could not modify"});
@@ -174,7 +174,7 @@ describe("Modifying - Unit tests V1", function() {
         await request(app)
             .put(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", user1.body.token)
-            .send({ newAmount: validAmount, newDate: futureDate })
+            .send({ newName: "", newAmount: validAmount, newDate: futureDate })
             .expect(400)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": "Invalid date or amount provided; could not modify"});
@@ -183,7 +183,7 @@ describe("Modifying - Unit tests V1", function() {
         await request(app)
             .put(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", user1.body.token)
-            .send({ newAmount: "0", newDate: validDate })
+            .send({ newName: "", newAmount: "0", newDate: validDate })
             .expect(400)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": "Invalid date or amount provided; could not modify"});
@@ -192,7 +192,7 @@ describe("Modifying - Unit tests V1", function() {
         const modifiedInvoice1 = await request(app)
             .put(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", user1.body.token)
-            .send({ newAmount: validAmount, newDate: validDate })
+            .send({ newName: "", newAmount: validAmount, newDate: validDate })
             .expect(200)
             .expect("Content-Type", /application\/json/);
 
@@ -206,7 +206,7 @@ describe("Modifying - Unit tests V1", function() {
         const modifiedInvoice2 = await request(app)
             .put(`/invoices/${invoice2.body.invoiceId}`)
             .set("token", user2.body.token)
-            .send({ newAmount: "", newDate: validDate })
+            .send({ newName: "", newAmount: "", newDate: validDate })
             .expect(200)
             .expect("Content-Type", /application\/json/);
 
@@ -220,7 +220,7 @@ describe("Modifying - Unit tests V1", function() {
         const modifiedInvoice3 = await request(app)
             .put(`/invoices/${invoice3.body.invoiceId}`)
             .set("token", user3.body.token)
-            .send({ newAmount: validFinalAmount, newDate: null})
+            .send({ newName: "", newAmount: validFinalAmount, newDate: null})
             .expect(200)
             .expect("Content-Type", /application\/json/);
         

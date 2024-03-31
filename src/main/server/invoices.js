@@ -165,7 +165,7 @@ function moveInvoiceToTrash(invoiceId, token) {
 
 }
 
-function modifyFile(invoiceId, token, newAmount, newDate) {
+function modifyFile(invoiceId, token, newName, newAmount, newDate) {
     const tokenValidation = auth.tokenIsValid(token);
     if (!tokenValidation.valid) {
         return {

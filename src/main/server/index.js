@@ -81,9 +81,9 @@ app.delete("/invoices/:invoiceId", (req, res) => {
 // Modify invoice
 app.put("/invoices/:invoiceId", (req, res) => {
     const { invoiceId } = req.params;
-    const { newAmount, newDate } = req.body;
+    const { newName, newAmount, newDate } = req.body;
     const token = req.headers.token;
-    const response = invoices.modifyFile(invoiceId, token, newAmount, newDate);
+    const response = invoices.modifyFile(invoiceId, token, newName, newAmount, newDate);
     return res.status(response.code).json(response.ret);
 });
 
