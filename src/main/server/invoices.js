@@ -147,6 +147,7 @@ function moveInvoiceToTrash(invoiceId, token) {
     }
 
     let trashData = other.getTrashData();
+    invoice.trashed = true;
     trashData.push(invoice);
     other.setTrashData(trashData);
 
