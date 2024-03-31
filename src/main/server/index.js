@@ -70,6 +70,13 @@ app.get("/invoices/:invoiceId", (req, res) => {
     return res.status(response.code).json(response.ret);
 });
 
+// Invoice list
+app.get("/invoices", (req, res) => {
+    const token = req.headers.token;
+    const response = invoices.fileList(token);
+    return res.status(response.code).json(response.ret);
+});
+
 // Move Invoice to trash
 app.delete("/invoices/:invoiceId", (req, res) => {
     const { invoiceId } = req.params;
