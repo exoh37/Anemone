@@ -2,23 +2,36 @@
 <html>
         <head>
                 <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>login-page</title>
                 <link rel="stylesheet" href="Login_style.css" />
         </head>
         <body>
-                
-                <img src="https://www.seattleaquarium.org/wp-content/uploads/2023/06/anemones-featured.jpg" alt="Group photo">
-                <h1>Login</h1>
-                <form method="post" action='/login'>
-                        <fieldset>
-                                <label for="username">Enter Your Username: <input id="username" name="username" type="text" required /></label>
-                                <label for="password">Enter Password: <input id="password" name="password" type="password" required /></label>
-                                <button type="submit">Login</button>
-                        </fieldset>
-                </form>
+        <h1 class="glow">Anemone</h1>
 
-               <!--<a href="main.html"><input type="submit" value="Submit" /></a>-->
-               <p> Haven't signed up yet? <a href="/users">Register here!</a>.</p>
+        <div class="wrapper">
+                <div class="form-wrapper sign-in">
+                        <form action="">
+                                <h2>Login</h2>
+                                <div class="input-group">
+                                        <input type="text" required>
+                                        <label for="">Username</label>
+                                </div>
+                                <div class="input-group">
+                                        <input type="password" required>
+                                        <label for="">Password</label>
+                                </div>
+                                <div class="remember">
+                                        <label><input type="checkbox"> Remember me</label>
+                                </div>
+                                <button type="submit">Login</button>
+                                <div class="signUp-link">
+                                        <p>Don't have an account? <a href="Register.html" class="signUpBtn-link">Sign Up</a></p>
+                                </div>
+                        </form>
+                </div>
+        </div>
+        <script src="script.js"></script>
         </body>
 </html>

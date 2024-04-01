@@ -5,6 +5,7 @@ const path = require("path");
 
 const users = require("./users.js");
 const invoices = require("./invoices.js");
+const trash = require("./trash.js");
 const other = require("./other.js"),
 
     // Create an Express application
@@ -69,11 +70,50 @@ app.get("/invoices/:invoiceId", (req, res) => {
     return res.status(response.code).json(response.ret);
 });
 
+// Invoice list
+app.get("/invoices", (req, res) => {
+    const token = req.headers.token;
+    const response = invoices.fileList(token);
+    return res.status(response.code).json(response.ret);
+});
+
 // Move Invoice to trash
-app.put("/invoices/:invoiceId", (req, res) => {
+app.delete("/invoices/:invoiceId", (req, res) => {
     const { invoiceId } = req.params;
     const token = req.headers.token;
     const response = invoices.moveInvoiceToTrash(invoiceId, token);
+    return res.status(response.code).json(response.ret);
+});
+
+// Modify invoice
+app.put("/invoices/:invoiceId", (req, res) => {
+    const { invoiceId } = req.params;
+    const { newName, newAmount, newDate } = req.body;
+    const token = req.headers.token;
+    const response = invoices.modifyFile(invoiceId, token, newName, newAmount, newDate);
+    return res.status(response.code).json(response.ret);
+});
+
+// List trash items
+app.get("/trash", (req, res) => {
+    const token = req.headers.token;
+    const response = trash.listTrashItems(token);
+    return res.status(response.code).json(response.ret);
+});
+
+// Delete from trash
+app.delete("/invoices/trash/:invoiceId", (req, res) => {
+    const { invoiceId } = req.params,
+        {token} = req.headers,
+        response = trash.deleteTrash(invoiceId, token);
+    return res.status(response.code).json(response.ret);
+    
+});
+
+app.post("/invoices/trash/:invoiceId/restore", (req, res) => {
+    const { invoiceId } = req.params,
+        { token } = req.headers,
+        response = trash.restoreTrash(invoiceId, token);
     return res.status(response.code).json(response.ret);
 });
 
@@ -85,12 +125,10 @@ app.delete("/clear", (req, res) => {
 
 // Start the Express server and listen on port 3000
 
-const PORT = 3103,
+const PORT = process.env.PORT || 3103,
     server = app.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);
     });
 
 module.exports = server;
 // Module.exports = PORT;
-
-console.log("random commit");
