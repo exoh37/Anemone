@@ -90,9 +90,15 @@ app.delete("/invoices/trash/:invoiceId", (req, res) => {
     const { invoiceId } = req.params,
         {token} = req.headers,
         response = trash.deleteTrash(invoiceId, token);
-    console.log(response);
     return res.status(response.code).json(response.ret);
     
+});
+
+app.post("/invoices/trash/:invoiceId/restore", (req, res) => {
+    const { invoiceId } = req.params,
+        { token } = req.headers,
+        response = trash.restoreTrash(invoiceId, token);
+    return res.status(response.code).json(response.ret);
 });
 
 // Clear function for testing purposes
