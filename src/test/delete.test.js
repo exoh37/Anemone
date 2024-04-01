@@ -149,6 +149,8 @@ describe("DeleteFromTrash unit tests", function() {
 
         assert.strictEqual(Deleteresult.body.success, true);
 
+       
+
     });
 });
 
