@@ -99,9 +99,15 @@ app.delete("/invoices/trash/:invoiceId", (req, res) => {
     const { invoiceId } = req.params,
         {token} = req.headers,
         response = trash.deleteTrash(invoiceId, token);
-    console.log(response);
     return res.status(response.code).json(response.ret);
     
+});
+
+app.post("/invoices/trash/:invoiceId/restore", (req, res) => {
+    const { invoiceId } = req.params,
+        { token } = req.headers,
+        response = trash.restoreTrash(invoiceId, token);
+    return res.status(response.code).json(response.ret);
 });
 
 // Clear function for testing purposes
@@ -112,7 +118,7 @@ app.delete("/clear", (req, res) => {
 
 // Start the Express server and listen on port 3000
 
-const PORT = 3103,
+const PORT = process.env.PORT || 3103,
     server = app.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);
     });
