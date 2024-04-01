@@ -36,6 +36,7 @@ describe("Restore from trash unit tests", function() {
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
     });
+
     it("Test for restoring from trash successfully", async function() {
         // user registered
         await request(app)
