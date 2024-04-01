@@ -126,7 +126,7 @@ describe("DeleteFromTrash unit tests", function() {
 
         // InvoiceId is incorrect
         await request(app)
-            .delete(`/invoices/trash/${falseId}`)
+            .delete(`/trash/${falseId}`)
             .set("token", user1.body.token)
             .expect(400)
             .expect("Content-Type", /application\/json/)
@@ -134,7 +134,7 @@ describe("DeleteFromTrash unit tests", function() {
 
         // unsuccessful retrieve as no such Token
         await request(app)
-            .delete(`/invoices/trash/${falseId}`)
+            .delete(`/trash/${falseId}`)
             .set("token", falseId)
             .expect(401)
             .expect("Content-Type", /application\/json/)
@@ -142,7 +142,7 @@ describe("DeleteFromTrash unit tests", function() {
 
         // Delete invoice to trash
         const Deleteresult = await request(app)
-            .delete(`/invoices/trash/${invoice1.body.invoiceId}`)
+            .delete(`/trash/${invoice1.body.invoiceId}`)
             .set("token", user1.body.token)
             .expect(200)
             .expect("Content-Type", /application\/json/);

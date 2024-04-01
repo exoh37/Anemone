@@ -126,6 +126,7 @@ function restoreTrash (invoiceId, token) {
     }
 
     const jsonData = other.getInvoiceData();
+    trashInvoice.trashed = false;
     jsonData.push(trashInvoice);
     trashData.splice(trashIndex, 1);
 

@@ -25,29 +25,24 @@ const app = require("../main/server");
 const server = require("../main/server");
 
 /* Asserts that the nth index of a an invoiceList contains a certain invoice.
- * endpoint: Route specified to test
+ * list: Returned body of a list route
  * index: Number referring to the index in the invoice array
  * invoice: Must be the unmodified returned body of a single invoice retrieval
- * user: Must be the unmodified returned body of a login, so it contains a token
  * trashed: Boolean value for whether an invoice should be trashed or not
  */
-async function assertListIndexHasInvoice(endpoint, index, invoice, user, trashed) {
-    // const list = await request(app)
-    //     .get(endpoint)
-    //     .set("token", user.body.token)
-    //     .expect(200)
-    //     .expect("Content-Type", /application\/json/);
-
-    // assert.strictEqual(list.body.success, true);
-    // assert.strictEqual(list.body.invoices[index].invoiceId, invoice.body.invoiceId);
-    // assert.strictEqual(list.body.invoices[index].invoiceName, invoice.body.invoiceName);
-    // assert.strictEqual(list.body.invoices[index].amount, invoice.body.amount);
-    // assert.strictEqual(list.body.invoices[index].date, invoice.body.date);
-    // assert.strictEqual(list.body.invoices[index].trashed, trashed);
+async function assertListIndexHasInvoice(list, index, invoice, trashed) {
+    assert.strictEqual(list.body.success, true);
+    assert.strictEqual(list.body.invoices[index].invoiceId, invoice.body.invoiceId);
+    assert.strictEqual(list.body.invoices[index].invoiceName, invoice.body.invoiceName);
+    assert.strictEqual(list.body.invoices[index].amount, invoice.body.amount);
+    assert.strictEqual(list.body.invoices[index].date, invoice.body.date);
+    assert.strictEqual(list.body.invoices[index].trashed, trashed);
 }
 
 describe("Sprint 3 system test(s)", function() {
     it("System Test", async function() {
+        let invoiceList;
+
         await request(app)
             .delete("/clear");
 
@@ -144,10 +139,37 @@ describe("Sprint 3 system test(s)", function() {
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
 
-        assertListIndexHasInvoice("/trash", 0, returnedInvoice1, user1, true);
-        assertListIndexHasInvoice("/invoices", 0, returnedInvoice2, user1, false);
-        assertListIndexHasInvoice("/trash", 0, returnedInvoice3, user2, true);
-        assertListIndexHasInvoice("/invoices", 0, returnedInvoice4, user2, false);
+        invoiceList = await request(app)
+            .get("/trash")
+            .set("token", user1.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        assertListIndexHasInvoice(invoiceList, 0, returnedInvoice1, true);
+
+        invoiceList = await request(app)
+            .get("/invoices")
+            .set("token", user1.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        assertListIndexHasInvoice(invoiceList, 0, returnedInvoice2, false);
+
+        invoiceList = await request(app)
+            .get("/trash")
+            .set("token", user2.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        assertListIndexHasInvoice(invoiceList, 0, returnedInvoice3, user2, true);
+
+        invoiceList = await request(app)
+            .get("/invoices")
+            .set("token", user2.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+            
+        assertListIndexHasInvoice(invoiceList, 0, returnedInvoice4, user2, false);
 
         // Move to trash (2 + 4)
         await request(app)
@@ -164,10 +186,37 @@ describe("Sprint 3 system test(s)", function() {
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
 
-        assertListIndexHasInvoice("/trash", 0, returnedInvoice1, user1, true);
-        assertListIndexHasInvoice("/trash", 1, returnedInvoice2, user1, true);
-        assertListIndexHasInvoice("/trash", 0, returnedInvoice3, user2, true);
-        assertListIndexHasInvoice("/trash", 1, returnedInvoice4, user2, true);
+        invoiceList = await request(app)
+            .get("/trash")
+            .set("token", user1.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        assertListIndexHasInvoice(invoiceList, 0, returnedInvoice1, true);
+
+        invoiceList = await request(app)
+            .get("/trash")
+            .set("token", user1.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        assertListIndexHasInvoice(invoiceList, 1, returnedInvoice2, true);
+
+        invoiceList = await request(app)
+            .get("/trash")
+            .set("token", user2.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        assertListIndexHasInvoice(invoiceList, 0, returnedInvoice3, true);
+
+        invoiceList = await request(app)
+            .get("/trash")
+            .set("token", user2.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        assertListIndexHasInvoice(invoiceList, 1, returnedInvoice4, true);
 
         // Restore (1 + 3)
         await request(app)
@@ -184,10 +233,37 @@ describe("Sprint 3 system test(s)", function() {
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
 
-        assertListIndexHasInvoice("/invoices", 0, returnedInvoice1, user1, false);
-        assertListIndexHasInvoice("/trash", 0, returnedInvoice2, user1, true);
-        assertListIndexHasInvoice("/invoices", 0, returnedInvoice3, user2, false);
-        assertListIndexHasInvoice("/trash", 0, returnedInvoice4, user2, true);
+        invoiceList = await request(app)
+            .get("/invoices")
+            .set("token", user1.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        assertListIndexHasInvoice(invoiceList, 0, returnedInvoice1, true);
+
+        invoiceList = await request(app)
+            .get("/trash")
+            .set("token", user1.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        assertListIndexHasInvoice(invoiceList, 0, returnedInvoice2, true);
+
+        invoiceList = await request(app)
+            .get("/invoices")
+            .set("token", user2.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        assertListIndexHasInvoice(invoiceList, 0, returnedInvoice3, true);
+
+        invoiceList = await request(app)
+            .get("/trash")
+            .set("token", user2.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        assertListIndexHasInvoice(invoiceList, 0, returnedInvoice4, true);
 
         // Modify (1 + 3)
         const modifiedInvoice1 = await request(app)
@@ -197,12 +273,12 @@ describe("Sprint 3 system test(s)", function() {
             .expect(200)
             .expect("Content-Type", /application\/json/);
         
-        // Unchanging invoiceId, changed name, changed amount, unchanging date
+        // Unchanging invoiceId, unchanged name, changed amount, unchanging date
         assert.strictEqual(modifiedInvoice1.body.success, true);
         assert.strictEqual(modifiedInvoice1.body.invoice.invoiceId, invoice1.body.invoiceId);
-        assert.strictEqual(modifiedInvoice1.body.invoice.invoiceName, modifyInvoice1.newInvoiceName);
+        assert.strictEqual(modifiedInvoice1.body.invoice.invoiceName, returnedInvoice1.body.invoice.invoiceName);
         assert.strictEqual(modifiedInvoice1.body.invoice.amount, modifyInvoice1.newAmount);
-        assert.strictEqual(modifiedInvoice1.body.invoice.date, returnedInvoice1.body.date);
+        assert.strictEqual(modifiedInvoice1.body.invoice.date, returnedInvoice1.body.invoice.date);
         assert.strictEqual(modifiedInvoice1.body.invoice.trashed, false);
 
         const modifiedInvoice3 = await request(app)
@@ -212,19 +288,47 @@ describe("Sprint 3 system test(s)", function() {
             .expect(200)
             .expect("Content-Type", /application\/json/);
 
-        // Unchanging invoiceId, changed name, changed amount, unchanging date
+        // Unchanging invoiceId, unchanged name, changed amount, unchanging date
         assert.strictEqual(modifiedInvoice3.body.success, true);
         assert.strictEqual(modifiedInvoice3.body.invoice.invoiceId, invoice3.body.invoiceId);
-        assert.strictEqual(modifiedInvoice3.body.invoice.invoiceName, modifyInvoice3.newInvoiceName);
+        assert.strictEqual(modifiedInvoice3.body.invoice.invoiceName, returnedInvoice3.body.invoice.invoiceName);
         assert.strictEqual(modifiedInvoice3.body.invoice.amount, modifyInvoice3.newAmount);
-        assert.strictEqual(modifiedInvoice3.body.invoice.date, returnedInvoice3.body.date);
+        assert.strictEqual(modifiedInvoice3.body.invoice.date, returnedInvoice3.body.invoice.date);
         assert.strictEqual(modifiedInvoice3.body.invoice.trashed, false);
 
         // Assert the modified invoices are still in the system
-        assertListIndexHasInvoice("/invoices", 0, modifiedInvoice1, user1, false);
-        assertListIndexHasInvoice("/trash", 0, returnedInvoice2, user1, true);
-        assertListIndexHasInvoice("/invoices", 0, modifiedInvoice3, user2, false);
-        assertListIndexHasInvoice("/trash", 0, returnedInvoice4, user2, true);
+
+        invoiceList = await request(app)
+            .get("/invoices")
+            .set("token", user1.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        assertListIndexHasInvoice(invoiceList, 0, modifiedInvoice1, true);
+
+        invoiceList = await request(app)
+            .get("/trash")
+            .set("token", user1.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        assertListIndexHasInvoice(invoiceList, 0, returnedInvoice2, true);
+
+        invoiceList = await request(app)
+            .get("/invoices")
+            .set("token", user2.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        assertListIndexHasInvoice(invoiceList, 0, modifiedInvoice3, true);
+
+        invoiceList = await request(app)
+            .get("/trash")
+            .set("token", user2.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        assertListIndexHasInvoice(invoiceList, 0, returnedInvoice4, true);
 
         // Delete (2 + 4)
         await request(app)
@@ -241,8 +345,21 @@ describe("Sprint 3 system test(s)", function() {
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
 
-        assertListIndexHasInvoice("/invoices", 0, modifiedInvoice1, user1, false);
-        assertListIndexHasInvoice("/invoices", 0, modifiedInvoice3, user2, false);
+        invoiceList = await request(app)
+            .get("/invoices")
+            .set("token", user1.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        assertListIndexHasInvoice(invoiceList, 0, modifiedInvoice1, true);
+
+        invoiceList = await request(app)
+            .get("/invoices")
+            .set("token", user2.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        assertListIndexHasInvoice(invoiceList, 0, modifiedInvoice3, true);
         
         const trashList1 = await request(app)
             .get("/trash")
