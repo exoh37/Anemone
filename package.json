@@ -4,6 +4,7 @@
   "description": "",
   "main": "src/main/server/index.js",
   "scripts": {
+    "start": "node src/main/user/index.js",
     "test": "nyc mocha src/test --timeout 5000",
     "lint": "eslint src/**/*.{ts,js}",
     "lint-fix": "eslint --fix src/**/*.{ts,js}"
