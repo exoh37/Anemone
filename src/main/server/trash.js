@@ -1,10 +1,7 @@
-const { json } = require("express");
-const auth = require("./auth.js");
 const other = require("./other.js");
+const auth = require("./auth.js");
 
-
-
-function deleteTrash(invoiceId,token) { 
+function listTrashItems(token) {
     const tokenValidation = auth.tokenIsValid(token);
     if (!tokenValidation.valid) {
         return {
@@ -15,10 +12,55 @@ function deleteTrash(invoiceId,token) {
             }
         };
     }
+
+    const jsonData = other.getTrashData();
+
+    // This is assuming that the invoices are appended to the end of the JSON array as
+    // they get deleted so that the invoices array can be returned in the correct order
+    let invoices = jsonData.filter(invoice => invoice.owner === tokenValidation.username);
+
+    if (invoices.length === 0) {
+        return {
+            code: 200,
+            ret: {
+                success: true,
+                invoices: []
+            }
+        };
+    }
     
-    const jsonData = other.getInvoiceData();
-    const invoice = jsonData.find(invoice => invoice.invoiceId === parseInt(invoiceId));
+    invoices = invoices.map(obj => {
+        // Remove owner from the array
+        const { owner, ...rest } = obj;
+        other.foo(owner);
+        return rest;
+    });
+
+    return {
+        code: 200,
+        ret: {
+            success: true,
+            invoices: invoices
+        }
+    };
+}
+
+function deleteTrash(invoiceId, token) { 
+    const tokenValidation = auth.tokenIsValid(token);
+    if (!tokenValidation.valid) {
+        return {
+            code: 401,
+            ret: {
+                success: false,
+                error: "Token is empty or invalid"
+            }
+        };
+    }
+
+    const jsonData = other.getTrashData();
     const invoiceIndex = jsonData.findIndex(invoice => invoice.invoiceId === parseInt(invoiceId));
+    const invoice = jsonData[invoiceIndex];
+    
     if (invoice === undefined) {
         return {
             code: 400,
@@ -27,30 +69,76 @@ function deleteTrash(invoiceId,token) {
                 error: `invoiceId '${invoiceId}' does not refer to an existing invoice`
             }
         };
-    } else if (invoice.trashed !== true) {
-        return {
-            code: 400,
-            ret: {
-                success: false,
-                error: `invoiceId refers to an invoice not in the trash '${invoiceId}'`
-            }
-        };
-    } 
-
-    else if (invoice.owner !== tokenValidation.username) {
+    } else if (invoice.owner !== tokenValidation.username) {
         return {
             code: 403,
             ret: {
                 success: false,
-                error: "Valid token and invoiceId are provided, but user is not owner of this invoice"
+                error: `Not owner of this invoice '${invoiceId}'`
             }
         };
     }
 
     jsonData.splice(invoiceIndex, 1);
     
-    other.setInvoiceData(jsonData);
-    return {success: true};
+    other.setTrashData(jsonData);
+    return {
+        code: 200,
+        ret: {
+            success: true
+        }
+    };
 }
 
-module.exports = { deleteTrash };
+function restoreTrash (invoiceId, token) {
+    const tokenValidation = auth.tokenIsValid(token);
+    if (!tokenValidation.valid) {
+        return {
+            code: 401,
+            ret: {
+                success: false,
+                error: "Token is empty or invalid"
+            }
+        };
+    }
+
+    const trashData = other.getTrashData();
+    const trashIndex = trashData.findIndex(invoice => invoice.invoiceId === parseInt(invoiceId));
+    const trashInvoice = trashData[trashIndex];
+
+    if (trashInvoice === undefined) {
+        return {
+            code: 400,
+            ret: {
+                success: false,
+                error: `invoiceId '${invoiceId}' does not refer to an existing invoice`
+            }
+        };
+    }
+    else if (trashInvoice.owner !== tokenValidation.username) {
+        return {
+            code: 403,
+            ret: {
+                success: false,
+                error: `Not owner of this invoice '${invoiceId}'`
+            }
+        };
+    }
+
+    const jsonData = other.getInvoiceData();
+    trashInvoice.trashed = false;
+    jsonData.push(trashInvoice);
+    trashData.splice(trashIndex, 1);
+
+    other.setTrashData(trashData);
+    other.setInvoiceData(jsonData);
+
+    return {
+        code: 200,
+        ret: {
+            success: true
+        }
+    };
+}
+
+module.exports = { listTrashItems, deleteTrash, restoreTrash };
