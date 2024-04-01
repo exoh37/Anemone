@@ -16,7 +16,6 @@ const invalidUsername2 = "name with space";
 const request = require("supertest");
 const app = require("../main/server");
 const server = require("../main/server");
-const assert = require("assert");
 
 describe("Testing route POST /users + POST /users/login", function() {
     beforeEach(async function() {
