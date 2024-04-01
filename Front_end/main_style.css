@@ -6,6 +6,9 @@ body {
     color: #f5f6f7;
     font-family: Tahoma;
     font-size: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 h1, p {
@@ -49,9 +52,17 @@ li {
     margin-bottom: 1em;
 }
 
+#uploadButton { 
+    padding:10px;
+    background:#2d2d2d;
+    color: #fff;;
+    
+}
+
 button {
     position: absolute;
     right: 0;
+    
 }
 
 #list-container {
@@ -78,4 +89,43 @@ button {
 input[type=file] {
     padding:10px;
     background:#2d2d2d;
+}
+
+#pass-bar{
+    display: none;
+    padding-bottom: 10px;
+}
+
+.progress-bar{
+    flex-direction: column;
+}
+
+.progress-bar .line{
+    height: 15px;
+    background: #e8e8e8;
+    border-radius: 7px;
+    position: relative;
+}
+
+.progress-bar .label{
+    font-size: 30px;
+}
+
+.progress-bar > .line > span{
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: red;
+    border-radius: 10px;
+}
+
+
+@keyframes animationLoaded{
+    0%{
+        width: 0%;
+    }
+    100%{
+        width: 100%;
+    }
 }
