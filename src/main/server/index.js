@@ -102,7 +102,7 @@ app.get("/trash", (req, res) => {
 });
 
 // Delete from trash
-app.delete("/invoices/trash/:invoiceId", (req, res) => {
+app.delete("/trash/:invoiceId", (req, res) => {
     const { invoiceId } = req.params;
     const token = req.headers.token;
     const response = trash.deleteTrash(invoiceId, token);
