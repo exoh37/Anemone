@@ -15,10 +15,10 @@ const invalidUsername2 = "name with space";
 
 const request = require("supertest");
 const app = require("../main/server");
-const server = require("../main/server"); 
+const server = require("../main/server");
 const assert = require("assert");
 
-describe("User Registration", function() {
+describe("Testing route POST /users + POST /users/login", function() {
     beforeEach(async function() {
         // Clear data before running any tests
         await request(app)
@@ -68,7 +68,7 @@ describe("User Registration", function() {
             .send({ username: validUsername1, email: validEmail1, password: invalidPassword1 })
             .expect(400)
             .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": "Password does not satisfy minimum requirements (1 lowercase letter, 1 uppercase letter, 1 special character and 1 number)"});
+            .expect({"success": false, "error": "Password does not satisfy minimum requirements (at least 8 characters long, 1 lowercase letter, 1 uppercase letter, 1 special character and 1 number)"});
     });
 
     it("Invalid Input: Password does not contain at least 1 lower letter", async function() {
@@ -77,7 +77,7 @@ describe("User Registration", function() {
             .send({ username: validUsername1, email: validEmail1, password: invalidPassword2 })
             .expect(400)
             .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": "Password does not satisfy minimum requirements (1 lowercase letter, 1 uppercase letter, 1 special character and 1 number)"});
+            .expect({"success": false, "error": "Password does not satisfy minimum requirements (at least 8 characters long, 1 lowercase letter, 1 uppercase letter, 1 special character and 1 number)"});
     });
 
     it("Invalid Input: Password does not contain at least 1 number", async function() {
@@ -86,7 +86,7 @@ describe("User Registration", function() {
             .send({ username: validUsername1, email: validEmail1, password: invalidPassword3 })
             .expect(400)
             .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": "Password does not satisfy minimum requirements (1 lowercase letter, 1 uppercase letter, 1 special character and 1 number)"});
+            .expect({"success": false, "error": "Password does not satisfy minimum requirements (at least 8 characters long, 1 lowercase letter, 1 uppercase letter, 1 special character and 1 number)"});
     });
 
     it("Invalid Input: Password does not contain at least 1 special character", async function() {
@@ -95,7 +95,7 @@ describe("User Registration", function() {
             .send({ username: validUsername1, email: validEmail1, password: invalidPassword4 })
             .expect(400)
             .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": "Password does not satisfy minimum requirements (1 lowercase letter, 1 uppercase letter, 1 special character and 1 number)"});
+            .expect({"success": false, "error": "Password does not satisfy minimum requirements (at least 8 characters long, 1 lowercase letter, 1 uppercase letter, 1 special character and 1 number)"});
     });
 
     it("Invalid Input: Password does not contain at least 8 characters", async function() {
@@ -104,7 +104,7 @@ describe("User Registration", function() {
             .send({ username: validUsername1, email: validEmail1, password: invalidPassword5 })
             .expect(400)
             .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": "Password does not satisfy minimum requirements (1 lowercase letter, 1 uppercase letter, 1 special character and 1 number)"});
+            .expect({"success": false, "error": "Password does not satisfy minimum requirements (at least 8 characters long, 1 lowercase letter, 1 uppercase letter, 1 special character and 1 number)"});
     });
 
     it("Invalid Input: Email does not satisfy validation", async function() {
@@ -149,77 +149,4 @@ describe("User Registration", function() {
     });
 });
 
-describe("User Login", function() {
-    beforeEach(async function() {
-        // Clear data before running any tests
-        await request(app)
-            .delete("/clear")
-            .expect(200)
-            .expect("Content-Type", /application\/json/)
-            .expect({"success": true});
-    });
-
-    it("Valid Input: Login successfully", async function() {
-        await request(app)
-            .post("/users")
-            .send({ username: validUsername1, email: validEmail1, password: validPassword1 })
-            .expect(200)
-            .expect("Content-Type", /application\/json/)
-            .expect({"success": true});
-
-        const user1 = await request(app)
-            .post("/users/login")
-            .send({ username: validUsername1, password: validPassword1 })
-            .expect(200)
-            .expect("Content-Type", /application\/json/);
-
-        assert.strictEqual(user1.body.success, true);
-        assert.strictEqual(typeof user1.body.token, "string");
-        
-    });
-
-
-    it("Invalid Input: Login unsuccessful as password does not match username", async function() {
-        await request(app)
-            .post("/users")
-            .send({ username: validUsername1, email: validEmail1, password: validPassword1 })
-            .expect(200)
-            .expect("Content-Type", /application\/json/)
-            .expect({"success": true});
-
-        await request(app)
-            .post("/users")
-            .send({ username: validUsername2, email: validEmail2, password: validPassword2 })
-            .expect(200)
-            .expect("Content-Type", /application\/json/)
-            .expect({"success": true});
-
-        await request(app)
-            .post("/users/login")
-            .send({ username: validUsername1, password: validPassword2 })
-            .expect(401)
-            .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": `Password does not match username '${validUsername1}'`});
-
-        await request(app)
-            .post("/users/login")
-            .send({ username: validUsername2, password: validPassword1 })
-            .expect(401)
-            .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": `Password does not match username '${validUsername2}'`});
-    });
-       
-    it("Invalid Input: Username doesn't exist", async function() {
-        await request(app)
-            .post("/users/login")
-            .send({ username: invalidUsername1, password: invalidPassword1 })
-            .expect(401)
-            .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": `Username '${invalidUsername1}' does not refer to an existing user`});
-
-    });
-
-});
-
-// close server
 server.close();

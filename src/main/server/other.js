@@ -1,3 +1,6 @@
+// For all functions related to setting and getting data.
+// Future implementations using SQL can be directly modified in this file without affecting the original implementation.
+
 const fs = require("fs"),
 
     JSON_INVOICE_PATH = "src/main/server/TEMP_invoiceStorage.json",
@@ -74,7 +77,7 @@ function clear() {
     };
 }
 
-// Suppressing lint error
+// Foo function to suppressing lint errors regarding no unused variables
 function foo(param) {
     return param;
 }

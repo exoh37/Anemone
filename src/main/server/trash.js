@@ -28,7 +28,7 @@ function listTrashItems(token) {
             }
         };
     }
-    
+
     invoices = invoices.map(obj => {
         // Remove owner from the array
         const { owner, ...rest } = obj;
@@ -45,7 +45,7 @@ function listTrashItems(token) {
     };
 }
 
-function deleteTrash(invoiceId, token) { 
+function deleteTrash(invoiceId, token) {
     const tokenValidation = auth.tokenIsValid(token);
     if (!tokenValidation.valid) {
         return {
@@ -60,7 +60,7 @@ function deleteTrash(invoiceId, token) {
     const jsonData = other.getTrashData();
     const invoiceIndex = jsonData.findIndex(invoice => invoice.invoiceId === parseInt(invoiceId));
     const invoice = jsonData[invoiceIndex];
-    
+
     if (invoice === undefined) {
         return {
             code: 400,
@@ -80,8 +80,9 @@ function deleteTrash(invoiceId, token) {
     }
 
     jsonData.splice(invoiceIndex, 1);
-    
+
     other.setTrashData(jsonData);
+
     return {
         code: 200,
         ret: {
@@ -114,8 +115,7 @@ function restoreTrash (invoiceId, token) {
                 error: `invoiceId '${invoiceId}' does not refer to an existing invoice`
             }
         };
-    }
-    else if (trashInvoice.owner !== tokenValidation.username) {
+    } else if (trashInvoice.owner !== tokenValidation.username) {
         return {
             code: 403,
             ret: {

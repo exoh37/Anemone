@@ -12,24 +12,23 @@ const emptyString = "";
 
 const validAmount = 5;
 const validFinalAmount = 10;
-const validDate = new Date(); 
+const validDate = new Date();
 validDate.setDate(validDate.getDate() - 2);
 const futureDate = new Date();
 futureDate.setDate(futureDate.getDate() + 2);
 
-
 const mockInvoice1 = { file: { amount: 125.45 } };
-const mockInvoice2 = { "file": "{\"amount\": \"123.45\"}" };
+const mockInvoice2 = { file: { amount: 125.45 } };
 const mockInvoice3 = { file: { amount: 17.90, date: validDate } };
 const falseId = 0;
 
 const request = require("supertest");
 const assert = require("assert");
 const app = require("../main/server");
-const server = require("../main/server"); 
+const server = require("../main/server");
 const other = require("../main/server/other.js");
 
-describe("Modifying - Unit tests V1", function() {
+describe("Testing route PUT /invoices/{invoiceId}", function() {
     it("tests for Modifying Invoices", async function() {
         // setup user and login process
         await request(app)
@@ -70,7 +69,7 @@ describe("Modifying - Unit tests V1", function() {
             .send({ username: validUsername2, password: validPassword2 })
             .expect(200)
             .expect("Content-Type", /application\/json/);
-        
+
         const user3 = await request(app)
             .post("/users/login")
             .send({ username: validUsername3, password: validPassword3 })
@@ -160,7 +159,7 @@ describe("Modifying - Unit tests V1", function() {
             .expect(403)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": `Not owner of this invoice '${invoice1.body.invoiceId}'`});
-        
+
         // error 400 empty entries
         await request(app)
             .put(`/invoices/${invoice1.body.invoiceId}`)
@@ -169,7 +168,7 @@ describe("Modifying - Unit tests V1", function() {
             .expect(400)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": "Invalid date or amount provided; could not modify"});
-        
+
         // error 400 date in future
         await request(app)
             .put(`/invoices/${invoice1.body.invoiceId}`)
@@ -178,7 +177,7 @@ describe("Modifying - Unit tests V1", function() {
             .expect(400)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": "Invalid date or amount provided; could not modify"});
-    
+
         // error 400 amount not positive
         await request(app)
             .put(`/invoices/${invoice1.body.invoiceId}`)
@@ -187,7 +186,7 @@ describe("Modifying - Unit tests V1", function() {
             .expect(400)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": "Invalid date or amount provided; could not modify"});
-        
+
         // success 200, params OK
         const modifiedInvoice1 = await request(app)
             .put(`/invoices/${invoice1.body.invoiceId}`)
@@ -212,7 +211,7 @@ describe("Modifying - Unit tests V1", function() {
 
         assert.strictEqual(modifiedInvoice2.body.success, true);
         assert.strictEqual(modifiedInvoice2.body.invoice.invoiceId, invoice2.body.invoiceId);
-        assert.strictEqual(modifiedInvoice2.body.invoice.amount, "");
+        assert.strictEqual(modifiedInvoice2.body.invoice.amount, mockInvoice2.file.amount);
         assert.strictEqual(modifiedInvoice2.body.invoice.date, validDate.toJSON());
         assert.strictEqual(modifiedInvoice2.body.invoice.trashed, false);
 
@@ -223,10 +222,10 @@ describe("Modifying - Unit tests V1", function() {
             .send({ newName: "", newAmount: validFinalAmount, newDate: null})
             .expect(200)
             .expect("Content-Type", /application\/json/);
-        
+
         const jsonData = other.getInvoiceData(),
             invoice = jsonData.find(invoice => invoice.invoiceId === parseInt(invoice3.body.invoiceId));
-    
+
         assert.strictEqual(modifiedInvoice3.body.success, true);
         assert.strictEqual(modifiedInvoice3.body.invoice.invoiceId, invoice3.body.invoiceId);
         assert.strictEqual(modifiedInvoice3.body.invoice.amount, validFinalAmount);

@@ -3,7 +3,7 @@ const validator = require("validator");
 const other = require("./other.js");
 const auth = require("./auth.js");
 
-function registerUser(username, email, password) {    
+function registerUser(username, email, password) {
     // If username contains empty space
     if (/\s/.test(username)) {
         return {
@@ -25,7 +25,7 @@ function registerUser(username, email, password) {
             code: 400,
             ret: {
                 success: false,
-                error: "Password does not satisfy minimum requirements (1 lowercase letter, 1 uppercase letter, 1 special character and 1 number)"
+                error: "Password does not satisfy minimum requirements (at least 8 characters long, 1 lowercase letter, 1 uppercase letter, 1 special character and 1 number)"
             }
         };
     }
@@ -94,9 +94,8 @@ function registerUser(username, email, password) {
 }
 
 function loginUser (username, password) {
-    const jsonData = other.getUserData(),
-
-        user = jsonData.find(user => user.username === username);
+    const jsonData = other.getUserData();
+    const user = jsonData.find(user => user.username === username);
 
     if (user === undefined) {
         return {

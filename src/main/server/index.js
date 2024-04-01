@@ -1,15 +1,15 @@
 // Import required modules
 const express = require("express");
 const bodyParser = require("body-parser");
-const path = require("path"); 
+const path = require("path");
 
 const users = require("./users.js");
 const invoices = require("./invoices.js");
 const trash = require("./trash.js");
-const other = require("./other.js"),
+const other = require("./other.js");
 
-    // Create an Express application
-    app = express();
+// Create an Express application
+const app = express();
 
 // Middleware ( AI-Generated )
 app.use(bodyParser.json());
@@ -33,7 +33,6 @@ app.get("/users", (req, res) => {
     const filePath = path.join(__dirname, "../../../Front_end/Register.html");
     res.sendFile(filePath);
 });
-
 
 // Register a user
 app.post("/users", (req, res) => {
@@ -107,7 +106,7 @@ app.delete("/trash/:invoiceId", (req, res) => {
     const token = req.headers.token;
     const response = trash.deleteTrash(invoiceId, token);
     return res.status(response.code).json(response.ret);
-    
+
 });
 
 // Restore from trash
@@ -124,12 +123,14 @@ app.delete("/clear", (req, res) => {
     return res.status(response.code).json(response.ret);
 });
 
-// Start the Express server and listen on port 3000
+/*
+ * Add more endpoints here
+ */
 
+// Start the Express server and listen on port 3000
 const PORT = process.env.PORT || 3103,
     server = app.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);
     });
 
 module.exports = server;
-// Module.exports = PORT;
