@@ -2,6 +2,7 @@ const validUsername1 = "validUsername1";
 const validEmail1 = "test123@gmail.com";
 const validPassword1 = "ThisIsSecure!123";
 const mockInvoice1 = { file: { amount: 123.45 } };
+const mockInvoice2 = { file: { amount: 543.21 } };
 
 const request = require("supertest");
 const assert = require("assert");
@@ -47,7 +48,7 @@ describe("Invoice List", function() {
             .send({ invoice: mockInvoice1 })
             .expect(200);
 
-        const invoicelist = await request(app)
+        let invoicelist = await request(app)
             .get("/invoices")
             .set("token", user.body.token)
             .expect(200);
@@ -57,6 +58,23 @@ describe("Invoice List", function() {
         assert.strictEqual(invoicelist.body.invoices[0].invoiceName, "PLACEHOLDER_NAME");
         assert.strictEqual(invoicelist.body.invoices[0].amount, mockInvoice1.file.amount);
         assert.strictEqual(invoicelist.body.invoices[0].trashed, false);
+
+        const invoice2 = await request(app)
+            .post("/invoices")
+            .set("token", user.body.token)
+            .send({ invoice: mockInvoice2 })
+            .expect(200);
+
+        invoicelist = await request(app)
+            .get("/invoices")
+            .set("token", user.body.token)
+            .expect(200);
+
+        assert.strictEqual(invoicelist.body.success, true);
+        assert.strictEqual(invoicelist.body.invoices[1].invoiceId, invoice2.body.invoiceId);
+        assert.strictEqual(invoicelist.body.invoices[1].invoiceName, "PLACEHOLDER_NAME");
+        assert.strictEqual(invoicelist.body.invoices[1].amount, mockInvoice2.file.amount);
+        assert.strictEqual(invoicelist.body.invoices[1].trashed, false);
     });
 
     it("Invalid Input: Invalid token", async function() {
