@@ -127,14 +127,12 @@ describe("Restore from trash unit tests", function() {
 
         
         const restoreResponse = await request(app)
-            .post(`/invoices/trash/${invoice1.body.invoiceId}/restore`)
+            .post(`/trash/${invoice1.body.invoiceId}/restore`)
             .set("token", user1.body.token)
             .expect(200)
             .expect("Content-Type", /application\/json/);
 
         assert.strictEqual(restoreResponse.body.success, true);
-
-
     });
 
     it("failed test invalid token", async function() {
@@ -157,7 +155,7 @@ describe("Restore from trash unit tests", function() {
 
         // Invalid token
         await request(app)
-            .post(`/invoices/trash/${invoice1.body.invoiceId}/restore`)
+            .post(`/trash/${invoice1.body.invoiceId}/restore`)
             .set("token", falseId)
             .expect(401)
             .expect("Content-Type", /application\/json/)
@@ -165,7 +163,7 @@ describe("Restore from trash unit tests", function() {
 
         // Empty token
         await request(app)
-            .post(`/invoices/trash/${invoice1.body.invoiceId}/restore`)
+            .post(`/trash/${invoice1.body.invoiceId}/restore`)
             .set("token", "")
             .expect(401)
             .expect("Content-Type", /application\/json/)
@@ -212,7 +210,7 @@ describe("Restore from trash unit tests", function() {
 
         // Invalid owner
         await request(app)
-            .post(`/invoices/trash/${invoice1.body.invoiceId}/restore`)
+            .post(`/trash/${invoice1.body.invoiceId}/restore`)
             .set("token", user2.body.token)
             .expect(403)
             .expect("Content-Type", /application\/json/)

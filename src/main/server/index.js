@@ -103,17 +103,18 @@ app.get("/trash", (req, res) => {
 
 // Delete from trash
 app.delete("/invoices/trash/:invoiceId", (req, res) => {
-    const { invoiceId } = req.params,
-        {token} = req.headers,
-        response = trash.deleteTrash(invoiceId, token);
+    const { invoiceId } = req.params;
+    const token = req.headers.token;
+    const response = trash.deleteTrash(invoiceId, token);
     return res.status(response.code).json(response.ret);
     
 });
 
-app.post("/invoices/trash/:invoiceId/restore", (req, res) => {
-    const { invoiceId } = req.params,
-        { token } = req.headers,
-        response = trash.restoreTrash(invoiceId, token);
+// Restore from trash
+app.post("/trash/:invoiceId/restore", (req, res) => {
+    const { invoiceId } = req.params;
+    const token = req.headers.token;
+    const response = trash.restoreTrash(invoiceId, token);
     return res.status(response.code).json(response.ret);
 });
 
