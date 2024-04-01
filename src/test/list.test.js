@@ -71,6 +71,10 @@ describe("Invoice List", function() {
             .expect(200);
 
         assert.strictEqual(invoicelist.body.success, true);
+        assert.strictEqual(invoicelist.body.invoices[0].invoiceId, invoice1.body.invoiceId);
+        assert.strictEqual(invoicelist.body.invoices[0].invoiceName, "PLACEHOLDER_NAME");
+        assert.strictEqual(invoicelist.body.invoices[0].amount, mockInvoice1.file.amount);
+        assert.strictEqual(invoicelist.body.invoices[0].trashed, false);
         assert.strictEqual(invoicelist.body.invoices[1].invoiceId, invoice2.body.invoiceId);
         assert.strictEqual(invoicelist.body.invoices[1].invoiceName, "PLACEHOLDER_NAME");
         assert.strictEqual(invoicelist.body.invoices[1].amount, mockInvoice2.file.amount);
