@@ -104,6 +104,42 @@ function retrieveFile(invoiceId, token) {
     
 }
 
+function fileList(token) {
+    const tokenValidation = auth.tokenIsValid(token);
+    if (!tokenValidation.valid) {
+        return {
+            code: 401,
+            ret: {
+                success: false,
+                error: "Token is empty or invalid"
+            }
+        };
+    }
+
+    const invoicesList = [];
+
+    const jsonData = other.getInvoiceData();
+    for (const invoice of jsonData) {
+        if (invoice.owner === tokenValidation.username) {
+            invoicesList.push({
+                invoiceId: invoice.invoiceId,
+                invoiceName: invoice.invoiceName,
+                amount: invoice.amount,
+                date: invoice.data,
+                trashed: invoice.trashed
+            });
+        }
+    }
+    
+    return {
+        code: 200,
+        ret: {
+            success: true,
+            invoices: invoicesList
+        }
+    };
+}
+
 function moveInvoiceToTrash(invoiceId, token) {
     const tokenValidation = auth.tokenIsValid(token);
     if (!tokenValidation.valid) {
@@ -256,4 +292,4 @@ function AreValidEntries(newAmount, newDate) {
 }
 
 
-module.exports = { uploadFile, retrieveFile, moveInvoiceToTrash, modifyFile };
+module.exports = { uploadFile, retrieveFile, moveInvoiceToTrash, modifyFile, fileList };
