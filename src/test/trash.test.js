@@ -85,7 +85,7 @@ describe("moveToTrash system tests", function() {
 
         // unsucessful move to trash as invoiceId is incorrect
         await request(app)
-            .get(`/invoices/${falseId}`)
+            .delete(`/invoices/${falseId}`)
             .set("token", user1.body.token)
             .expect(400)
             .expect("Content-Type", /application\/json/)
@@ -93,7 +93,7 @@ describe("moveToTrash system tests", function() {
 
         // unsuccessful retrieve as no such Token
         await request(app)
-            .get(`/invoices/${invoice1.body.invoiceId}`)
+            .delete(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", falseId)
             .expect(401)
             .expect("Content-Type", /application\/json/)
@@ -109,7 +109,7 @@ describe("moveToTrash system tests", function() {
         assert.strictEqual(moveToTrashResult.body.success, true);
         // move invoice to trash successfully
         await request(app)
-            .get(`/invoices/${invoice1.body.invoiceId}`)
+            .delete(`/invoices/${invoice1.body.invoiceId}`)
             .set("token", user1.body.token)
             .expect(400)
             .expect("Content-Type", /application\/json/)

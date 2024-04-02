@@ -11,42 +11,23 @@
     <h1>Anemone File storage</h1>
 
     <form id="form" onsubmit="return false;">
-        <input type="text" id="user" />
-        <input type="submit" value="Upload" onclick="addItem();" />
+        <input type='file' id="fileInput" />
+        <input type="submit" value="Upload" id="uploadButton" onclick="addItem();" />
     </form>
+
+    <div class="progress-bar" id="pass-bar">
+        <div class="label" data-count="100">0%</div>
+        <div class="line"style="width:500px">
+          <span></span>
+        </div>
+      </div>
+      
     
     <div id="list-container">
         <input type="text" id="search" placeholder="Search..." />
-        <button id="retrieveButton">Retrieve</button>
+        <button id="retrieveButton" onclick="searchItem()">Retrieve</button>
         <ul id="list"></ul>
     </div>
 
-    <script> 
-        const retrieveButton = document.getElementById('retrieveButton');
-
-        retrieveButton.addEventListener('click', retrieveInvoice);
-
-        // Partially AI generated
-        function retrieveInvoice() {
-            // Get the invoiceId from the input field
-            const invoiceId = document.getElementById('search').value.trim();
-
-            fetch(`/invoices/${invoiceId}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Invoice not found');
-                    }
-                    return response.json();
-                })
-                .then(invoice => {
-                    const listContainer = document.getElementById('list');
-                    listContainer.innerHTML = `<li>Invoice ID: ${invoice.invoiceId}, Amount: ${invoice.amount}</li>`;
-                })
-                .catch(error => {
-                    const listContainer = document.getElementById('list');
-                    listContainer.innerHTML = `<li>${error.message}</li>`;
-                });
-        }
-    </script>
 </body>
 </html>

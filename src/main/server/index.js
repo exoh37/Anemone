@@ -70,11 +70,27 @@ app.get("/invoices/:invoiceId", (req, res) => {
     return res.status(response.code).json(response.ret);
 });
 
+// Invoice list
+app.get("/invoices", (req, res) => {
+    const token = req.headers.token;
+    const response = invoices.fileList(token);
+    return res.status(response.code).json(response.ret);
+});
+
 // Move Invoice to trash
 app.delete("/invoices/:invoiceId", (req, res) => {
     const { invoiceId } = req.params;
     const token = req.headers.token;
     const response = invoices.moveInvoiceToTrash(invoiceId, token);
+    return res.status(response.code).json(response.ret);
+});
+
+// Modify invoice
+app.put("/invoices/:invoiceId", (req, res) => {
+    const { invoiceId } = req.params;
+    const { newName, newAmount, newDate } = req.body;
+    const token = req.headers.token;
+    const response = invoices.modifyFile(invoiceId, token, newName, newAmount, newDate);
     return res.status(response.code).json(response.ret);
 });
 
@@ -86,13 +102,20 @@ app.get("/trash", (req, res) => {
 });
 
 // Delete from trash
-app.delete("/invoices/trash/:invoiceId", (req, res) => {
-    const { invoiceId } = req.params,
-        {token} = req.headers,
-        response = trash.deleteTrash(invoiceId, token);
-    console.log(response);
+app.delete("/trash/:invoiceId", (req, res) => {
+    const { invoiceId } = req.params;
+    const token = req.headers.token;
+    const response = trash.deleteTrash(invoiceId, token);
     return res.status(response.code).json(response.ret);
     
+});
+
+// Restore from trash
+app.post("/trash/:invoiceId/restore", (req, res) => {
+    const { invoiceId } = req.params;
+    const token = req.headers.token;
+    const response = trash.restoreTrash(invoiceId, token);
+    return res.status(response.code).json(response.ret);
 });
 
 // Clear function for testing purposes

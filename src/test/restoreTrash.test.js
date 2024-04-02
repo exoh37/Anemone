@@ -27,15 +27,17 @@ const server = require("../main/server");
 //4. invoiceid already in trash, not trashed
 //5. valid token but invalid invoiceid (user is not owner of the invoice), not trashed
 
-describe("DeleteFromTrash unit tests", function() {
-    it("Test for deleteing from trash successfully", async function() {
-        
+describe("Restore from trash unit tests", function() {
+    beforeEach(async function() {
+        // Clear data before running any tests
         await request(app)
             .delete("/clear")
             .expect(200)
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
+    });
 
+    it("Test for restoring from trash successfully", async function() {
         // user registered
         await request(app)
             .post("/users")
@@ -122,34 +124,101 @@ describe("DeleteFromTrash unit tests", function() {
             .set("token", user3.body.token)
             .expect(200)
             .expect("Content-Type", /application\/json/);
+
         
-
-        // InvoiceId is incorrect
-        await request(app)
-            .delete(`/trash/${falseId}`)
+        const restoreResponse = await request(app)
+            .post(`/trash/${invoice1.body.invoiceId}/restore`)
             .set("token", user1.body.token)
-            .expect(400)
-            .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": `invoiceId '${falseId}' does not refer to an existing invoice`});
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
 
-        // unsuccessful retrieve as no such Token
+        assert.strictEqual(restoreResponse.body.success, true);
+    });
+
+    it("failed test invalid token", async function() {
         await request(app)
-            .delete(`/trash/${falseId}`)
+            .post("/users")
+            .send({ username: validUsername1, email: validEmail1, password: validPassword1 });
+
+        const user1 = await request(app)
+            .post("/users/login")
+            .send({ username: validUsername1, password: validPassword1 });
+
+        const invoice1 = await request(app)
+            .post("/invoices")
+            .set("token", user1.body.token)
+            .send({ invoice: mockInvoice1 });
+
+        await request(app)
+            .delete(`/invoices/${invoice1.body.invoiceId}`)
+            .set("token", user1.body.token);
+
+        // Invalid token
+        await request(app)
+            .post(`/trash/${invoice1.body.invoiceId}/restore`)
             .set("token", falseId)
             .expect(401)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": "Token is empty or invalid"});
 
-        // Delete invoice to trash
-        const Deleteresult = await request(app)
-            .delete(`/trash/${invoice1.body.invoiceId}`)
-            .set("token", user1.body.token)
-            .expect(200)
-            .expect("Content-Type", /application\/json/);
+        // Empty token
+        await request(app)
+            .post(`/trash/${invoice1.body.invoiceId}/restore`)
+            .set("token", "")
+            .expect(401)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": "Token is empty or invalid"});
+    });
 
-        assert.strictEqual(Deleteresult.body.success, true);
+    it("failed test Wrong owner", async function() {
+        await request(app)
+            .post("/users")
+            .send({ username: validUsername1, email: validEmail1, password: validPassword1 });
+
+        await request(app)
+            .post("/users")
+            .send({ username: validUsername2, email: validEmail2, password: validPassword2 });
+
+        const user1 = await request(app)
+            .post("/users/login")
+            .send({ username: validUsername1, password: validPassword1 });
+
+        const user2 = await request(app)
+            .post("/users/login")
+            .send({ username: validUsername2, password: validPassword2 });
+
+        const invoice1 = await request(app)
+            .post("/invoices")
+            .set("token", user1.body.token)
+            .send({ invoice: mockInvoice1 });
+
+        
+        const invoice2 = await request(app)
+            .post("/invoices")
+            .set("token", user2.body.token)
+            .send({ invoice: mockInvoice1 });
+
+        await request(app)
+            .delete(`/invoices/${invoice1.body.invoiceId}`)
+            .set("token", user1.body.token);
+
+        
+        await request(app)
+            .delete(`/invoices/${invoice2.body.invoiceId}`)
+            .set("token", user2.body.token);
+
+
+        // Invalid owner
+        await request(app)
+            .post(`/trash/${invoice1.body.invoiceId}/restore`)
+            .set("token", user2.body.token)
+            .expect(403)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error" : `Not owner of this invoice '${invoice1.body.invoiceId}'`});
 
     });
+
+
 });
 
 server.close();

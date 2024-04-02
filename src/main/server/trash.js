@@ -45,8 +45,6 @@ function listTrashItems(token) {
     };
 }
 
-
-
 function deleteTrash(invoiceId, token) { 
     const tokenValidation = auth.tokenIsValid(token);
     if (!tokenValidation.valid) {
@@ -92,5 +90,55 @@ function deleteTrash(invoiceId, token) {
     };
 }
 
+function restoreTrash (invoiceId, token) {
+    const tokenValidation = auth.tokenIsValid(token);
+    if (!tokenValidation.valid) {
+        return {
+            code: 401,
+            ret: {
+                success: false,
+                error: "Token is empty or invalid"
+            }
+        };
+    }
 
-module.exports = { listTrashItems, deleteTrash };
+    const trashData = other.getTrashData();
+    const trashIndex = trashData.findIndex(invoice => invoice.invoiceId === parseInt(invoiceId));
+    const trashInvoice = trashData[trashIndex];
+
+    if (trashInvoice === undefined) {
+        return {
+            code: 400,
+            ret: {
+                success: false,
+                error: `invoiceId '${invoiceId}' does not refer to an existing invoice`
+            }
+        };
+    }
+    else if (trashInvoice.owner !== tokenValidation.username) {
+        return {
+            code: 403,
+            ret: {
+                success: false,
+                error: `Not owner of this invoice '${invoiceId}'`
+            }
+        };
+    }
+
+    const jsonData = other.getInvoiceData();
+    trashInvoice.trashed = false;
+    jsonData.push(trashInvoice);
+    trashData.splice(trashIndex, 1);
+
+    other.setTrashData(trashData);
+    other.setInvoiceData(jsonData);
+
+    return {
+        code: 200,
+        ret: {
+            success: true
+        }
+    };
+}
+
+module.exports = { listTrashItems, deleteTrash, restoreTrash };
