@@ -8,9 +8,18 @@
     <script src="main_script.js"></script>
 </head>
 <body>
+    <div class="dropdown">
+        <button class="dropbtn">Languages</button>
+        <div class="dropdown-content">
+                <a href="main.html">English</a>
+                <a href="main_cn.html">中国人</a>
+                <a href="main_a.html">عربي</a>  
+        </div>
+    </div>
     <h1>Anemone ファイルストレージ</h1>
 
     <form id="form" onsubmit="return false;">
+        <label for="fileInput" class="btn">ファイル選択</label>
         <input type='file' id="fileInput" />
         <input type="submit" value="アップロード" id="uploadButton" onclick="addItem();" />
     </form>

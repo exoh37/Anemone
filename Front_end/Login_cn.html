@@ -8,26 +8,34 @@
                 <link rel="stylesheet" href="Login_style.css" />
         </head>
         <body>
+        <div class="dropdown">
+                <button class="dropbtn">Languages</button>
+                <div class="dropdown-content">
+                        <a href="Login_jap.html">日本語</a>
+                        <a href="Login.html">English</a>
+                        <a href="Login_a.html">عربي</a>  
+                </div>
+        </div>
         <h1 class="glow">Anemone</h1>
 
         <div class="wrapper">
                 <div class="form-wrapper sign-in">
                         <form action="">
-                                <h2>Login</h2>
+                                <h2>登入帐号</h2>
                                 <div class="input-group">
                                         <input type="text" required>
-                                        <label for="">Username</label>
+                                        <label for="">用户名</label>
                                 </div>
                                 <div class="input-group">
                                         <input type="password" required>
-                                        <label for="">Password</label>
+                                        <label for="">密码</label>
                                 </div>
                                 <div class="remember">
-                                        <label><input type="checkbox"> Remember me</label>
+                                        <label><input type="checkbox">记住帐号</label>
                                 </div>
-                                <button type="submit" onclick="window.location.href='main.html'">Login</button>
+                                <button type="submit" onclick="window.location.href='main_cn.html'">登入帐号</button>
                                 <div class="signUp-link">
-                                        <p>Don't have an account? <a href="Register.html" class="signUpBtn-link">Sign Up</a></p>
+                                        <p>没有帐号? <a href="Register.html" class="signUpBtn-link">登记帐号</a></p>
                                 </div>
                         </form>
                 </div>
