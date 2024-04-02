@@ -1,9 +1,9 @@
 const request = require("supertest");
 const app = require("../main/server");
-const server = require("../main/server"); 
+const server = require("../main/server");
 
 // Sample test using supertest and mocha
-describe("Testing route: /clear", function() {
+describe("Testing route DELETE /clear", function() {
     it("Valid return status and return body", function(done) {
         request(app)
             // Route

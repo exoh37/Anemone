@@ -1,6 +1,7 @@
-const other = require("./other.js"),
+const other = require("./other.js");
 
-    ONE_DAY_MS = 24 * 60 * 60 * 1000;
+// Constants
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 // Generate a unique token wtih expiration time and adds it to the valid tokens list
 function generateToken(username) {
@@ -10,7 +11,7 @@ function generateToken(username) {
         // Generates a base-36 string and then extracts 16 digits
         tokenString = Math.random().toString(36).substring(2,17),
         tokenId = `${timestamp}_${tokenString}`,
-    
+
         jsonData = other.getTokenData();
 
     jsonData.push({
@@ -29,15 +30,8 @@ function tokenIsValid(tokenId) {
     const jsonData = other.getTokenData(),
         token = jsonData.find(token => token.tokenId === tokenId);
 
-    // Could not find token
-    if (token === undefined) {
-        return {
-            valid: false
-        };
-    }
-
-    // Token has expired
-    if (token.expiration < Date.now()) {
+    // Could not find token or token has expired
+    if (token === undefined || token.expiration < Date.now()) {
         return {
             valid: false
         };

@@ -8,11 +8,11 @@ const validUsername1 = "validUsername1",
 const request = require("supertest");
 const assert = require("assert");
 const app = require("../main/server");
-const server = require("../main/server"), 
+const server = require("../main/server"),
 
     invalid_token = 0;
 
-describe("Retrieve system tests V2", function() {
+describe("Testing route POST /invoices", function() {
     it("tests for Retrieving Invoices", async function() {
         // Setup user and login process
         await request(app)
@@ -27,7 +27,6 @@ describe("Retrieve system tests V2", function() {
             .expect(200)
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
-        
 
         const user1 = await request(app)
             .post("/users/login")
@@ -45,8 +44,7 @@ describe("Retrieve system tests V2", function() {
             .set("token", invalid_token)
             .expect(401)
             .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": "Token is empty or invalid"});        
-        
+            .expect({"success": false, "error": "Token is empty or invalid"});
 
         // Successful upload
         const invoice1 = await request(app)
@@ -57,9 +55,6 @@ describe("Retrieve system tests V2", function() {
 
         assert.strictEqual(invoice1.body.success, true);
         assert.strictEqual(typeof invoice1.body.invoiceId, "number");
-
-
-
 
     });
 });

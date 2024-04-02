@@ -8,7 +8,7 @@ const request = require("supertest");
 const assert = require("assert");
 const app = require("../main/server");
 
-describe("Invoice List", function() {
+describe("Testing route GET /invoices", function() {
     let user;
 
     beforeEach(async function() {
@@ -36,7 +36,7 @@ describe("Invoice List", function() {
             .set("token", user.body.token)
             .expect(200)
             .expect({
-                success:true, 
+                success:true,
                 invoices: []
             });
     });
@@ -87,7 +87,7 @@ describe("Invoice List", function() {
             .set("token", user.body.token + "1")
             .expect(401)
             .expect({
-                success:false, 
+                success:false,
                 "error": "Token is empty or invalid"
             });
     });
@@ -98,7 +98,7 @@ describe("Invoice List", function() {
             .set("token", "")
             .expect(401)
             .expect({
-                success:false, 
+                success:false,
                 "error": "Token is empty or invalid"
             });
     });
