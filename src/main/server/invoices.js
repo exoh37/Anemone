@@ -207,7 +207,7 @@ function modifyFile(invoiceId, token, newName, newAmount, newDate) {
                 error: `Not owner of this invoice '${invoiceId}'`
             }
         };
-    } else if (!AreValidEntries(newAmount, newDate)) {
+    } else if (!AreValidEntries(newName, newAmount, newDate)) {
         return {
             code: 400,
             ret: {
@@ -242,23 +242,47 @@ function modifyFile(invoiceId, token, newName, newAmount, newDate) {
     };
 }
 
-function AreValidEntries(newAmount, newDate) {
-    if ((newAmount === null && newDate === null) || ((newAmount.toString().trim().length === 0 && newDate.toString().trim().length === 0))) {
+function isEmptyOrNull(entry) {
+    return entry === undefined || entry === null || entry.toString().trim().length === 0
+}
+
+function AreValidEntries(newName, newAmount, newDate) {
+    if (isEmptyOrNull(newAmount) && isEmptyOrNull(newDate) && isEmptyOrNull(newName)) {
         return false;
     }
 
-    if (newAmount !== null && newAmount.toString().trim().length !== 0) {
-        if (newDate !== null && newDate.toString().trim().length !== 0) {
+    // cases to handle
+    /**
+     * !emptynewAmount !emptynewDate !emptyName - added stub
+     * !emptynewAmount !emptynewDate emptyName - added stub
+     * !emptynewAmount emptynewDate emptyName - added stub - need to modify logic
+     * !emptynewAmount emptynewDate !emptyName - added stub
+     * emptynewAmount !emptynewDate !emptyname - added stub
+     * emptynewAmount !emptynewDate emptyName
+     * emptynewAmount emptynewDate !emptyName
+     */
+
+    if (!isEmptyOrNull(newAmount)) {
+        if (!isEmptyOrNull(newDate) && isEmptyOrNull(newName)) {
             if (parseInt(newAmount) > 0 && (new Date(newDate)) <= Date.now()) {
                 return true;
             }
+        } else if (!isEmptyOrNull(newDate) && !isEmptyOrNull(newName)) {
+            return true; // STUB
+        } else if (isEmptyOrNull(newDate) && !isEmptyOrNull(newName)) {
+            return true; // STUB
         } else {
             if (parseInt(newAmount) > 0) {
                 return true;
             }
         }
-    } else if ((new Date(newDate)) <= Date.now()) {
-        return true;
+    // from here onwaards, Handle logic when empty amount
+    } else if (!isEmptyOrNull(newDate)) {
+        if (!isEmptyOrNull(newDate) && !isEmptyOrNull(newName)) {
+            return true; // STUB
+        } else if ((new Date(newDate)) <= Date.now()) {
+            return true;
+        } 
     }
 
     return false;
