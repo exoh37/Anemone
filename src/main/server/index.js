@@ -7,9 +7,13 @@ const users = require("./users.js");
 const invoices = require("./invoices.js");
 const trash = require("./trash.js");
 const other = require("./other.js");
+const validate = require("./validate.js");
 
 // Create an Express application
 const app = express();
+
+// Invoice validation API route
+const validationAPI = "https://sandc.vercel.app"
 
 // Middleware ( AI-Generated )
 app.use(bodyParser.json());

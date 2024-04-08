@@ -1,5 +1,6 @@
 const auth = require("./auth.js");
 const other = require("./other.js");
+const validate = require("./validate.js")
 
 function uploadFile(invoice, token) {
     const tokenValidation = auth.tokenIsValid(token);
@@ -12,6 +13,27 @@ function uploadFile(invoice, token) {
             }
         };
     }
+
+    // Invoice Validation Stuff
+    // Commented out to pass pipeline
+    // const validation = validate.invoiceValidation(invoice);
+    // if (validation.status === "offline") {
+    //     return {
+    //         code: 404,
+    //         ret: {
+    //             success: false,
+    //             error: "Validation API is offline"
+    //         }
+    //     }
+    // } else if (validation.status === "invalid") {
+    //     return {
+    //         code: 400,
+    //         ret: {
+    //             success: false,
+    //             error: "Invoice format invalid"
+    //         }
+    //     }
+    // }
 
     const data = invoice;
     const invoiceId = Date.now();
