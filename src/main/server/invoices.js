@@ -1,5 +1,6 @@
 const auth = require("./auth.js");
 const other = require("./other.js");
+const pool = require("./database.js");
 
 function uploadFile(invoice, token) {
     const tokenValidation = auth.tokenIsValid(token);
@@ -264,4 +265,111 @@ function AreValidEntries(newAmount, newDate) {
     return false;
 }
 
-module.exports = { uploadFile, retrieveFile, moveInvoiceToTrash, modifyFile, fileList };
+async function uploadFileV2(invoice, token) {
+    const client = await pool.connect();
+    try {
+        const tokenValidation = await auth.tokenIsValidV2(token);
+        if (!tokenValidation.valid) {
+            return {
+                code: 401,
+                ret: {
+                    success: false,
+                    error: "Token is empty or invalid"
+                }
+            };
+        }
+
+        const invoiceId = Date.now();
+
+        await pool.query(`
+        INSERT INTO invoices (invoiceId, invoice)
+        VALUES ($1, $2)
+        `, [invoiceId, invoice]);
+
+        return {
+            code: 200,
+            ret: {
+                success: true,
+                invoiceId
+            }
+        };
+    } catch (error) {
+        console.error("Failed to upload file:", error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function retrieveFileV2(invoiceId, token) {
+    const client = await pool.connect();
+    try {
+        const tokenValidation = await auth.tokenIsValidV2(token);
+        if (!tokenValidation.valid) {
+            return {
+                code: 401,
+                ret: {
+                    success: false,
+                    error: "Token is empty or invalid"
+                }
+            };
+        }
+
+        const invoice = await client.query("SELECT * FROM invoices i WHERE i.invoiceId = $1", [invoiceId]);
+        if (invoice.rows.length === 0) {
+            return {
+                code: 400,
+                ret: {
+                    success: false,
+                    error: `invoiceId '${invoiceId}' does not refer to an existing invoice`
+                }
+            };
+        }
+
+        const invoiceItems = await auth.fetchXMLData(invoiceId);
+        const name = invoiceItems.invoices.invoice[0].invoiceName[0];
+        const amount = invoiceItems.invoices.invoice[0].amount[0];
+        const date = invoiceItems.invoices.invoice[0].date[0];
+        const trash = invoiceItems.invoices.invoice[0].trashed[0];
+        const owner = invoiceItems.invoices.invoice[0].owner[0];
+
+        if (owner !== tokenValidation.username) {
+            return {
+                code: 403,
+                ret: {
+                    success: false,
+                    error: `Not owner of this invoice '${invoiceId}'`
+                }
+            };
+        }
+
+        let trashed;
+        if (trash === "false") {
+            trashed = false;
+        } else {
+            trashed = true;
+        }
+
+        // OK
+        return {
+            code: 200,
+            ret: {
+                success: true,
+                invoice: {
+                    invoiceId: Number(invoice.rows[0].invoiceid),
+                    invoiceName: name,
+                    amount: Number(amount),
+                    date: date,
+                    trashed: trashed
+                }
+            }
+        };
+    } catch (error) {
+        console.error("Failed to retrieve invoice:", error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+module.exports = { uploadFile, retrieveFile, moveInvoiceToTrash, modifyFile, fileList, uploadFileV2, retrieveFileV2 };
