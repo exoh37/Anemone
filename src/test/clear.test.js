@@ -13,7 +13,7 @@ describe("Testing route DELETE /clear", function() {
             // Regex for checking content type to ignore charset
             .expect("Content-Type", /application\/json/)
             // Expected JSON body
-            .expect({"success": true})
+            .expect({"success": true});
     });
 });
 
