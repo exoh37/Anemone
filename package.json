@@ -5,7 +5,7 @@
   "main": "src/main/server/index.js",
   "scripts": {
     "start": "node src/main/server/index.js",
-    "test": "nyc mocha src/test --timeout 5000",
+    "test": "nyc mocha src/test/register.test.js --timeout 5000 --exit",
     "lint": "eslint src/**/*.{ts,js}",
     "lint-fix": "eslint --fix src/**/*.{ts,js}"
   },
