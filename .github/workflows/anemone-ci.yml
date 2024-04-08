@@ -42,12 +42,7 @@ jobs:
       run: chmod -R a+x node_modules
 
     - name: Connect to PostgreSQL
-      run: node src\main\server\client.js
-      env:
-        # The hostname used to communicate with the PostgreSQL service container
-        POSTGRES_HOST: localhost
-        # The default PostgreSQL port
-        POSTGRES_PORT: 5432  
+      run: psql -h localhost -U postgres -d anemone -c 'SELECT 1'
 
     - name: Run tests
       run: npm test
