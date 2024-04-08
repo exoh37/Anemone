@@ -4,10 +4,10 @@
 const fs = require("fs");
 const pool = require("./database.js");
 
-    JSON_INVOICE_PATH = "src/main/server/TEMP_invoiceStorage.json",
-    JSON_USER_PATH = "src/main/server/TEMP_userStorage.json",
-    JSON_TOKENS_PATH = "src/main/server/TEMP_tokenStorage.json",
-    JSON_TRASH_PATH = "src/main/server/TEMP_trashStorage.json";
+const JSON_INVOICE_PATH = "src/main/server/TEMP_invoiceStorage.json";
+const JSON_USER_PATH = "src/main/server/TEMP_userStorage.json";
+const JSON_TOKENS_PATH = "src/main/server/TEMP_tokenStorage.json";
+const JSON_TRASH_PATH = "src/main/server/TEMP_trashStorage.json";
 
 function getInvoiceData() {
     const jsonData = fs.readFileSync(JSON_INVOICE_PATH),
@@ -79,11 +79,12 @@ function clear() {
 }
 
 async function clearV2() {
+    const client = await pool.connect();
     try {
-        await pool.query('delete from tokens')
-        await pool.query('delete from users')
-        await pool.query('delete from invoices')
-        
+        await pool.query("DELETE FROM tokens");
+        await pool.query("DELETE FROM users");
+        await pool.query("DELETE FROM invoices");
+
         return {
             code: 200,
             ret: {
@@ -91,8 +92,10 @@ async function clearV2() {
             }
         };
     } catch (error) {
-        console.error('Error clearing data:', error);
+        console.error("Error clearing data:", error);
         throw error;
+    } finally {
+        client.release();
     }
 }
 
