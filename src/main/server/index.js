@@ -154,10 +154,10 @@ app.post("/invoices2", async (req, res) => {
 });
 
 // Retrieve invoice
-app.get("/invoices2/:invoiceId", (req, res) => {
+app.get("/invoices2/:invoiceId", async (req, res) => {
     const { invoiceId } = req.params,
         {token} = req.headers,
-        response = invoices.retrieveFileV2(invoiceId, token);
+        response = await invoices.retrieveFileV2(invoiceId, token);
     return res.status(response.code).json(response.ret);
 });
 
