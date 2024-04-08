@@ -42,7 +42,7 @@ jobs:
       run: chmod -R a+x node_modules
 
     - name: Connect to PostgreSQL
-      run: psql -h localhost -U postgres -d anemone -c 'SELECT 1'
+      run: psql -h localhost -U postgres -d anemone -c 'SELECT 1' -W <<< 'Anemone123'
 
     - name: Run tests
       run: npm test
