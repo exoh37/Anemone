@@ -42,7 +42,7 @@ jobs:
       run: chmod -R a+x node_modules
 
     - name: Connect to PostgreSQL
-      run: node /src/main/server/client.js
+      run: node src/main/server/client.js
       env:
         # The hostname used to communicate with the PostgreSQL service container
         POSTGRES_HOST: localhost
