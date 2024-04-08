@@ -16,20 +16,20 @@ describe("Testing route POST /invoices", function() {
     it("tests for Retrieving Invoices", async function() {
         // Setup user and login process
         await request(app)
-            .delete("/clear")
+            .delete("/clear2")
             .expect(200)
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
 
         await request(app)
-            .post("/users")
+            .post("/users2")
             .send({ username: validUsername1, email: validEmail1, password: validPassword1 })
             .expect(200)
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
 
         const user1 = await request(app)
-            .post("/users/login")
+            .post("/users/login2")
             .send({ username: validUsername1, password: validPassword1 })
             .expect(200)
             .expect("Content-Type", /application\/json/);
@@ -40,7 +40,7 @@ describe("Testing route POST /invoices", function() {
 
         //Invalid token
         await request(app)
-            .post("/invoices")
+            .post("/invoices2")
             .set("token", invalid_token)
             .expect(401)
             .expect("Content-Type", /application\/json/)
@@ -48,7 +48,7 @@ describe("Testing route POST /invoices", function() {
 
         // Successful upload
         const invoice1 = await request(app)
-            .post("/invoices")
+            .post("/invoices2")
             .set("token", user1.body.token)
             .send({ invoice: mockInvoice1 })
             .expect(200);
