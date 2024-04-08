@@ -1,7 +1,8 @@
 // For all functions related to setting and getting data.
 // Future implementations using SQL can be directly modified in this file without affecting the original implementation.
 
-const fs = require("fs"),
+const fs = require("fs");
+const pool = require("./database.js");
 
     JSON_INVOICE_PATH = "src/main/server/TEMP_invoiceStorage.json",
     JSON_USER_PATH = "src/main/server/TEMP_userStorage.json",
@@ -77,9 +78,27 @@ function clear() {
     };
 }
 
+async function clearV2() {
+    try {
+        await pool.query('delete from tokens')
+        await pool.query('delete from users')
+        await pool.query('delete from invoices')
+        
+        return {
+            code: 200,
+            ret: {
+                success: true
+            }
+        };
+    } catch (error) {
+        console.error('Error clearing data:', error);
+        throw error;
+    }
+}
+
 // Foo function to suppressing lint errors regarding no unused variables
 function foo(param) {
     return param;
 }
 
-module.exports = { getInvoiceData, setInvoiceData, getUserData, setUserData, getTokenData, setTokenData, getTrashData, setTrashData, clear, foo };
+module.exports = { getInvoiceData, setInvoiceData, getUserData, setUserData, getTokenData, setTokenData, getTrashData, setTrashData, clear, clearV2, foo };
