@@ -16,7 +16,7 @@ describe("Testing route POST /users/login", function() {
     beforeEach(async function() {
         // Clear data before running any tests
         await request(app)
-            .delete("/clear")
+            .delete("/clear2")
             .expect(200)
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
@@ -24,14 +24,14 @@ describe("Testing route POST /users/login", function() {
 
     it("Valid Input: Login successfully", async function() {
         await request(app)
-            .post("/users")
+            .post("/users2")
             .send({ username: validUsername1, email: validEmail1, password: validPassword1 })
             .expect(200)
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
 
         const user1 = await request(app)
-            .post("/users/login")
+            .post("/users/login2")
             .send({ username: validUsername1, password: validPassword1 })
             .expect(200)
             .expect("Content-Type", /application\/json/);
@@ -43,28 +43,28 @@ describe("Testing route POST /users/login", function() {
 
     it("Invalid Input: Login unsuccessful as password does not match username", async function() {
         await request(app)
-            .post("/users")
+            .post("/users2")
             .send({ username: validUsername1, email: validEmail1, password: validPassword1 })
             .expect(200)
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
 
         await request(app)
-            .post("/users")
+            .post("/users2")
             .send({ username: validUsername2, email: validEmail2, password: validPassword2 })
             .expect(200)
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
 
         await request(app)
-            .post("/users/login")
+            .post("/users/login2")
             .send({ username: validUsername1, password: validPassword2 })
             .expect(401)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": `Password does not match username '${validUsername1}'`});
 
         await request(app)
-            .post("/users/login")
+            .post("/users/login2")
             .send({ username: validUsername2, password: validPassword1 })
             .expect(401)
             .expect("Content-Type", /application\/json/)
@@ -73,7 +73,7 @@ describe("Testing route POST /users/login", function() {
 
     it("Invalid Input: Username doesn't exist", async function() {
         await request(app)
-            .post("/users/login")
+            .post("/users/login2")
             .send({ username: invalidUsername1, password: invalidPassword1 })
             .expect(401)
             .expect("Content-Type", /application\/json/)
