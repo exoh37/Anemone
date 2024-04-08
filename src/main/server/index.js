@@ -127,6 +127,46 @@ app.delete("/clear", (req, res) => {
  * Add more endpoints here
  */
 
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// ADD SQL ROUTES HERE //////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+// Register a user
+app.post("/users2", async (req, res) => {
+    const { username, email, password } = req.body,
+        response = await users.registerUserV2(username, email, password);
+    return res.status(response.code).json(response.ret);
+});
+
+// Login user
+app.post("/users/login2", async (req, res) => {
+    const { username, password } = req.body,
+        response = await users.loginUserV2(username, password);
+    return res.status(response.code).json(response.ret);
+});
+
+// Upload invoice
+app.post("/invoices2", async (req, res) => {
+    const { invoice } = req.body,
+        {token} = req.headers,
+        response = await invoices.uploadFileV2(invoice, token);
+    return res.status(response.code).json(response.ret);
+});
+
+// Retrieve invoice
+app.get("/invoices/:invoiceId", (req, res) => {
+    const { invoiceId } = req.params,
+        {token} = req.headers,
+        response = invoices.retrieveFileV2(invoiceId, token);
+    return res.status(response.code).json(response.ret);
+});
+
+// Clear function for testing purposes
+app.delete("/clear2", async (req, res) => {
+    const response = await other.clearV2();
+    return res.status(response.code).json(response.ret);
+});
+
 // Start the Express server and listen on port 3000
 const PORT = process.env.PORT || 3103,
     server = app.listen(PORT, () => {
