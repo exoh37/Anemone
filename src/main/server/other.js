@@ -81,9 +81,9 @@ function clear() {
 async function clearV2() {
     const client = await pool.connect();
     try {
-        await pool.query("DELETE FROM tokens");
-        await pool.query("DELETE FROM users");
-        await pool.query("DELETE FROM invoices");
+        await client.query("DELETE FROM tokens");
+        await client.query("DELETE FROM users");
+        await client.query("DELETE FROM invoices");
 
         return {
             code: 200,
