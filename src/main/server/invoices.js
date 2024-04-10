@@ -258,8 +258,8 @@ function AreValidEntries(newName, newAmount, newDate) {
      * !emptynewAmount emptynewDate emptyName - added stub - need to modify logic
      * !emptynewAmount emptynewDate !emptyName - added stub
      * emptynewAmount !emptynewDate !emptyname - added stub
-     * emptynewAmount !emptynewDate emptyName
-     * emptynewAmount emptynewDate !emptyName
+     * emptynewAmount !emptynewDate emptyName - added stub - need to modify logic
+     * emptynewAmount emptynewDate !emptyName - added stub
      */
 
     if (!isEmptyOrNull(newAmount)) {
@@ -278,11 +278,13 @@ function AreValidEntries(newName, newAmount, newDate) {
         }
     // from here onwaards, Handle logic when empty amount
     } else if (!isEmptyOrNull(newDate)) {
-        if (!isEmptyOrNull(newDate) && !isEmptyOrNull(newName)) {
+        if (!isEmptyOrNull(newAmount) && !isEmptyOrNull(newName)) {
             return true; // STUB
         } else if ((new Date(newDate)) <= Date.now()) {
             return true;
         } 
+    } else if (!isEmptyOrNull(newName)) {
+        return true; // STUB
     }
 
     return false;
