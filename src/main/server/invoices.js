@@ -264,4 +264,46 @@ function AreValidEntries(newAmount, newDate) {
     return false;
 }
 
-module.exports = { uploadFile, retrieveFile, moveInvoiceToTrash, modifyFile, fileList };
+function filterInvoice(token, filteredWord) {
+    const tokenValidation = auth.tokenIsValid(token);
+    if (!tokenValidation.valid) {
+        return {
+            code: 401,
+            ret: {
+                success: false,
+                error: "Token is empty or invalid"
+            }
+        };
+    }
+
+    if (filteredWord.trim() === "") {
+        return {
+            code: 400,
+            ret: {
+                success: false,
+                error: "filteredWord is an empty string "/""
+            }
+        };
+    }
+
+    const jsonData = other.getInvoiceData();
+    const filteredInvoices = jsonData.filter(invoice => {
+        return invoice.invoiceName.toLowerCase().includes(filteredWord.toLowerCase());
+    })
+
+    return {
+        code: 200,
+        ret: {
+            success: true,
+            filteredInvoices: filteredInvoices.map(invoice => ({
+                invoiceId: invoice.invoiceId,
+                invoiceName: invoice.invoiceName,
+                amount: invoice.amount,
+                date: invoice.date,
+                trashed: invoice.trashed
+            }))
+        }
+    };
+
+}
+module.exports = { uploadFile, retrieveFile, moveInvoiceToTrash, modifyFile, fileList, filterInvoice };
