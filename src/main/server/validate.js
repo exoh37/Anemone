@@ -15,7 +15,7 @@ async function invoiceValidation(file) {
         const invoice = await request(validation)
             .post("/validate")
             .set("Content-Type", "application/xml")
-            .send(file)
+            .send(file);
         if (invoice.status !== 200) {
             return {
                 status: "invalid"
@@ -28,4 +28,4 @@ async function invoiceValidation(file) {
     }
 }
 
-module.exports = { invoiceValidation }
+module.exports = { invoiceValidation };

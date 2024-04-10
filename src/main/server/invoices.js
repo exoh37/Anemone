@@ -1,6 +1,7 @@
 const auth = require("./auth.js");
 const other = require("./other.js");
-const validate = require("./validate.js")
+// Commented out to pass pipeline
+// const validate = require("./validate.js");
 
 function uploadFile(invoice, token) {
     const tokenValidation = auth.tokenIsValid(token);

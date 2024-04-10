@@ -7,7 +7,7 @@ describe("Testing Invoice Validation (External API)", function() {
         await request(validation)
             .get("/")
             .expect(200);
-    })
+    });
 
     it("Testing External Invoice Validation API with a Sample Invoice", async function() {
         const invoiceString = samples.getSampleInvoice();
@@ -17,7 +17,7 @@ describe("Testing Invoice Validation (External API)", function() {
             .send(invoiceString)
             .expect(200);
         console.log(response.body);
-    })
+    });
 
     it("Testing External Invoice Validation API with an Invalid Invoice", async function() {
         await request(validation)
@@ -25,5 +25,5 @@ describe("Testing Invoice Validation (External API)", function() {
             .set("Content-Type", "application/xml")
             .send("Hello World")
             .expect(500);
-    })
+    });
 });
