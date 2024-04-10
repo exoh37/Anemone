@@ -253,38 +253,42 @@ function AreValidEntries(newName, newAmount, newDate) {
 
     // cases to handle
     /**
-     * !emptynewAmount !emptynewDate !emptyName - added stub
-     * !emptynewAmount !emptynewDate emptyName - added stub
-     * !emptynewAmount emptynewDate emptyName - added stub - need to modify logic
-     * !emptynewAmount emptynewDate !emptyName - added stub
-     * emptynewAmount !emptynewDate !emptyname - added stub
-     * emptynewAmount !emptynewDate emptyName - added stub - need to modify logic
-     * emptynewAmount emptynewDate !emptyName - added stub
+     * !emptynewAmount !emptynewDate !emptyName - added stub - added logic
+     * !emptynewAmount !emptynewDate emptyName - added stub - added logic
+     * !emptynewAmount emptynewDate emptyName - added stub - added logic
+     * !emptynewAmount emptynewDate !emptyName - added stub - added logic
+     * emptynewAmount !emptynewDate !emptyname - added stub - added logic
+     * emptynewAmount !emptynewDate emptyName - added stub - added logic
+     * emptynewAmount emptynewDate !emptyName - added stub - added logic
      */
 
     if (!isEmptyOrNull(newAmount)) {
         if (!isEmptyOrNull(newDate) && isEmptyOrNull(newName)) {
             if (parseInt(newAmount) > 0 && (new Date(newDate)) <= Date.now()) {
-                return true;
+                return true; 
             }
         } else if (!isEmptyOrNull(newDate) && !isEmptyOrNull(newName)) {
-            return true; // STUB
+            //return true; // STUB
+            return parseInt(newAmount) > 0 && (new Date(newDate)) <= Date.now();
         } else if (isEmptyOrNull(newDate) && !isEmptyOrNull(newName)) {
-            return true; // STUB
+            // return true; // STUB
+            return parseInt(newAmount) > 0;
         } else {
-            if (parseInt(newAmount) > 0) {
-                return true;
-            }
+            // clean up at end
+            return parseInt(newAmount) > 0;
         }
     // from here onwaards, Handle logic when empty amount
     } else if (!isEmptyOrNull(newDate)) {
-        if (!isEmptyOrNull(newAmount) && !isEmptyOrNull(newName)) {
-            return true; // STUB
+        if (!isEmptyOrNull(newName)) {
+            // return true; // STUB
+            return (new Date(newDate)) <= Date.now();
         } else if ((new Date(newDate)) <= Date.now()) {
-            return true;
+            // return true; // Modify logic
+            // cleanup at end
+            return (new Date(newDate)) <= Date.now();
         } 
     } else if (!isEmptyOrNull(newName)) {
-        return true; // STUB
+        return true; // STUB - OK to go
     }
 
     return false;
