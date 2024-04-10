@@ -5,8 +5,12 @@ const validUsername1 = "validUsername1",
     validPassword1 = "ThisIsSecure!123",
     validPassword2 = "lessSecure2@",
 
-    mockInvoice1 = { file: { amount: 125.45 } },
-    mockInvoice2 = { "file": "{\"amount\": \"123.45\"}" },
+    mockInvoice1 = { file: { amount: 125.45,
+                             title: "Business" } },
+    mockInvoice2 = { "file": "{\"amount\": \"123.45\", \"title\": \"Business\" }" },
+    filteredWord = "Business",
+    invalidFilteredWord = "Bisnus",
+    emptyFilteredWord = "",
     falseId = 0;
 const request = require("supertest");
 const assert = require("assert");
@@ -28,10 +32,10 @@ describe("Testing filtering of invoices", function() {
     it("General tests for invoice filtering", async function() {
         // Setup user and login process
         await request(app)
-        .delete("/clear")
-        .expect(200)
-        .expect("Content-Type", /application\/json/)
-        .expect({"success": true});
+            .delete("/clear")
+            .expect(200)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": true});
 
         await request(app)
             .post("/users")
@@ -75,10 +79,10 @@ describe("Testing filtering of invoices", function() {
 
          // 1: create invoice
          const invoice2 = await request(app)
-         .post("/invoices")
-         .set("token", user2.body.token)
-         .send({ invoice: mockInvoice2 })
-         .expect(200);
+            .post("/invoices")
+            .set("token", user2.body.token)
+            .send({ invoice: mockInvoice2 })
+            .expect(200);
 
         assert.strictEqual(invoice2.body.success, true);
         assert.strictEqual(typeof invoice2.body.invoiceId, "number");
@@ -92,10 +96,49 @@ describe("Testing filtering of invoices", function() {
         // invoices must belong to user
         // invoices must fit the keyword exactly, possibly using filter, includes, tolower
         
-        assert.filteredInvoice(filteredInvoice.body.success, true);
         assert.filteredInvoice(filteredInvoice.body.invoices[0].id, invoice1.body.invoiceId);
 
+        // 5. error case for filtered word on invoice belonging to wrong user
+        await request(app)
+            .get(`/invoices/search/${filteredWord}`)
+            .set("token", user2.body.token)
+            .expect(401)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false});
 
+        // 6. error case for filtered word on invoice in trash
+        const moveToTrashResult = await request(app)
+            .delete(`/invoices/${invoice1.body.invoiceId}`)
+            .set("token", user1.body.token)
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        assert.strictEqual(moveToTrashResult.body.success, true)
+
+        await request(app)
+            .get(`/invoices/search/${filteredWord}`)
+            .set("token", user1.body.token)
+            .expect(401)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false});
+
+        // 7. error case for filtered word not found
+        // is this error case 400?
+        await request(app)
+            .get(`/invoices/search/${invalidFilteredWord}`)
+            .set("token", user1.body.token)
+            .expect(400)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false});
+
+        // 8. error case for empty string for filtered word
+        await request(app)
+            .get(`/invoices/search/${emptyFilteredWord}`)
+            .set("token", user1.body.token)
+            .expect(400)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false});
+        
     });
 });
 
