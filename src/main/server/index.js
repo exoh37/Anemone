@@ -117,6 +117,14 @@ app.post("/trash/:invoiceId/restore", (req, res) => {
     return res.status(response.code).json(response.ret);
 });
 
+app.get("/invoices/search/:filteredWord", (req, res) => {
+    const { filteredWord } = req.params;
+    const token = req.headers.token;
+    const response = invoices.filterInvoice(token, filteredWord);
+    return res.status(response.code).json(response.ret);
+});
+
+
 // Clear function for testing purposes
 app.delete("/clear", (req, res) => {
     const response = other.clear();
