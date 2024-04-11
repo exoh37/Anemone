@@ -132,21 +132,21 @@ app.delete("/clear", (req, res) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 // Register a user
-app.post("/users2", async (req, res) => {
+app.post("/usersV2", async (req, res) => {
     const { username, email, password } = req.body,
         response = await users.registerUserV2(username, email, password);
     return res.status(response.code).json(response.ret);
 });
 
 // Login user
-app.post("/users/login2", async (req, res) => {
+app.post("/usersV2/login", async (req, res) => {
     const { username, password } = req.body,
         response = await users.loginUserV2(username, password);
     return res.status(response.code).json(response.ret);
 });
 
 // Upload invoice
-app.post("/invoices2", async (req, res) => {
+app.post("/invoicesV2", async (req, res) => {
     const { invoice } = req.body,
         {token} = req.headers,
         response = await invoices.uploadFileV2(invoice, token);
@@ -154,15 +154,62 @@ app.post("/invoices2", async (req, res) => {
 });
 
 // Retrieve invoice
-app.get("/invoices2/:invoiceId", async (req, res) => {
+app.get("/invoicesV2/:invoiceId", async (req, res) => {
     const { invoiceId } = req.params,
         {token} = req.headers,
         response = await invoices.retrieveFileV2(invoiceId, token);
     return res.status(response.code).json(response.ret);
 });
 
+// Invoice list
+app.get("/invoicesV2", async (req, res) => {
+    const token = req.headers.token;
+    const response = await invoices.fileListV2(token);
+    return res.status(response.code).json(response.ret);
+});
+
+// Move Invoice to trash
+app.delete("/invoicesV2/:invoiceId", async (req, res) => {
+    const { invoiceId } = req.params;
+    const token = req.headers.token;
+    const response = await invoices.moveInvoiceToTrashV2(invoiceId, token);
+    return res.status(response.code).json(response.ret);
+});
+
+// Modify invoice
+app.put("/invoicesV2/:invoiceId", async (req, res) => {
+    const { invoiceId } = req.params;
+    const { newName, newAmount, newDate } = req.body;
+    const token = req.headers.token;
+    const response = await invoices.modifyFileV2(invoiceId, token, newName, newAmount, newDate);
+    return res.status(response.code).json(response.ret);
+});
+
+// List trash items
+app.get("/trashV2", async (req, res) => {
+    const token = req.headers.token;
+    const response = await trash.listTrashItemsV2(token);
+    return res.status(response.code).json(response.ret);
+});
+
+// Delete from trash
+app.delete("/trashV2/:invoiceId", async (req, res) => {
+    const { invoiceId } = req.params;
+    const token = req.headers.token;
+    const response = await trash.deleteTrashV2(invoiceId, token);
+    return res.status(response.code).json(response.ret);
+});
+
+// Restore from trash
+app.post("/trashV2/:invoiceId/restore", async (req, res) => {
+    const { invoiceId } = req.params;
+    const token = req.headers.token;
+    const response = await trash.restoreTrashV2(invoiceId, token);
+    return res.status(response.code).json(response.ret);
+});
+
 // Clear function for testing purposes
-app.delete("/clear2", async (req, res) => {
+app.delete("/clearV2", async (req, res) => {
     const response = await other.clearV2();
     return res.status(response.code).json(response.ret);
 });
