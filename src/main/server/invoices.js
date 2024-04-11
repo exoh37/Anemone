@@ -18,7 +18,6 @@ function uploadFile(invoice, token) {
     const jsonData = other.getInvoiceData();
     const { amount } = data.file;
     const invoiceName = invoice.file.title;
-    console.log(invoice);
 
     jsonData.push({
         invoiceId: invoiceId,
