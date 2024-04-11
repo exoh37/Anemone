@@ -1,6 +1,7 @@
 const other = require("./other.js");
 const pool = require("./database.js");
 const parseString = require("xml2js").parseString;
+var xml2js = require('xml2js');
 
 // Constants
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
@@ -117,4 +118,64 @@ async function fetchXMLData(invoiceId) {
     }
 }
 
-module.exports = { generateToken, tokenIsValid, generateTokenV2, tokenIsValidV2, fetchXMLData };
+async function modifyXMLAmount(invoiceId, NewAmount) {
+    const client = await pool.connect();
+    try {
+        const invoice = await client.query("SELECT * FROM invoices i WHERE i.invoiceId = $1", [invoiceId]);
+        const xml = invoice.rows[0].invoice;
+        let updatedXmlString;
+        parseString(xml, function (err, result) {
+            result.invoice.amount = NewAmount;
+            const builder = new xml2js.Builder();
+            updatedXmlString = builder.buildObject(result);
+        });
+        await client.query("UPDATE invoices SET invoice = $1 WHERE invoiceid = $2", [updatedXmlString, invoiceId]);
+    } catch (error) {
+        console.error("Failed to update XML amount:", error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function modifyXMLName(invoiceId, NewName) {
+    const client = await pool.connect();
+    try {
+        const invoice = await client.query("SELECT * FROM invoices i WHERE i.invoiceId = $1", [invoiceId]);
+        const xml = invoice.rows[0].invoice;
+        let updatedXmlString;
+        parseString(xml, function (err, result) {
+            result.invoice.invoiceName = NewName;
+            const builder = new xml2js.Builder();
+            updatedXmlString = builder.buildObject(result);
+        });
+        await client.query("UPDATE invoices SET invoice = $1 WHERE invoiceid = $2", [updatedXmlString, invoiceId]);
+    } catch (error) {
+        console.error("Failed to update XML amount:", error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function modifyXMLDate(invoiceId, NewDate) {
+    const client = await pool.connect();
+    try {
+        const invoice = await client.query("SELECT * FROM invoices i WHERE i.invoiceId = $1", [invoiceId]);
+        const xml = invoice.rows[0].invoice;
+        let updatedXmlString;
+        parseString(xml, function (err, result) {
+            result.invoice.date = NewDate;
+            const builder = new xml2js.Builder();
+            updatedXmlString = builder.buildObject(result);
+        });
+        await client.query("UPDATE invoices SET invoice = $1 WHERE invoiceid = $2", [updatedXmlString, invoiceId]);
+    } catch (error) {
+        console.error("Failed to update XML amount:", error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+module.exports = { generateToken, tokenIsValid, generateTokenV2, tokenIsValidV2, fetchXMLData, modifyXMLAmount, modifyXMLName, modifyXMLDate };
