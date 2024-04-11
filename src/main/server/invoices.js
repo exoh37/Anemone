@@ -293,9 +293,9 @@ async function uploadFileV2(invoice, token) {
         `, [invoiceId, invoice]);
 
         const invoiceItems = await auth.fetchXMLData(invoiceId);
-        const name = invoiceItems.invoices.invoice[0].invoiceName[0];
-        const amount = invoiceItems.invoices.invoice[0].amount[0];
-        const date = invoiceItems.invoices.invoice[0].date[0];
+        const name = invoiceItems.invoice.invoiceName[0];
+        const amount = invoiceItems.invoice.amount[0];
+        const date = invoiceItems.invoice.date[0];
         const owner = tokenValidation.username;
 
         await pool.query(`
@@ -510,23 +510,30 @@ async function modifyFileV2(invoiceId, token, newName, newAmount, newDate) {
             };
         }
 
-        if (!AreValidEntries(newAmount, newDate)) {
+        if (!AreValidEntries(newName, newAmount, newDate)) {
             return {
                 code: 400,
                 ret: {
                     success: false,
-                    error: "Invalid date or amount provided; could not modify"
+                    error: "Invalid entry provided; could not modify"
                 }
             };
         }
 
         // modify the entries as requied
-        if (newAmount !== invoiceInfo.rows[0].amount && newAmount.toString().length !== 0) {
+        if (newAmount !== invoiceInfo.rows[0].amount  && !isEmptyOrNull(newAmount)) {
             await client.query("UPDATE invoiceinfo SET amount = $1 WHERE invoiceid = $2", [newAmount, invoiceId]);
+            await auth.modifyXMLAmount(invoiceId, newAmount);
         }
 
-        if (newDate !== null && newDate.toString().length !== 0) {
+        if (!isEmptyOrNull(newDate)) {
             await client.query("UPDATE invoiceinfo SET date = $1 WHERE invoiceid = $2", [newDate, invoiceId]);
+            await auth.modifyXMLDate(invoiceId, newDate);
+        }
+    
+        if (!isEmptyOrNull(newName)) {
+            await client.query("UPDATE invoiceinfo SET invoicename = $1 WHERE invoiceid = $2", [newName, invoiceId]);
+            await auth.modifyXMLName(invoiceId, newName);
         }
 
         const updatedInvoice = await client.query("SELECT * FROM invoiceinfo WHERE invoiceid = $1", [invoiceId]);
