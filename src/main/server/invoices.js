@@ -287,21 +287,15 @@ function filterInvoice(token, filteredWord) {
     }
 
     const jsonData = other.getInvoiceData();
-    const filteredInvoices = jsonData.filter(invoice => {
-        return invoice.invoiceName.toLowerCase().includes(filteredWord.toLowerCase());
+    const filteredInvoices = jsonData.find(invoice => {
+        return invoice.title.toLowerCase().includes(filteredWord.toLowerCase());
     })
 
     return {
         code: 200,
         ret: {
             success: true,
-            filteredInvoices: filteredInvoices.map(invoice => ({
-                invoiceId: invoice.invoiceId,
-                invoiceName: invoice.invoiceName,
-                amount: invoice.amount,
-                date: invoice.date,
-                trashed: invoice.trashed
-            }))
+            filteredInvoices: filteredInvoices,
         }
     };
 
