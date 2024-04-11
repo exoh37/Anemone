@@ -1,4 +1,6 @@
 const {Pool} = require("pg");
+const pg = require("pg");
+pg.defaults.parseInt8 = true;
 const dotenv = require("dotenv");
 dotenv.config();
 
