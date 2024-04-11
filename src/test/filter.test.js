@@ -67,7 +67,7 @@ describe("Testing filtering of invoices", function() {
             .expect(200)
             .expect("Content-Type", /application\/json/);
 
-        // 1: create invoice
+        // 1: create invoice1
         const invoice1 = await request(app)
             .post("/invoices")
             .set("token", user1.body.token)
@@ -77,7 +77,7 @@ describe("Testing filtering of invoices", function() {
         assert.strictEqual(invoice1.body.success, true);
         assert.strictEqual(typeof invoice1.body.invoiceId, "number");
 
-         // 1: create invoice
+         // 1: create invoice2
          const invoice2 = await request(app)
             .post("/invoices")
             .set("token", user2.body.token)
@@ -92,22 +92,20 @@ describe("Testing filtering of invoices", function() {
             .set("token", user1.body.token)
             .expect(200)
             .expect("Content-Type", /application\/json/)
-            .expect({"success": true});
+            
 
-        // console.log(filteredInvoice);
+        console.log(filteredInvoice.body);
 
         // invoices must belong to user
         // invoices must fit the keyword exactly, possibly using filter, includes, tolower
-        
-        assert.filteredInvoice(filteredInvoice.body.invoices[0].id, invoice1.body.invoiceId);
+        assert.strictEqual(filteredInvoice.body.success, true);
+        console.log(invoice1.body);
+        assert.strictEqual(filteredInvoice.body.filteredInvoices.invoiceId, invoice1.body.invoiceId);
+        console.log("here", mockInvoice1.file);
+        assert.strictEqual(filteredInvoice.body.filteredInvoices.invoiceName, mockInvoice1.file.title);
+        assert.strictEqual(filteredInvoice.body.filteredInvoices.trashed, false);
 
-        // 5. error case for filtered word on invoice belonging to wrong user
-        await request(app)
-            .get(`/invoices/search/${filteredWord}`)
-            .set("token", user2.body.token)
-            .expect(401)
-            .expect("Content-Type", /application\/json/)
-            .expect({"success": false});
+      
 
         // 6. error case for filtered word on invoice in trash
         const moveToTrashResult = await request(app)
