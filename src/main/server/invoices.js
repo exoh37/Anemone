@@ -255,46 +255,18 @@ function AreValidEntries(newName, newAmount, newDate) {
         return false;
     }
 
-    // cases to handle
-    /**
-     * !emptynewAmount !emptynewDate !emptyName - added stub - added logic
-     * !emptynewAmount !emptynewDate emptyName - added stub - added logic
-     * !emptynewAmount emptynewDate emptyName - added stub - added logic
-     * !emptynewAmount emptynewDate !emptyName - added stub - added logic
-     * emptynewAmount !emptynewDate !emptyname - added stub - added logic
-     * emptynewAmount !emptynewDate emptyName - added stub - added logic
-     * emptynewAmount emptynewDate !emptyName - added stub - added logic
-     */
-
     if (!isEmptyOrNull(newAmount)) {
-        if (!isEmptyOrNull(newDate) && isEmptyOrNull(newName)) {
-            if (parseInt(newAmount) > 0 && (new Date(newDate)) <= Date.now()) {
-                return true;
-            }
-        } else if (!isEmptyOrNull(newDate) && !isEmptyOrNull(newName)) {
-            //return true; // STUB
+        if (!isEmptyOrNull(newDate) && isEmptyOrNull(newName) ||
+            !isEmptyOrNull(newDate) && !isEmptyOrNull(newName)) {
             return parseInt(newAmount) > 0 && (new Date(newDate)) <= Date.now();
-        } else if (isEmptyOrNull(newDate) && !isEmptyOrNull(newName)) {
-            // return true; // STUB
-            return parseInt(newAmount) > 0;
         } else {
-            // clean up at end
             return parseInt(newAmount) > 0;
         }
-    // from here onwaards, Handle logic when empty amount
     } else if (!isEmptyOrNull(newDate)) {
-        if (!isEmptyOrNull(newName)) {
-            // return true; // STUB
-            return (new Date(newDate)) <= Date.now();
-        } else if ((new Date(newDate)) <= Date.now()) {
-            // return true; // Modify logic
-            // cleanup at end
-            return (new Date(newDate)) <= Date.now();
-        }
+        return (new Date(newDate)) <= Date.now();
     } else if (!isEmptyOrNull(newName)) {
-        return true; // STUB - OK to go
+        return true;
     }
-
     return false;
 }
 
