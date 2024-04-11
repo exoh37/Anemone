@@ -84,6 +84,9 @@ async function clearV2() {
         await client.query("DELETE FROM Tokens");
         await client.query("DELETE FROM Users");
         await client.query("DELETE FROM Invoices");
+        await client.query("DELETE FROM InvoiceInfo");
+        await client.query("DELETE FROM Trash");
+        await client.query("DELETE FROM TrashInfo");
 
         return {
             code: 200,
