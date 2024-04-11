@@ -212,18 +212,22 @@ function modifyFile(invoiceId, token, newName, newAmount, newDate) {
             code: 400,
             ret: {
                 success: false,
-                error: "Invalid date or amount provided; could not modify"
+                error: "Invalid entry provided; could not modify"
             }
         };
     }
 
     // modify the entries as requied
-    if (newAmount !== invoice.amount && newAmount.toString().length !== 0) {
+    if (newAmount !== invoice.amount && !isEmptyOrNull(newAmount)) {
         invoice.amount = newAmount;
     }
 
-    if (newDate !== null && newDate.toString().length !== 0) {
+    if (!isEmptyOrNull(newDate)) {
         invoice.date = newDate;
+    }
+
+    if (!isEmptyOrNull(newName)) {
+        invoice.invoiceName = newName;
     }
 
     // return invoice
@@ -243,7 +247,7 @@ function modifyFile(invoiceId, token, newName, newAmount, newDate) {
 }
 
 function isEmptyOrNull(entry) {
-    return entry === undefined || entry === null || entry.toString().trim().length === 0
+    return entry === undefined || entry === null || entry.toString().trim().length === 0;
 }
 
 function AreValidEntries(newName, newAmount, newDate) {
@@ -265,7 +269,7 @@ function AreValidEntries(newName, newAmount, newDate) {
     if (!isEmptyOrNull(newAmount)) {
         if (!isEmptyOrNull(newDate) && isEmptyOrNull(newName)) {
             if (parseInt(newAmount) > 0 && (new Date(newDate)) <= Date.now()) {
-                return true; 
+                return true;
             }
         } else if (!isEmptyOrNull(newDate) && !isEmptyOrNull(newName)) {
             //return true; // STUB
@@ -286,7 +290,7 @@ function AreValidEntries(newName, newAmount, newDate) {
             // return true; // Modify logic
             // cleanup at end
             return (new Date(newDate)) <= Date.now();
-        } 
+        }
     } else if (!isEmptyOrNull(newName)) {
         return true; // STUB - OK to go
     }
