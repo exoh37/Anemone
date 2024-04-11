@@ -1,7 +1,7 @@
 const other = require("./other.js");
 const pool = require("./database.js");
 const parseString = require("xml2js").parseString;
-var xml2js = require('xml2js');
+var xml2js = require("xml2js");
 
 // Constants
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;

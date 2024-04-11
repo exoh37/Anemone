@@ -210,7 +210,7 @@ describe("Testing route PUT /invoices/{invoiceId}", function() {
             .expect(400)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": "Invalid entry provided; could not modify"});
-        
+
         // success 200, params OK
         const modifiedInvoice1 = await request(app)
             .put(`/invoicesV2/${invoice1.body.invoiceId}`)

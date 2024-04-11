@@ -530,7 +530,7 @@ async function modifyFileV2(invoiceId, token, newName, newAmount, newDate) {
             await client.query("UPDATE invoiceinfo SET date = $1 WHERE invoiceid = $2", [newDate, invoiceId]);
             await auth.modifyXMLDate(invoiceId, newDate);
         }
-    
+
         if (!isEmptyOrNull(newName)) {
             await client.query("UPDATE invoiceinfo SET invoicename = $1 WHERE invoiceid = $2", [newName, invoiceId]);
             await auth.modifyXMLName(invoiceId, newName);
