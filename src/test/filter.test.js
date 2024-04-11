@@ -93,6 +93,9 @@ describe("Testing filtering of invoices", function() {
             .expect(200)
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
+
+        // console.log(filteredInvoice);
+
         // invoices must belong to user
         // invoices must fit the keyword exactly, possibly using filter, includes, tolower
         

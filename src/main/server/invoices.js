@@ -17,10 +17,12 @@ function uploadFile(invoice, token) {
     const invoiceId = Date.now();
     const jsonData = other.getInvoiceData();
     const { amount } = data.file;
+    const invoiceName = invoice.file.title;
+    console.log(invoice);
 
     jsonData.push({
         invoiceId: invoiceId,
-        invoiceName: "PLACEHOLDER_NAME",
+        invoiceName: invoiceName ?? "PLACEHOLDER_NAME",
         amount,
         date: Date.now(),
         trashed: false,
@@ -288,8 +290,10 @@ function filterInvoice(token, filteredWord) {
 
     const jsonData = other.getInvoiceData();
     const filteredInvoices = jsonData.find(invoice => {
-        return invoice.title.toLowerCase().includes(filteredWord.toLowerCase());
-    })
+        return invoice.invoiceName.toLowerCase().includes(filteredWord.toLowerCase());
+    });
+    console.log(jsonData);
+    console.log(filteredInvoices);
 
     return {
         code: 200,
