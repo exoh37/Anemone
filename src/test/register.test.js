@@ -21,7 +21,7 @@ describe("Testing route POST /users + POST /users/login", function() {
     beforeEach(async function() {
         // Clear data before running any tests
         await request(app)
-            .delete("/clear2")
+            .delete("/clear")
             .expect(200)
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
@@ -29,14 +29,14 @@ describe("Testing route POST /users + POST /users/login", function() {
 
     it("Valid Input: Register a new user with valid username and password and valid return status", async function() {
         await request(app)
-            .post("/users2")
+            .post("/users")
             .send({ username: validUsername1, email: validEmail1, password: validPassword1 })
             .expect(200)
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
 
         await request(app)
-            .post("/users2")
+            .post("/users")
             .send({ username: validUsername2, email: validEmail2, password: validPassword2 })
             .expect(200)
             .expect("Content-Type", /application\/json/)
@@ -45,7 +45,7 @@ describe("Testing route POST /users + POST /users/login", function() {
 
     it("Invalid Input: Username is not between 3-20 characters long", async function() {
         await request(app)
-            .post("/users2")
+            .post("/users")
             .send({ username: invalidUsername1, email: validEmail1, password: validPassword1 })
             .expect(400)
             .expect("Content-Type", /application\/json/)
@@ -54,7 +54,7 @@ describe("Testing route POST /users + POST /users/login", function() {
 
     it("Invalid Input: Register a user with a username containing whitespace", async function() {
         await request(app)
-            .post("/users2")
+            .post("/users")
             .send({ username: invalidUsername2, email: validEmail1, password: validPassword1 })
             .expect(400)
             .expect("Content-Type", /application\/json/)
@@ -63,7 +63,7 @@ describe("Testing route POST /users + POST /users/login", function() {
 
     it("Invalid Input: Password does not contain at least 1 uppercase letter", async function() {
         await request(app)
-            .post("/users2")
+            .post("/users")
             .send({ username: validUsername1, email: validEmail1, password: invalidPassword1 })
             .expect(400)
             .expect("Content-Type", /application\/json/)
@@ -72,7 +72,7 @@ describe("Testing route POST /users + POST /users/login", function() {
 
     it("Invalid Input: Password does not contain at least 1 lower letter", async function() {
         await request(app)
-            .post("/users2")
+            .post("/users")
             .send({ username: validUsername1, email: validEmail1, password: invalidPassword2 })
             .expect(400)
             .expect("Content-Type", /application\/json/)
@@ -81,7 +81,7 @@ describe("Testing route POST /users + POST /users/login", function() {
 
     it("Invalid Input: Password does not contain at least 1 number", async function() {
         await request(app)
-            .post("/users2")
+            .post("/users")
             .send({ username: validUsername1, email: validEmail1, password: invalidPassword3 })
             .expect(400)
             .expect("Content-Type", /application\/json/)
@@ -90,7 +90,7 @@ describe("Testing route POST /users + POST /users/login", function() {
 
     it("Invalid Input: Password does not contain at least 1 special character", async function() {
         await request(app)
-            .post("/users2")
+            .post("/users")
             .send({ username: validUsername1, email: validEmail1, password: invalidPassword4 })
             .expect(400)
             .expect("Content-Type", /application\/json/)
@@ -99,7 +99,7 @@ describe("Testing route POST /users + POST /users/login", function() {
 
     it("Invalid Input: Password does not contain at least 8 characters", async function() {
         await request(app)
-            .post("/users2")
+            .post("/users")
             .send({ username: validUsername1, email: validEmail1, password: invalidPassword5 })
             .expect(400)
             .expect("Content-Type", /application\/json/)
@@ -108,7 +108,7 @@ describe("Testing route POST /users + POST /users/login", function() {
 
     it("Invalid Input: Email does not satisfy validation", async function() {
         await request(app)
-            .post("/users2")
+            .post("/users")
             .send({ username: validUsername1, email: invalidEmail1, password: validPassword1 })
             .expect(400)
             .expect("Content-Type", /application\/json/)
@@ -117,14 +117,14 @@ describe("Testing route POST /users + POST /users/login", function() {
 
     it("Invalid Input: Username is currently used by another user", async function() {
         await request(app)
-            .post("/users2")
+            .post("/users")
             .send({ username: validUsername1, email: validEmail1, password: validPassword1 })
             .expect(200)
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
 
         await request(app)
-            .post("/users2")
+            .post("/users")
             .send({ username: validUsername1, email: validEmail2, password: validPassword1 })
             .expect(400)
             .expect("Content-Type", /application\/json/)
@@ -133,14 +133,14 @@ describe("Testing route POST /users + POST /users/login", function() {
 
     it("Invalid Input: Email is currently used by another user", async function() {
         await request(app)
-            .post("/users2")
+            .post("/users")
             .send({ username: validUsername1, email: validEmail1, password: validPassword1 })
             .expect(200)
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
 
         await request(app)
-            .post("/users2")
+            .post("/users")
             .send({ username: validUsername2, email: validEmail1, password: validPassword1 })
             .expect(400)
             .expect("Content-Type", /application\/json/)
