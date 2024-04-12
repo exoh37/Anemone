@@ -124,7 +124,6 @@ app.get("/invoices/search/:filteredWord", (req, res) => {
     return res.status(response.code).json(response.ret);
 });
 
-
 // Clear function for testing purposes
 app.delete("/clear", (req, res) => {
     const response = other.clear();

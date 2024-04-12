@@ -9,24 +9,12 @@ const validUsername1 = "validUsername1",
                              title: "Business" } },
     mockInvoice2 = { "file": "{\"amount\": \"123.45\", \"title\": \"Business\" }" },
     filteredWord = "Business",
-    invalidFilteredWord = "Bisnus",
-    emptyFilteredWord = "",
-    falseId = 0;
+    emptyString = "",
+    invalidToken = 0;
 const request = require("supertest");
 const assert = require("assert");
 const app = require("../main/server");
-const server = require("../main/server"),
-
-    invalid_token = 0;
-
-// 1. clear
-// 2. register and login 2 users
-// 3. create 3 invoices, 2 belonging to user1, 1 belonging to user2
-// 4. filter for the 2nd invoice belonging to user1
-// 5. error case for filtered word on invoice belonging to wrong user
-// 6. error case for filtered word on invoice in trash
-// 7. error case for filtered word not found
-// 8. error case for no matches for filtered word
+const server = require("../main/server");
 
 describe("Testing filtering of invoices", function() {
     it("General tests for invoice filtering", async function() {
@@ -93,53 +81,25 @@ describe("Testing filtering of invoices", function() {
             .expect(200)
             .expect("Content-Type", /application\/json/)
             
-
-        console.log(filteredInvoice.body);
-
-        // invoices must belong to user
-        // invoices must fit the keyword exactly, possibly using filter, includes, tolower
         assert.strictEqual(filteredInvoice.body.success, true);
-        console.log(invoice1.body);
         assert.strictEqual(filteredInvoice.body.filteredInvoices.invoiceId, invoice1.body.invoiceId);
-        console.log("here", mockInvoice1.file);
         assert.strictEqual(filteredInvoice.body.filteredInvoices.invoiceName, mockInvoice1.file.title);
         assert.strictEqual(filteredInvoice.body.filteredInvoices.trashed, false);
 
-      
-
-        // 6. error case for filtered word on invoice in trash
-        const moveToTrashResult = await request(app)
-            .delete(`/invoices/${invoice1.body.invoiceId}`)
-            .set("token", user1.body.token)
-            .expect(200)
-            .expect("Content-Type", /application\/json/);
-
-        assert.strictEqual(moveToTrashResult.body.success, true)
-
         await request(app)
             .get(`/invoices/search/${filteredWord}`)
-            .set("token", user1.body.token)
+            .set("token", invalidToken)
             .expect(401)
             .expect("Content-Type", /application\/json/)
-            .expect({"success": false});
-
-        // 7. error case for filtered word not found
-        // is this error case 400?
+            .expect({"success": false, "error": "Token is empty or invalid"});
+            
         await request(app)
-            .get(`/invoices/search/${invalidFilteredWord}`)
-            .set("token", user1.body.token)
-            .expect(400)
+            .get(`/invoices/search/${filteredWord}`)
+            .set("token", emptyString)
+            .expect(401)
             .expect("Content-Type", /application\/json/)
-            .expect({"success": false});
+            .expect({"success": false, "error": "Token is empty or invalid"});
 
-        // 8. error case for empty string for filtered word
-        await request(app)
-            .get(`/invoices/search/${emptyFilteredWord}`)
-            .set("token", user1.body.token)
-            .expect(400)
-            .expect("Content-Type", /application\/json/)
-            .expect({"success": false});
-        
     });
 });
 

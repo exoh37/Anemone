@@ -283,7 +283,7 @@ function filterInvoice(token, filteredWord) {
         };
     }
 
-    if (filteredWord.trim() === "") {
+    if (filteredWord === "") {
         return {
             code: 400,
             ret: {
