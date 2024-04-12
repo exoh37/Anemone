@@ -20,7 +20,6 @@ jobs:
         env:
           POSTGRES_DB: anemone
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     strategy:
@@ -45,8 +44,8 @@ jobs:
       run: |
         touch .env
         echo POSTGRES_HOST= localhost > .env
-        echo POSTGRES_USER= $POSTGRES_USER > .env
-        echo POSTGRES_DB= $POSTGRES_DB > .env
+        echo POSTGRES_USER= postgres > .env
+        echo POSTGRES_DB= anemone > .env
         echo POSTGRES_PASSWORD= ${{ secrets.POSTGRES_PASSWORD }} > .env
 
     - name: Connect to PostgreSQL
