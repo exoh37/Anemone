@@ -5,10 +5,10 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const pool = new Pool({
-    host: "localhost",
-    user: "postgres",
-    password: "Anemone123",
-    database: "anemone"
+    host: process.env.POSTGRES_HOST,
+    user: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+    database: process.env.POSTGRES_DB
 });
 
 module.exports = pool;
