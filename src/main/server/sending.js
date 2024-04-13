@@ -62,7 +62,7 @@ async function invoiceSending(token, recipient, invoiceId) {
 
         if (check.status !== 200) {
             return {
-                code: 500,
+                code: 400,
                 ret: {
                     success: false,
                     error: "Invoice sending API is offline"
