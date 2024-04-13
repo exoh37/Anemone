@@ -215,7 +215,7 @@ app.post("/invoicesV2/:invoiceId/send", (req, res) => {
     const { recipient } = req.body;
     const token = req.headers.token;
     const response = sending.invoiceSending(token, recipient, invoiceId);
-    return res.status(response.code).json(response.rete);
+    return res.status(response.code).json(response.ret);
 });
 
 // Clear function for testing purposes
