@@ -80,9 +80,9 @@ describe("Testing route POST /invoices/:invoiceId/send", function() {
             .post(`/invoicesV2/${invoice1.body.invoiceId}/send`)
             .set("token", user1.body.token)
             .send({ recipient: falseEmailAddress })
-            .expect(401)
+            .expect(400)
             .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": "Token is empty or invalid"});
+            .expect({"success": false, "error": `Email '${falseEmailAddress}' is not a valid email address`});
 
         // Unsuccessful send as no such id
         await request(app)
