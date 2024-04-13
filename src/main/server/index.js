@@ -7,6 +7,7 @@ const users = require("./users.js");
 const invoices = require("./invoices.js");
 const trash = require("./trash.js");
 const other = require("./other.js");
+const sending = require("./sending.js");
 
 // Create an Express application
 const app = express();
@@ -122,6 +123,15 @@ app.delete("/clear", (req, res) => {
     const response = other.clear();
     return res.status(response.code).json(response.ret);
 });
+
+// Sending Invoice API Integration
+app.post("/invoice/:invoiceId/send", (req, res) => {
+    const { invoiceId } = req.params;
+    const { recipient } = req.body;
+    const token = req.headers.token;
+    const response = sending.invoiceSending(token, recipient, invoiceId);
+    return res.status(response.code).json(response.rete);
+})
 
 /*
  * Add more endpoints here
