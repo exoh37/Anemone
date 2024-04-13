@@ -124,15 +124,6 @@ app.delete("/clear", (req, res) => {
     return res.status(response.code).json(response.ret);
 });
 
-// Sending Invoice API Integration
-app.post("/invoice/:invoiceId/send", (req, res) => {
-    const { invoiceId } = req.params;
-    const { recipient } = req.body;
-    const token = req.headers.token;
-    const response = sending.invoiceSending(token, recipient, invoiceId);
-    return res.status(response.code).json(response.rete);
-})
-
 /*
  * Add more endpoints here
  */
@@ -216,6 +207,15 @@ app.post("/trashV2/:invoiceId/restore", async (req, res) => {
     const token = req.headers.token;
     const response = await trash.restoreTrashV2(invoiceId, token);
     return res.status(response.code).json(response.ret);
+});
+
+// Sending Invoice API Integration
+app.post("/invoicesV2/:invoiceId/send", (req, res) => {
+    const { invoiceId } = req.params;
+    const { recipient } = req.body;
+    const token = req.headers.token;
+    const response = sending.invoiceSending(token, recipient, invoiceId);
+    return res.status(response.code).json(response.rete);
 });
 
 // Clear function for testing purposes
