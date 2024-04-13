@@ -21,7 +21,7 @@
 
     <form id="form" onsubmit="return false;">
         <input type='file' id="fileInput" />
-        <input type="submit" value="Upload" id="uploadButton" onclick="addItem();" />
+        <button type="submit" id="uploadButton">Upload</button>
     </form>
 
     <div class="progress-bar" id="pass-bar">
@@ -38,5 +38,57 @@
         <ul id="list"></ul>
     </div>
 
+    
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const postBtn = document.getElementById("uploadButton");
+        const getBtn = document.getElementById("retrieveButton");
+
+        const token = window.location.href.split('=')[1];
+        console.log(token);
+
+        const baseUrl = 'http://localhost:3103';
+
+        postBtn.addEventListener('click', postinfo);
+        postBtn.addEventListener('click', getinfo);
+
+        async function getinfo(e){
+
+            e.preventDefault()
+            axios.get(`${baseUrl}/invoices`, {
+                    invoice: userInput,
+            }, {
+                headers: {
+                'token': token
+                }
+            })
+            .then(function (response) {
+                    console.log(response);
+                    addItem();
+            })
+            .catch(function (error) {
+                    console.log(error);
+            })
+        }
+        async function postinfo(e){
+            var input = document.getElementById('fileInput');
+            var userInput = input.files[0].name;
+            e.preventDefault()
+            axios.post(`${baseUrl}/invoices`, {
+                    invoice: userInput,
+            }, {
+                headers: {
+                'token': token
+                }
+            })
+            .then(function (response) {
+                    console.log(response);
+                    addItem();
+            })
+            .catch(function (error) {
+                    console.log(error);
+            })
+        }
+    </script>
 </body>
 </html>

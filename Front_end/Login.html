@@ -24,23 +24,52 @@
                         <form action="">
                                 <h2>Login</h2>
                                 <div class="input-group">
-                                        <input type="text" required>
-                                        <label for="">Username</label>
+                                        <input type="text" id="username" required>
+                                        <label for="username">Username</label>
                                 </div>
                                 <div class="input-group">
-                                        <input type="password" required>
-                                        <label for="">Password</label>
+                                        <input type="password" id="password" required>
+                                        <label for="password">Password</label>
                                 </div>
                                 <div class="remember">
                                         <label><input type="checkbox"> Remember me</label>
                                 </div>
-                                <button type="submit" onclick="window.location.href='main.html'">Login</button>
+                                <button type="submit" id="login">Login</button>
                                 <div class="signUp-link">
                                         <p>Don't have an account? <a href="Register.html" class="signUpBtn-link">Sign Up</a></p>
                                 </div>
                         </form>
                 </div>
         </div>
-        <script src="script.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+
+                const postBtn = document.getElementById("login");
+
+                const baseUrl = 'http://localhost:3103'
+
+                
+                postBtn.addEventListener('click', postinfo);
+                async function postinfo(e){
+
+                        const usernameId = document.getElementById('username');
+                        let username = usernameId.value;
+                        const passwordId = document.getElementById('password');
+                        let password = passwordId.value;
+                        e.preventDefault()
+                        axios.post(`${baseUrl}/users/login`, {
+                                username: username,
+                                password: password
+                        })
+                        .then(function (response) {
+                                console.log(response);
+                                window.location.replace(`main.html?token=${response.data.token}`);
+                        })
+                        .catch(function (error) {
+                                console.log(error);
+                        })
+                }
+                
+        </script>
         </body>
 </html>
