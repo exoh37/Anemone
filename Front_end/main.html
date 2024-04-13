@@ -48,6 +48,8 @@
         console.log(token);
 
         const baseUrl = 'http://localhost:3103';
+    
+        let invoiceId = 0;
 
         postBtn.addEventListener('click', postinfo);
         postBtn.addEventListener('click', getinfo);
@@ -55,9 +57,7 @@
         async function getinfo(e){
 
             e.preventDefault()
-            axios.get(`${baseUrl}/invoices`, {
-                    invoice: userInput,
-            }, {
+            axios.get(`${baseUrl}/invoices/${invoiceId}`, {
                 headers: {
                 'token': token
                 }
@@ -82,6 +82,7 @@
                 }
             })
             .then(function (response) {
+                    invoiceId = response.ret.invoiceId;
                     console.log(response);
                     addItem();
             })
