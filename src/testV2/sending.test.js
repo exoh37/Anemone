@@ -6,6 +6,7 @@ const validPassword1 = "ThisIsSecure!123";
 const validPassword2 = "lessSecure2@";
 
 const falseId = 0;
+const falseEmailAddress = "thisIs@noMansLand";
 
 const recipient = "noreply.anemone.seng2021@gmail.com";
 
@@ -78,7 +79,7 @@ describe("Testing route POST /invoices/:invoiceId/send", function() {
         await request(app)
             .post(`/invoicesV2/${invoice1.body.invoiceId}/send`)
             .set("token", user1.body.token)
-            .send({ recipient: falseId })
+            .send({ recipient: falseEmailAddress })
             .expect(401)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": "Token is empty or invalid"});
