@@ -31,6 +31,7 @@ async function invoiceSending(token, recipient, invoiceId) {
         }
 
         const invoice = await client.query("SELECT * FROM invoices i WHERE i.invoiceId = $1", [invoiceId]);
+        console.log(invoice);
         if (invoice.rows.length === 0) {
             return {
                 code: 400,
@@ -54,7 +55,7 @@ async function invoiceSending(token, recipient, invoiceId) {
         }
 
         // Retrieve XML String
-        const xmlString = invoice.row[0].invoice;
+        const xmlString = invoice.rows[0].invoice;
 
         // Check their server is online
         const check = await request(sending).get("/");
