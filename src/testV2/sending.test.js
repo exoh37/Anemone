@@ -18,6 +18,9 @@ const app = require("../main/server");
 const server = require("../main/server");
 
 describe("Testing route POST /invoices/:invoiceId/send", function() {
+    // 20 second timeout to account for connecting to other team's API
+    this.timeout(20000);
+
     it("tests for Retrieving Invoices", async function() {
         // Setup user and login process
         await request(app)
