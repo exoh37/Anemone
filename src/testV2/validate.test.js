@@ -4,7 +4,7 @@ const validEmail1 = "test123@gmail.com";
 const validPassword1 = "ThisIsSecure!123";
 
 const invalidXMLfile1 = "this is just a string";
-const invalidXMLfile2 = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\ninvalid syntax haha`;
+const invalidXMLfile2 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\ninvalid syntax haha";
 
 const request = require("supertest");
 const assert = require("assert");
