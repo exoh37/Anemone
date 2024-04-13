@@ -11,7 +11,7 @@ describe("Testing route POST /invoices/:invoiceId/send", function() {
         await request("https://invoice-seng2021-24t1-eggs.vercel.app")
             .post("/send/email")
             .set("Content-Type", "application/json")
-            .send({ 
+            .send({
                 from: "Anemone Testing API",
                 recipient: recipient,
                 xmlString: XML.mockInvoice1
