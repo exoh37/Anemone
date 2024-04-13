@@ -1,4 +1,4 @@
-const validUsername1 = "validUsername1";
+const validUsername1 = "helloFromAnemone";
 const validUsername2 = "thisIsAValidName";
 const validEmail1 = "test123@gmail.com";
 const validEmail2 = "123test@gmail.com";
