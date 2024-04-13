@@ -1,7 +1,7 @@
 const auth = require("./auth.js");
 const other = require("./other.js");
-// Commented out to pass pipeline
-// const validate = require("./validate.js");
+const validate = require("./validate.js");
+const pool = require("./database.js");
 
 function uploadFile(invoice, token) {
     const tokenValidation = auth.tokenIsValid(token);
@@ -14,27 +14,6 @@ function uploadFile(invoice, token) {
             }
         };
     }
-
-    // Invoice Validation Stuff
-    // Commented out to pass pipeline
-    // const validation = validate.invoiceValidation(invoice);
-    // if (validation.status === "offline") {
-    //     return {
-    //         code: 404,
-    //         ret: {
-    //             success: false,
-    //             error: "Validation API is offline"
-    //         }
-    //     }
-    // } else if (validation.status === "invalid") {
-    //     return {
-    //         code: 400,
-    //         ret: {
-    //             success: false,
-    //             error: "Invoice format invalid"
-    //         }
-    //     }
-    // }
 
     const data = invoice;
     const invoiceId = Date.now();
@@ -293,4 +272,312 @@ function AreValidEntries(newName, newAmount, newDate) {
     return false;
 }
 
-module.exports = { uploadFile, retrieveFile, moveInvoiceToTrash, modifyFile, fileList };
+async function uploadFileV2(invoice, token) {
+    const client = await pool.connect();
+    try {
+        const tokenValidation = await auth.tokenIsValidV2(token);
+        if (!tokenValidation.valid) {
+            return {
+                code: 401,
+                ret: {
+                    success: false,
+                    error: "Token is empty or invalid"
+                }
+            };
+        }
+
+        // Invoice Validation Stuff
+        const validation = validate.invoiceValidation(invoice);
+        if (validation.status === "offline") {
+            return {
+                code: 400,
+                ret: {
+                    success: false,
+                    error: "Validation API is offline"
+                }
+            };
+        } else if (validation.status === "invalid") {
+            return {
+                code: 400,
+                ret: {
+                    success: false,
+                    error: "Invoice is of invalid format"
+                }
+            };
+        }
+
+        const invoiceId = Date.now();
+
+        await pool.query(`
+        INSERT INTO invoices (invoiceId, invoice)
+        VALUES ($1, $2)
+        `, [invoiceId, invoice]);
+
+        const invoiceItems = await auth.fetchXMLData(invoiceId);
+        const name = invoiceItems.invoice.invoiceName[0];
+        const amount = invoiceItems.invoice.amount[0];
+        const date = invoiceItems.invoice.date[0];
+        const owner = tokenValidation.username;
+
+        await pool.query(`
+        INSERT INTO invoiceInfo (invoiceId, invoiceName, owner, amount, date)
+        VALUES ($1, $2, $3, $4, $5)
+        `, [invoiceId, name, owner, amount, date]);
+
+        return {
+            code: 200,
+            ret: {
+                success: true,
+                invoiceId
+            }
+        };
+    } catch (error) {
+        console.error("Failed to upload file:", error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function retrieveFileV2(invoiceId, token) {
+    const client = await pool.connect();
+    try {
+        const tokenValidation = await auth.tokenIsValidV2(token);
+        if (!tokenValidation.valid) {
+            return {
+                code: 401,
+                ret: {
+                    success: false,
+                    error: "Token is empty or invalid"
+                }
+            };
+        }
+
+        const invoice = await client.query("SELECT * FROM invoices i WHERE i.invoiceId = $1", [invoiceId]);
+        if (invoice.rows.length === 0) {
+            return {
+                code: 400,
+                ret: {
+                    success: false,
+                    error: `invoiceId '${invoiceId}' does not refer to an existing invoice`
+                }
+            };
+        }
+
+        const invoiceInfo = await client.query("SELECT * FROM invoiceinfo WHERE invoiceId = $1", [invoiceId]);
+
+        if (invoiceInfo.rows[0].owner !== tokenValidation.username) {
+            return {
+                code: 403,
+                ret: {
+                    success: false,
+                    error: `Not owner of this invoice '${invoiceId}'`
+                }
+            };
+        }
+
+        // OK
+        return {
+            code: 200,
+            ret: {
+                success: true,
+                invoice: {
+                    invoiceId: invoiceInfo.rows[0].invoiceid,
+                    invoiceName: invoiceInfo.rows[0].invoicename,
+                    amount: invoiceInfo.rows[0].amount,
+                    date: invoiceInfo.rows[0].date,
+                }
+            }
+        };
+    } catch (error) {
+        console.error("Failed to retrieve invoice:", error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function fileListV2(token) {
+    const client = await pool.connect();
+    try {
+        const tokenValidation = await auth.tokenIsValidV2(token);
+        if (!tokenValidation.valid) {
+            return {
+                code: 401,
+                ret: {
+                    success: false,
+                    error: "Token is empty or invalid"
+                }
+            };
+        }
+
+        const invoicesList = await client.query("SELECT invoiceid, invoicename, amount, date FROM invoiceinfo WHERE owner = $1", [tokenValidation.username]);
+
+        return {
+            code: 200,
+            ret: {
+                success: true,
+                invoices: invoicesList.rows
+            }
+        };
+    } catch (error) {
+        console.error("Failed to list invoice:", error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function moveInvoiceToTrashV2(invoiceId, token) {
+    const client = await pool.connect();
+    try {
+        const tokenValidation = await auth.tokenIsValidV2(token);
+        if (!tokenValidation.valid) {
+            return {
+                code: 401,
+                ret: {
+                    success: false,
+                    error: "Token is empty or invalid"
+                }
+            };
+        }
+
+        const invoice = await client.query("SELECT * FROM invoices i WHERE i.invoiceId = $1", [invoiceId]);
+
+        if (invoice.rows.length === 0) {
+            return {
+                code: 400,
+                ret: {
+                    success: false,
+                    error: `invoiceId '${invoiceId}' does not refer to an existing invoice`
+                }
+            };
+        }
+
+        const invoiceItems = await client.query("SELECT * FROM invoiceinfo i WHERE i.invoiceid = $1", [invoiceId]);
+        const name = invoiceItems.rows[0].invoicename;
+        const amount = invoiceItems.rows[0].amount;
+        const date = invoiceItems.rows[0].date;
+        const owner = invoiceItems.rows[0].owner;
+        if (owner !== tokenValidation.username) {
+            return {
+                code: 403,
+                ret: {
+                    success: false,
+                    error: `Not owner of this invoice '${invoiceId}'`
+                }
+            };
+        }
+
+        // Add trashed invoice into trash
+        await client.query("INSERT INTO trash (invoiceid, invoice) VALUES ($1, $2)", [invoiceId, invoice.rows[0].invoice]);
+
+        await client.query(`
+        INSERT INTO trashInfo (invoiceId, invoiceName, owner, amount, date)
+        VALUES ($1, $2, $3, $4, $5)
+        `, [invoiceId, name, owner, amount, date]);
+
+        // Remove from current invoices
+        await client.query("DELETE FROM invoices WHERE invoiceid = $1", [invoiceId]);
+        await client.query("DELETE FROM invoiceinfo WHERE invoiceid = $1", [invoiceId]);
+
+        return {
+            code: 200,
+            ret: {
+                success: true,
+            }
+        };
+    } catch (error) {
+        console.error("Failed to delete invoice:", error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function modifyFileV2(invoiceId, token, newName, newAmount, newDate) {
+    const client = await pool.connect();
+    try {
+        const tokenValidation = await auth.tokenIsValidV2(token);
+        if (!tokenValidation.valid) {
+            return {
+                code: 401,
+                ret: {
+                    success: false,
+                    error: "Token is empty or invalid"
+                }
+            };
+        }
+
+        const invoice = await client.query("SELECT * FROM invoices WHERE invoiceid = $1", [invoiceId]);
+        if (invoice.rows.length === 0) {
+            return {
+                code: 400,
+                ret: {
+                    success: false,
+                    error: `invoiceId '${invoiceId}' does not refer to an existing invoice`
+                }
+            };
+        }
+
+        const invoiceInfo = await client.query("SELECT * FROM invoiceinfo WHERE invoiceid = $1", [invoiceId]);
+        if (invoiceInfo.rows[0].owner !== tokenValidation.username) {
+            return {
+                code: 403,
+                ret: {
+                    success: false,
+                    error: `Not owner of this invoice '${invoiceId}'`
+                }
+            };
+        }
+
+        if (!AreValidEntries(newName, newAmount, newDate)) {
+            return {
+                code: 400,
+                ret: {
+                    success: false,
+                    error: "Invalid entry provided; could not modify"
+                }
+            };
+        }
+
+        // modify the entries as requied
+        if (newAmount !== invoiceInfo.rows[0].amount  && !isEmptyOrNull(newAmount)) {
+            await client.query("UPDATE invoiceinfo SET amount = $1 WHERE invoiceid = $2", [newAmount, invoiceId]);
+            await auth.modifyXMLAmount(invoiceId, newAmount);
+        }
+
+        if (!isEmptyOrNull(newDate)) {
+            await client.query("UPDATE invoiceinfo SET date = $1 WHERE invoiceid = $2", [newDate, invoiceId]);
+            await auth.modifyXMLDate(invoiceId, newDate);
+        }
+
+        if (!isEmptyOrNull(newName)) {
+            await client.query("UPDATE invoiceinfo SET invoicename = $1 WHERE invoiceid = $2", [newName, invoiceId]);
+            await auth.modifyXMLName(invoiceId, newName);
+        }
+
+        const updatedInvoice = await client.query("SELECT * FROM invoiceinfo WHERE invoiceid = $1", [invoiceId]);
+        // return invoice
+        return {
+            code: 200,
+            ret: {
+                success: true,
+                invoice: {
+                    invoiceId: updatedInvoice.rows[0].invoiceid,
+                    invoiceName: updatedInvoice.rows[0].invoicename,
+                    amount: updatedInvoice.rows[0].amount,
+                    date: updatedInvoice.rows[0].date
+                }
+            }
+        };
+
+    } catch (error) {
+        console.error("Failed to delete invoice:", error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+module.exports = { uploadFile, retrieveFile, moveInvoiceToTrash, modifyFile, fileList, uploadFileV2, retrieveFileV2, moveInvoiceToTrashV2, fileListV2, modifyFileV2 };
