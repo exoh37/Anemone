@@ -88,7 +88,7 @@ describe("Testing route POST /invoices/:invoiceId/send", function() {
         await request(app)
             .post(`/invoicesV2/${falseId}/send`)
             .set("token", user1.body.token)
-            .send({ recipient: falseId })
+            .send({ recipient: recipient })
             .expect(400)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": `invoiceId '${falseId}' does not refer to an existing invoice`});
