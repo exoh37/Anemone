@@ -1,7 +1,7 @@
 const request = require("supertest");
 const validator = require("validator");
 const sending = "https://invoice-seng2021-24t1-eggs.vercel.app";
-const endpoint = "send/email";
+const endpoint = "/send/email";
 const auth = require("./auth.js");
 const pool = require("./database.js");
 

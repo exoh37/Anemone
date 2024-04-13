@@ -12,7 +12,7 @@ describe("Testing route POST /invoices/:invoiceId/send", function() {
             .post("/send/email")
             .set("Content-Type", "application/json")
             .send({ 
-                from: "Anemone Testing",
+                from: "Anemone Testing API",
                 recipient: recipient,
                 xmlString: XML.mockInvoice1
             })
