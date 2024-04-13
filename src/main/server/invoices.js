@@ -287,7 +287,7 @@ async function uploadFileV2(invoice, token) {
         }
 
         // Invoice Validation Stuff
-        const validation = validate.invoiceValidation(invoice);
+        const validation = await validate.invoiceValidation(invoice);
         if (validation.status === "offline") {
             return {
                 code: 400,
