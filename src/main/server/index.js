@@ -210,11 +210,11 @@ app.post("/trashV2/:invoiceId/restore", async (req, res) => {
 });
 
 // Sending Invoice API Integration
-app.post("/invoicesV2/:invoiceId/send", (req, res) => {
+app.post("/invoicesV2/:invoiceId/send", async (req, res) => {
     const { invoiceId } = req.params;
     const { recipient } = req.body;
     const token = req.headers.token;
-    const response = sending.invoiceSending(token, recipient, invoiceId);
+    const response = await sending.invoiceSending(token, recipient, invoiceId);
     return res.status(response.code).json(response.ret);
 });
 
