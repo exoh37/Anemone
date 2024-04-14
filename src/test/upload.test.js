@@ -1,19 +1,19 @@
 
-const validUsername1 = "validUsername1",
-    validEmail1 = "test123@gmail.com",
-    validPassword1 = "ThisIsSecure!123",
+const validUsername1 = "validUsername1";
+const validEmail1 = "test123@gmail.com";
+const validPassword1 = "ThisIsSecure!123";
 
-    mockInvoice1 = { file: { amount: 125.45 } };
+const mockInvoice1 = { file: { amount: 123.45 } };
 
 const request = require("supertest");
 const assert = require("assert");
 const app = require("../main/server");
-const server = require("../main/server"),
+const server = require("../main/server");
 
-    invalid_token = 0;
+const invalid_token = 0;
 
 describe("Testing route POST /invoices", function() {
-    it("tests for Retrieving Invoices", async function() {
+    it("tests for Uploading Invoices", async function() {
         // Setup user and login process
         await request(app)
             .delete("/clear")

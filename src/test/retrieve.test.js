@@ -3,11 +3,12 @@ const validUsername1 = "validUsername1",
     validEmail1 = "test123@gmail.com",
     validEmail2 = "123test@gmail.com",
     validPassword1 = "ThisIsSecure!123",
-    validPassword2 = "lessSecure2@",
+    validPassword2 = "lessSecure2@";
 
-    mockInvoice1 = { file: { amount: 125.45 } },
-    mockInvoice2 = { "file": "{\"amount\": \"123.45\"}" },
-    falseId = 0;
+const mockInvoice1 = { file: { amount: 123.45 } };
+const mockInvoice2 = { "file": "{\"amount\": \"123.45\"}" };
+
+const falseId = 0;
 
 const request = require("supertest");
 const assert = require("assert");
