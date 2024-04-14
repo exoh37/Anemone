@@ -32,6 +32,16 @@ module.exports = {
         "mocha"
     ],
     "rules": {
+        "no-trailing-spaces": [
+            "error"
+        ],
+        "no-unused-vars": [
+            "error"
+        ],
+        "no-multiple-empty-lines": [
+            "error",
+            { max: 1 }
+        ],
         "indent": [
             "error",
             4

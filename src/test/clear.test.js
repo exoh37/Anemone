@@ -1,11 +1,11 @@
 const request = require("supertest");
 const app = require("../main/server");
-const server = require("../main/server"); 
+const server = require("../main/server");
 
 // Sample test using supertest and mocha
-describe("Testing route: /clear", function() {
-    it("Valid return status and return body", function(done) {
-        request(app)
+describe("Testing route DELETE /clear", function() {
+    it("Valid return status and return body", async function() {
+        await request(app)
             // Route
             .delete("/clear")
             // Status Code
@@ -13,9 +13,7 @@ describe("Testing route: /clear", function() {
             // Regex for checking content type to ignore charset
             .expect("Content-Type", /application\/json/)
             // Expected JSON body
-            .expect({"success": true})
-            // Call done
-            .end(done);
+            .expect({"success": true});
     });
 });
 

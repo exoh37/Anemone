@@ -15,7 +15,7 @@ const assert = require("assert");
 const app = require("../main/server");
 const server = require("../main/server");
 
-describe("List from trash test(s)", function() {
+describe("Testing route GET /trash", function() {
     beforeEach(async function() {
         // Clear data before running any tests
         await request(app)
@@ -82,7 +82,7 @@ describe("List from trash test(s)", function() {
             .get("/trash")
             .set("token", user1.body.token)
             .expect(200);
-        
+
         assert.strictEqual(trashList.body.success, true);
         assert.strictEqual(trashList.body.invoices[0].invoiceId, invoice1.body.invoiceId);
         assert.strictEqual(trashList.body.invoices[0].amount, mockInvoice1.file.amount);
@@ -120,7 +120,7 @@ describe("List from trash test(s)", function() {
             .get("/trash")
             .set("token", user1.body.token)
             .expect(200);
-        
+
         assert.strictEqual(trashList.body.success, true);
         assert.strictEqual(trashList.body.invoices[0].invoiceId, invoice1.body.invoiceId);
         assert.strictEqual(trashList.body.invoices[0].amount, mockInvoice1.file.amount);
@@ -169,7 +169,7 @@ describe("List from trash test(s)", function() {
             .get("/trash")
             .set("token", user1.body.token)
             .expect(200);
-        
+
         assert.strictEqual(trashList1.body.success, true);
         assert.strictEqual(trashList1.body.invoices[0].invoiceId, invoice1.body.invoiceId);
         assert.strictEqual(trashList1.body.invoices[0].amount, mockInvoice1.file.amount);
@@ -207,7 +207,7 @@ describe("List from trash test(s)", function() {
             .get("/trash")
             .set("token", user1.body.token)
             .expect(200);
-        
+
         assert.strictEqual(trashList3.body.success, true);
         assert.strictEqual(trashList3.body.invoices[0].invoiceId, invoice1.body.invoiceId);
         assert.strictEqual(trashList3.body.invoices[0].amount, mockInvoice1.file.amount);

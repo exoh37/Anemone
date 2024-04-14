@@ -12,7 +12,7 @@ const validUsername1 = "validUsername1",
 const request = require("supertest");
 const assert = require("assert");
 const app = require("../main/server");
-const server = require("../main/server"); 
+const server = require("../main/server");
 
 describe("Sprint 2 system test(s)", function() {
     it("System Test", async function() {
@@ -28,7 +28,7 @@ describe("Sprint 2 system test(s)", function() {
             .expect(400)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": "Username 'name with space' contains a whitespace character"});
-        
+
         await request(app)
             .post("/users")
             .send({ username: validUsername1, email: validEmail1, password: validPassword1 })
@@ -62,7 +62,7 @@ describe("Sprint 2 system test(s)", function() {
             .send({ username: validUsername1, password: validPassword1 })
             .expect(200)
             .expect("Content-Type", /application\/json/);
-        
+
         // Using assert to check for each type
         assert.strictEqual(user1.body.success, true);
         assert.strictEqual(typeof user1.body.token, "string");
@@ -72,7 +72,7 @@ describe("Sprint 2 system test(s)", function() {
             .send({ username: validUsername2, password: validPassword2 })
             .expect(200)
             .expect("Content-Type", /application\/json/);
-        
+
         // Using assert to check for each type
         assert.strictEqual(user2.body.success, true);
         assert.strictEqual(typeof user2.body.token, "string");
@@ -114,7 +114,7 @@ describe("Sprint 2 system test(s)", function() {
             .set("token", user1.body.token)
             .expect(200)
             .expect("Content-Type", /application\/json/);
-        
+
         assert.strictEqual(returnedInvoice1.body.success, true);
         assert.strictEqual(returnedInvoice1.body.invoice.invoiceId, invoice1.body.invoiceId);
         assert.strictEqual(returnedInvoice1.body.invoice.amount, mockInvoice1.file.amount);
@@ -125,7 +125,7 @@ describe("Sprint 2 system test(s)", function() {
             .set("token", user2.body.token)
             .expect(200)
             .expect("Content-Type", /application\/json/);
-        
+
         assert.strictEqual(returnedInvoice2.body.success, true);
         assert.strictEqual(returnedInvoice2.body.invoice.invoiceId, invoice2.body.invoiceId);
         assert.strictEqual(returnedInvoice2.body.invoice.amount, mockInvoice2.file.amount);

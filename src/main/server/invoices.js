@@ -1,5 +1,6 @@
 const auth = require("./auth.js");
 const other = require("./other.js");
+const pool = require("./database.js");
 
 function uploadFile(invoice, token) {
     const tokenValidation = auth.tokenIsValid(token);
@@ -12,49 +13,30 @@ function uploadFile(invoice, token) {
             }
         };
     }
-    
-    let data;
-    
-    try {
-        // Support both string and object format
-        if (typeof data === "string") {
-            data = JSON.parse(invoice);
-        } else {
-            data = invoice;
-        }
-    } catch (error) {
-        return {
-            code: 400,
-            ret: {
-                success: false,
-                error: "Invoice is invalid"
-            }
-        };
-    }
 
-    const invoiceId = Date.now(),
-        jsonData = other.getInvoiceData(),
-        // Only 2 decimal places
-        {amount} = data.file;
+    const data = invoice;
+    const invoiceId = Date.now();
+    const jsonData = other.getInvoiceData();
+    const { amount } = data.file;
 
     jsonData.push({
-        invoiceId,
+        invoiceId: invoiceId,
         invoiceName: "PLACEHOLDER_NAME",
         amount,
         date: Date.now(),
         trashed: false,
         owner: tokenValidation.username
     });
-    
+
     other.setInvoiceData(jsonData);
 
     return {
         code: 200,
         ret: {
             success: true,
-            invoiceId
+            invoiceId: invoiceId
         }
-    };    
+    };
 }
 
 function retrieveFile(invoiceId, token) {
@@ -69,8 +51,9 @@ function retrieveFile(invoiceId, token) {
         };
     }
 
-    const jsonData = other.getInvoiceData(),
-        invoice = jsonData.find(invoice => invoice.invoiceId === parseInt(invoiceId));
+    const jsonData = other.getInvoiceData();
+    const invoice = jsonData.find(invoice => invoice.invoiceId === parseInt(invoiceId));
+
     if (invoice === undefined) {
         return {
             code: 400,
@@ -87,7 +70,9 @@ function retrieveFile(invoiceId, token) {
                 error: `Not owner of this invoice '${invoiceId}'`
             }
         };
-    } 
+    }
+
+    // OK
     return {
         code: 200,
         ret: {
@@ -101,7 +86,7 @@ function retrieveFile(invoiceId, token) {
             }
         }
     };
-    
+
 }
 
 function fileList(token) {
@@ -130,7 +115,7 @@ function fileList(token) {
             });
         }
     }
-    
+
     return {
         code: 200,
         ret: {
@@ -155,21 +140,13 @@ function moveInvoiceToTrash(invoiceId, token) {
     const jsonData = other.getInvoiceData();
     const invoiceIndex = jsonData.findIndex(invoice => invoice.invoiceId === parseInt(invoiceId));
     const invoice = jsonData[invoiceIndex];
-    
+
     if (invoice === undefined) {
         return {
             code: 400,
             ret: {
                 success: false,
                 error: `invoiceId '${invoiceId}' does not refer to an existing invoice`
-            }
-        };
-    } else if (invoice.trashed) {
-        return {
-            code: 400,
-            ret: {
-                success: false,
-                error: "invoiceId refers to an invoice in the trash"
             }
         };
     } else if (invoice.owner !== tokenValidation.username) {
@@ -190,14 +167,12 @@ function moveInvoiceToTrash(invoiceId, token) {
     jsonData.splice(invoiceIndex, 1);
     other.setInvoiceData(jsonData);
 
-
     return {
         code: 200,
         ret: {
             success: true,
         }
-    };    
-
+    };
 
 }
 
@@ -216,7 +191,7 @@ function modifyFile(invoiceId, token, newName, newAmount, newDate) {
     const jsonData = other.getInvoiceData();
     const invoiceIndex = jsonData.findIndex(invoice => invoice.invoiceId === parseInt(invoiceId));
     const invoice = jsonData[invoiceIndex];
-    
+
     if (invoice === undefined) {
         return {
             code: 400,
@@ -233,63 +208,355 @@ function modifyFile(invoiceId, token, newName, newAmount, newDate) {
                 error: `Not owner of this invoice '${invoiceId}'`
             }
         };
-    } else if (!AreValidEntries(newAmount, newDate)) { 
+    } else if (!AreValidEntries(newName, newAmount, newDate)) {
         return {
             code: 400,
             ret: {
                 success: false,
-                error: "Invalid date or amount provided; could not modify"
+                error: "Invalid entry provided; could not modify"
             }
         };
-    // Modifying logic here
-    } else {
+    }
+
+    // modify the entries as requied
+    if (newAmount !== invoice.amount && !isEmptyOrNull(newAmount)) {
+        invoice.amount = newAmount;
+    }
+
+    if (!isEmptyOrNull(newDate)) {
+        invoice.date = newDate;
+    }
+
+    if (!isEmptyOrNull(newName)) {
+        invoice.invoiceName = newName;
+    }
+
+    // return invoice
+    return {
+        code: 200,
+        ret: {
+            success: true,
+            invoice: {
+                invoiceId: invoice.invoiceId,
+                invoiceName: invoice.invoiceName,
+                amount: invoice.amount,
+                date: invoice.date,
+                trashed: invoice.trashed
+            }
+        }
+    };
+}
+
+function isEmptyOrNull(entry) {
+    return entry === undefined || entry === null || entry.toString().trim().length === 0;
+}
+
+function AreValidEntries(newName, newAmount, newDate) {
+    if (isEmptyOrNull(newAmount) && isEmptyOrNull(newDate) && isEmptyOrNull(newName)) {
+        return false;
+    }
+
+    if (!isEmptyOrNull(newAmount)) {
+        if (!isEmptyOrNull(newDate) && isEmptyOrNull(newName) ||
+            !isEmptyOrNull(newDate) && !isEmptyOrNull(newName)) {
+            return parseInt(newAmount) > 0 && (new Date(newDate)) <= Date.now();
+        } else {
+            return parseInt(newAmount) > 0;
+        }
+    } else if (!isEmptyOrNull(newDate)) {
+        return (new Date(newDate)) <= Date.now();
+    } else if (!isEmptyOrNull(newName)) {
+        return true;
+    }
+    return false;
+}
+
+async function uploadFileV2(invoice, token) {
+    const client = await pool.connect();
+    try {
+        const tokenValidation = await auth.tokenIsValidV2(token);
+        if (!tokenValidation.valid) {
+            return {
+                code: 401,
+                ret: {
+                    success: false,
+                    error: "Token is empty or invalid"
+                }
+            };
+        }
+
+        const invoiceId = Date.now();
+
+        await pool.query(`
+        INSERT INTO invoices (invoiceId, invoice)
+        VALUES ($1, $2)
+        `, [invoiceId, invoice]);
+
+        const invoiceItems = await auth.fetchXMLData(invoiceId);
+        const name = invoiceItems.invoice.invoiceName[0];
+        const amount = invoiceItems.invoice.amount[0];
+        const date = invoiceItems.invoice.date[0];
+        const owner = tokenValidation.username;
+
+        await pool.query(`
+        INSERT INTO invoiceInfo (invoiceId, invoiceName, owner, amount, date)
+        VALUES ($1, $2, $3, $4, $5)
+        `, [invoiceId, name, owner, amount, date]);
+
+        return {
+            code: 200,
+            ret: {
+                success: true,
+                invoiceId
+            }
+        };
+    } catch (error) {
+        console.error("Failed to upload file:", error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function retrieveFileV2(invoiceId, token) {
+    const client = await pool.connect();
+    try {
+        const tokenValidation = await auth.tokenIsValidV2(token);
+        if (!tokenValidation.valid) {
+            return {
+                code: 401,
+                ret: {
+                    success: false,
+                    error: "Token is empty or invalid"
+                }
+            };
+        }
+
+        const invoice = await client.query("SELECT * FROM invoices i WHERE i.invoiceId = $1", [invoiceId]);
+        if (invoice.rows.length === 0) {
+            return {
+                code: 400,
+                ret: {
+                    success: false,
+                    error: `invoiceId '${invoiceId}' does not refer to an existing invoice`
+                }
+            };
+        }
+
+        const invoiceInfo = await client.query("SELECT * FROM invoiceinfo WHERE invoiceId = $1", [invoiceId]);
+
+        if (invoiceInfo.rows[0].owner !== tokenValidation.username) {
+            return {
+                code: 403,
+                ret: {
+                    success: false,
+                    error: `Not owner of this invoice '${invoiceId}'`
+                }
+            };
+        }
+
+        // OK
+        return {
+            code: 200,
+            ret: {
+                success: true,
+                invoice: {
+                    invoiceId: invoiceInfo.rows[0].invoiceid,
+                    invoiceName: invoiceInfo.rows[0].invoicename,
+                    amount: invoiceInfo.rows[0].amount,
+                    date: invoiceInfo.rows[0].date,
+                }
+            }
+        };
+    } catch (error) {
+        console.error("Failed to retrieve invoice:", error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function fileListV2(token) {
+    const client = await pool.connect();
+    try {
+        const tokenValidation = await auth.tokenIsValidV2(token);
+        if (!tokenValidation.valid) {
+            return {
+                code: 401,
+                ret: {
+                    success: false,
+                    error: "Token is empty or invalid"
+                }
+            };
+        }
+
+        const invoicesList = await client.query("SELECT invoiceid, invoicename, amount, date FROM invoiceinfo WHERE owner = $1", [tokenValidation.username]);
+
+        return {
+            code: 200,
+            ret: {
+                success: true,
+                invoices: invoicesList.rows
+            }
+        };
+    } catch (error) {
+        console.error("Failed to list invoice:", error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function moveInvoiceToTrashV2(invoiceId, token) {
+    const client = await pool.connect();
+    try {
+        const tokenValidation = await auth.tokenIsValidV2(token);
+        if (!tokenValidation.valid) {
+            return {
+                code: 401,
+                ret: {
+                    success: false,
+                    error: "Token is empty or invalid"
+                }
+            };
+        }
+
+        const invoice = await client.query("SELECT * FROM invoices i WHERE i.invoiceId = $1", [invoiceId]);
+
+        if (invoice.rows.length === 0) {
+            return {
+                code: 400,
+                ret: {
+                    success: false,
+                    error: `invoiceId '${invoiceId}' does not refer to an existing invoice`
+                }
+            };
+        }
+
+        const invoiceItems = await client.query("SELECT * FROM invoiceinfo i WHERE i.invoiceid = $1", [invoiceId]);
+        const name = invoiceItems.rows[0].invoicename;
+        const amount = invoiceItems.rows[0].amount;
+        const date = invoiceItems.rows[0].date;
+        const owner = invoiceItems.rows[0].owner;
+        if (owner !== tokenValidation.username) {
+            return {
+                code: 403,
+                ret: {
+                    success: false,
+                    error: `Not owner of this invoice '${invoiceId}'`
+                }
+            };
+        }
+
+        // Add trashed invoice into trash
+        await client.query("INSERT INTO trash (invoiceid, invoice) VALUES ($1, $2)", [invoiceId, invoice.rows[0].invoice]);
+
+        await client.query(`
+        INSERT INTO trashInfo (invoiceId, invoiceName, owner, amount, date)
+        VALUES ($1, $2, $3, $4, $5)
+        `, [invoiceId, name, owner, amount, date]);
+
+        // Remove from current invoices
+        await client.query("DELETE FROM invoices WHERE invoiceid = $1", [invoiceId]);
+        await client.query("DELETE FROM invoiceinfo WHERE invoiceid = $1", [invoiceId]);
+
+        return {
+            code: 200,
+            ret: {
+                success: true,
+            }
+        };
+    } catch (error) {
+        console.error("Failed to delete invoice:", error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function modifyFileV2(invoiceId, token, newName, newAmount, newDate) {
+    const client = await pool.connect();
+    try {
+        const tokenValidation = await auth.tokenIsValidV2(token);
+        if (!tokenValidation.valid) {
+            return {
+                code: 401,
+                ret: {
+                    success: false,
+                    error: "Token is empty or invalid"
+                }
+            };
+        }
+
+        const invoice = await client.query("SELECT * FROM invoices WHERE invoiceid = $1", [invoiceId]);
+        if (invoice.rows.length === 0) {
+            return {
+                code: 400,
+                ret: {
+                    success: false,
+                    error: `invoiceId '${invoiceId}' does not refer to an existing invoice`
+                }
+            };
+        }
+
+        const invoiceInfo = await client.query("SELECT * FROM invoiceinfo WHERE invoiceid = $1", [invoiceId]);
+        if (invoiceInfo.rows[0].owner !== tokenValidation.username) {
+            return {
+                code: 403,
+                ret: {
+                    success: false,
+                    error: `Not owner of this invoice '${invoiceId}'`
+                }
+            };
+        }
+
+        if (!AreValidEntries(newName, newAmount, newDate)) {
+            return {
+                code: 400,
+                ret: {
+                    success: false,
+                    error: "Invalid entry provided; could not modify"
+                }
+            };
+        }
+
         // modify the entries as requied
-        if (newAmount !== invoice.amount) {
-            invoice.amount = newAmount;
+        if (newAmount !== invoiceInfo.rows[0].amount  && !isEmptyOrNull(newAmount)) {
+            await client.query("UPDATE invoiceinfo SET amount = $1 WHERE invoiceid = $2", [newAmount, invoiceId]);
+            await auth.modifyXMLAmount(invoiceId, newAmount);
         }
-        console.log("date is noooooooowwww ", newDate);
-        if (newDate !== null && newDate !== "") {
-            invoice.date = newDate;
+
+        if (!isEmptyOrNull(newDate)) {
+            await client.query("UPDATE invoiceinfo SET date = $1 WHERE invoiceid = $2", [newDate, invoiceId]);
+            await auth.modifyXMLDate(invoiceId, newDate);
         }
+
+        if (!isEmptyOrNull(newName)) {
+            await client.query("UPDATE invoiceinfo SET invoicename = $1 WHERE invoiceid = $2", [newName, invoiceId]);
+            await auth.modifyXMLName(invoiceId, newName);
+        }
+
+        const updatedInvoice = await client.query("SELECT * FROM invoiceinfo WHERE invoiceid = $1", [invoiceId]);
         // return invoice
         return {
             code: 200,
             ret: {
                 success: true,
                 invoice: {
-                    invoiceId: invoice.invoiceId,
-                    invoiceName: invoice.invoiceName,
-                    amount: invoice.amount,
-                    date: invoice.date,
-                    trashed: invoice.trashed
+                    invoiceId: updatedInvoice.rows[0].invoiceid,
+                    invoiceName: updatedInvoice.rows[0].invoicename,
+                    amount: updatedInvoice.rows[0].amount,
+                    date: updatedInvoice.rows[0].date
                 }
             }
         };
+
+    } catch (error) {
+        console.error("Failed to delete invoice:", error);
+        throw error;
+    } finally {
+        client.release();
     }
 }
 
-function AreValidEntries(newAmount, newDate) {
-    if ((newAmount === null && newDate === null)
-    || ((newAmount.toString().trim().length === 0 && newDate.toString().trim().length === 0))) {
-        return false;
-    }
-
-    if (newAmount !== null && newAmount.toString().trim().length !== 0) {
-        if (newDate !== null && newDate.toString().trim().length !== 0) {
-            if (parseInt(newAmount) > 0 && (new Date(newDate)) <= Date.now()) {
-                return true;
-            }
-        } else {
-            if (parseInt(newAmount) > 0) {
-                return true;
-            }
-        }
-    } else if ((new Date(newDate)) <= Date.now()) {
-        return true;
-    }
-
-    return false;
-}
-
-
-module.exports = { uploadFile, retrieveFile, moveInvoiceToTrash, modifyFile, fileList };
+module.exports = { uploadFile, retrieveFile, moveInvoiceToTrash, modifyFile, fileList, uploadFileV2, retrieveFileV2, moveInvoiceToTrashV2, fileListV2, modifyFileV2 };

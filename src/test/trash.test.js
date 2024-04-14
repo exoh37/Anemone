@@ -5,16 +5,13 @@ const validEmail2 = "123test@gmail.com";
 const validPassword1 = "ThisIsSecure!123";
 const validPassword2 = "lessSecure2@";
 
-
 const mockInvoice1 = { file: { amount: 125.45 } };
 const falseId = 0;
-
 
 const request = require("supertest");
 const assert = require("assert");
 const app = require("../main/server");
-const server = require("../main/server"); 
-
+const server = require("../main/server");
 
 //tests
 //1. successfully in trash
@@ -23,9 +20,9 @@ const server = require("../main/server");
 //4. invoiceid already in trash, not trashed
 //5. valid token but invalid invoiceid (user is not owner of the invoice), not trashed
 
-describe("moveToTrash system tests", function() {
+describe("Testing route DELETE /invoices/{invoiceId}", function() {
     it("test for moving invoice to trash successfully", async function() {
-        
+
         await request(app)
             .delete("/clear")
             .expect(200)
@@ -39,8 +36,7 @@ describe("moveToTrash system tests", function() {
             .expect(200)
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
-        
-            
+
         await request(app)
             .post("/users")
             .send({ username: validUsername2, email: validEmail2, password: validPassword2 })
@@ -55,16 +51,15 @@ describe("moveToTrash system tests", function() {
             .expect(200)
             .expect("Content-Type", /application\/json/);
 
-        
         const user2 = await request(app)
             .post("/users/login")
             .send({ username: validUsername2, password: validPassword2 })
             .expect(200)
             .expect("Content-Type", /application\/json/);
-        
+
         assert.strictEqual(user1.body.success, true);
         assert.strictEqual(typeof user1.body.token, "string");
-    
+
         // invoice created
         const invoice1 = await request(app)
             .post("/invoices")
@@ -116,7 +111,6 @@ describe("moveToTrash system tests", function() {
             .expect({"success": false, "error": `invoiceId '${invoice1.body.invoiceId}' does not refer to an existing invoice`});
 
         // invoice wont be found since it has been moved (via put req) to trash file
-       
 
     });
 });

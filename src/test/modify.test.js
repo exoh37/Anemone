@@ -10,26 +10,27 @@ const validPassword3 = "less901Secure2@";
 
 const emptyString = "";
 
+const validName = "validName";
 const validAmount = 5;
 const validFinalAmount = 10;
-const validDate = new Date(); 
+const validDate = new Date();
 validDate.setDate(validDate.getDate() - 2);
 const futureDate = new Date();
 futureDate.setDate(futureDate.getDate() + 2);
 
-
 const mockInvoice1 = { file: { amount: 125.45 } };
-const mockInvoice2 = { "file": "{\"amount\": \"123.45\"}" };
+const mockInvoice2 = { file: { amount: 125.45 } };
 const mockInvoice3 = { file: { amount: 17.90, date: validDate } };
+const mockInvoice4 = { file: { invoiceName: "defaultName", amount: 5, date: validDate }};
 const falseId = 0;
 
 const request = require("supertest");
 const assert = require("assert");
 const app = require("../main/server");
-const server = require("../main/server"); 
+const server = require("../main/server");
 const other = require("../main/server/other.js");
 
-describe("Modifying - Unit tests V1", function() {
+describe("Testing route PUT /invoices/{invoiceId}", function() {
     it("tests for Modifying Invoices", async function() {
         // setup user and login process
         await request(app)
@@ -70,7 +71,7 @@ describe("Modifying - Unit tests V1", function() {
             .send({ username: validUsername2, password: validPassword2 })
             .expect(200)
             .expect("Content-Type", /application\/json/);
-        
+
         const user3 = await request(app)
             .post("/users/login")
             .send({ username: validUsername3, password: validPassword3 })
@@ -109,16 +110,14 @@ describe("Modifying - Unit tests V1", function() {
         assert.strictEqual(invoice3.body.success, true);
         assert.strictEqual(typeof invoice3.body.invoiceId, "number");
 
-        // check successful retrieve
-        const returnedInvoice1 = await request(app)
-            .get(`/invoices/${invoice1.body.invoiceId}`)
-            .set("token", user1.body.token)
-            .expect(200)
-            .expect("Content-Type", /application\/json/);
-        assert.strictEqual(returnedInvoice1.body.success, true);
-        assert.strictEqual(returnedInvoice1.body.invoice.invoiceId, invoice1.body.invoiceId);
-        assert.strictEqual(returnedInvoice1.body.invoice.amount, mockInvoice1.file.amount);
-        assert.strictEqual(returnedInvoice1.body.invoice.trashed, false);
+        const invoice4 = await request(app)
+            .post("/invoices")
+            .set("token", user3.body.token)
+            .send({ invoice: mockInvoice4 })
+            .expect(200);
+
+        assert.strictEqual(invoice4.body.success, true);
+        assert.strictEqual(typeof invoice4.body.invoiceId, "number");
 
         // modify testing here
         // what is being tested:
@@ -132,6 +131,13 @@ describe("Modifying - Unit tests V1", function() {
          * sucess 200 amount positive, newDate valid - added
          * success 200, no modification to amount, newDate valid - added
          * success 200 empty newDate string - added
+         *
+         * sprint 4 tests
+         * error 400 valid name, valid date, invalid amount - added
+         * error 400 valid name, invalid date, valid amount - added
+         * success 200 valid name empty other 2 - added
+         * success 200 all valid non-empty entries - added
+         *
          */
 
         // error 400 invoiceId not found
@@ -160,7 +166,7 @@ describe("Modifying - Unit tests V1", function() {
             .expect(403)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": `Not owner of this invoice '${invoice1.body.invoiceId}'`});
-        
+
         // error 400 empty entries
         await request(app)
             .put(`/invoices/${invoice1.body.invoiceId}`)
@@ -168,8 +174,8 @@ describe("Modifying - Unit tests V1", function() {
             .send({ newName: "", newAmount: emptyString, newDate: emptyString })
             .expect(400)
             .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": "Invalid date or amount provided; could not modify"});
-        
+            .expect({"success": false, "error": "Invalid entry provided; could not modify"});
+
         // error 400 date in future
         await request(app)
             .put(`/invoices/${invoice1.body.invoiceId}`)
@@ -177,8 +183,8 @@ describe("Modifying - Unit tests V1", function() {
             .send({ newName: "", newAmount: validAmount, newDate: futureDate })
             .expect(400)
             .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": "Invalid date or amount provided; could not modify"});
-    
+            .expect({"success": false, "error": "Invalid entry provided; could not modify"});
+
         // error 400 amount not positive
         await request(app)
             .put(`/invoices/${invoice1.body.invoiceId}`)
@@ -186,8 +192,26 @@ describe("Modifying - Unit tests V1", function() {
             .send({ newName: "", newAmount: "0", newDate: validDate })
             .expect(400)
             .expect("Content-Type", /application\/json/)
-            .expect({"success": false, "error": "Invalid date or amount provided; could not modify"});
-        
+            .expect({"success": false, "error": "Invalid entry provided; could not modify"});
+
+        // error 400 valid name, invalid date, valid amount
+        await request(app)
+            .put(`/invoices/${invoice1.body.invoiceId}`)
+            .set("token", user1.body.token)
+            .send({ newName: validName, newAmount: validAmount, newDate: futureDate })
+            .expect(400)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": "Invalid entry provided; could not modify"});
+
+        // error 400 valid name, valid date, invalid amount
+        await request(app)
+            .put(`/invoices/${invoice1.body.invoiceId}`)
+            .set("token", user1.body.token)
+            .send({ newName: validName, newAmount: 0, newDate: validDate })
+            .expect(400)
+            .expect("Content-Type", /application\/json/)
+            .expect({"success": false, "error": "Invalid entry provided; could not modify"});
+
         // success 200, params OK
         const modifiedInvoice1 = await request(app)
             .put(`/invoices/${invoice1.body.invoiceId}`)
@@ -212,7 +236,7 @@ describe("Modifying - Unit tests V1", function() {
 
         assert.strictEqual(modifiedInvoice2.body.success, true);
         assert.strictEqual(modifiedInvoice2.body.invoice.invoiceId, invoice2.body.invoiceId);
-        assert.strictEqual(modifiedInvoice2.body.invoice.amount, "");
+        assert.strictEqual(modifiedInvoice2.body.invoice.amount, mockInvoice2.file.amount);
         assert.strictEqual(modifiedInvoice2.body.invoice.date, validDate.toJSON());
         assert.strictEqual(modifiedInvoice2.body.invoice.trashed, false);
 
@@ -223,15 +247,47 @@ describe("Modifying - Unit tests V1", function() {
             .send({ newName: "", newAmount: validFinalAmount, newDate: null})
             .expect(200)
             .expect("Content-Type", /application\/json/);
-        
-        const jsonData = other.getInvoiceData(),
+
+        var jsonData = other.getInvoiceData(),
             invoice = jsonData.find(invoice => invoice.invoiceId === parseInt(invoice3.body.invoiceId));
-    
+
         assert.strictEqual(modifiedInvoice3.body.success, true);
         assert.strictEqual(modifiedInvoice3.body.invoice.invoiceId, invoice3.body.invoiceId);
         assert.strictEqual(modifiedInvoice3.body.invoice.amount, validFinalAmount);
         assert.strictEqual(modifiedInvoice3.body.invoice.date, invoice.date);
         assert.strictEqual(modifiedInvoice3.body.invoice.trashed, false);
+
+        // success 200, amount changed but date NOT changed
+        var modifiedInvoice4 = await request(app)
+            .put(`/invoices/${invoice4.body.invoiceId}`)
+            .set("token", user3.body.token)
+            .send({ newName: validName, newAmount: "", newDate: ""})
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        jsonData = other.getInvoiceData(),
+        invoice = jsonData.find(invoice => invoice.invoiceId === parseInt(invoice4.body.invoiceId));
+
+        assert.strictEqual(modifiedInvoice4.body.success, true);
+        assert.strictEqual(modifiedInvoice4.body.invoice.invoiceName, validName);
+        assert.strictEqual(modifiedInvoice4.body.invoice.invoiceId, invoice4.body.invoiceId);
+        assert.strictEqual(modifiedInvoice4.body.invoice.amount, mockInvoice4.file.amount);
+        assert.strictEqual(modifiedInvoice4.body.invoice.date, invoice.date);
+        assert.strictEqual(modifiedInvoice4.body.invoice.trashed, false);
+
+        modifiedInvoice4 = await request(app)
+            .put(`/invoices/${invoice4.body.invoiceId}`)
+            .set("token", user3.body.token)
+            .send({ newName: validName, newAmount: validAmount, newDate: validDate})
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        assert.strictEqual(modifiedInvoice4.body.success, true);
+        assert.strictEqual(modifiedInvoice4.body.invoice.invoiceName, validName);
+        assert.strictEqual(modifiedInvoice4.body.invoice.invoiceId, invoice4.body.invoiceId);
+        assert.strictEqual(modifiedInvoice4.body.invoice.amount, validAmount);
+        assert.strictEqual(modifiedInvoice4.body.invoice.date, validDate.toJSON());
+        assert.strictEqual(modifiedInvoice4.body.invoice.trashed, false);
     });
 });
 

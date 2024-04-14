@@ -50,7 +50,7 @@ describe("Sprint 3 system test(s)", function() {
         await request(app)
             .post("/users")
             .send({ username: validUsername1, email: validEmail1, password: validPassword1 });
-        
+
         await request(app)
             .post("/users")
             .send({ username: validUsername2, email: validEmail2, password: validPassword2 });
@@ -75,7 +75,7 @@ describe("Sprint 3 system test(s)", function() {
             .set("token", user2.body.token)
             .expect(200)
             .expect("Content-Type", /application\/json/);
-        
+
         assert.strictEqual(emptyList1.body.invoices.length, 0);
         assert.strictEqual(emptyList2.body.invoices.length, 0);
 
@@ -168,7 +168,7 @@ describe("Sprint 3 system test(s)", function() {
             .set("token", user2.body.token)
             .expect(200)
             .expect("Content-Type", /application\/json/);
-            
+
         assertListIndexHasInvoice(invoiceList, 0, returnedInvoice4, user2, false);
 
         // Move to trash (2 + 4)
@@ -272,7 +272,7 @@ describe("Sprint 3 system test(s)", function() {
             .send(modifyInvoice1)
             .expect(200)
             .expect("Content-Type", /application\/json/);
-        
+
         // Unchanging invoiceId, unchanged name, changed amount, unchanging date
         assert.strictEqual(modifiedInvoice1.body.success, true);
         assert.strictEqual(modifiedInvoice1.body.invoice.invoiceId, invoice1.body.invoiceId);
@@ -360,7 +360,7 @@ describe("Sprint 3 system test(s)", function() {
             .expect("Content-Type", /application\/json/);
 
         assertListIndexHasInvoice(invoiceList, 0, modifiedInvoice3, true);
-        
+
         const trashList1 = await request(app)
             .get("/trash")
             .set("token", user1.body.token)
@@ -372,7 +372,7 @@ describe("Sprint 3 system test(s)", function() {
             .set("token", user2.body.token)
             .expect(200)
             .expect("Content-Type", /application\/json/);
-        
+
         assert.strictEqual(trashList1.body.invoices.length, 0);
         assert.strictEqual(trashList2.body.invoices.length, 0);
     });
