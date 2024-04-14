@@ -1325,6 +1325,12 @@ paths:
               $ref: '#/components/schemas/invoiceSendingRequestBodyV2'
         required: true
       responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/okReturnObject'
         '400':
           description: |-
             If any of the following is true:
@@ -1343,6 +1349,31 @@ paths:
                 $ref: '#/components/schemas/error'
         '403':
           description: Valid token and invoiceId are provided, but user is not owner of this invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /users/logoout:
+    post:
+      tags:
+        - users v2
+      summary: Logout a currently logged in user
+      parameters:
+        - name: token
+          in: header
+          description: The token used for user login
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/okReturnObject'
+        '401':
+          description: Token is empty or invalid
           content:
             application/json:
               schema:
