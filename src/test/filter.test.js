@@ -6,9 +6,11 @@ const validUsername1 = "validUsername1",
     validPassword2 = "lessSecure2@",
 
     mockInvoice1 = { file: { amount: 125.45,
-                             title: "Business" } },
-    mockInvoice2 = { "file": "{\"amount\": \"123.45\", \"title\": \"Business\" }" },
+                            title: "Business" } },
+    mockInvoice2 = { file: { amount: 130.05,
+                            title: "NotBusiness" } },
     filteredWord = "Business",
+    OtherFilteredWord = "BadBusiness",
     emptyString = "",
     invalidToken = 0;
 const request = require("supertest");
@@ -75,17 +77,19 @@ describe("Testing filtering of invoices", function() {
         assert.strictEqual(invoice2.body.success, true);
         assert.strictEqual(typeof invoice2.body.invoiceId, "number");
 
-        const filteredInvoice = await request(app)
+        // Success case
+        const filteredInvoice1 = await request(app)
             .get(`/invoices/search/${filteredWord}`)
             .set("token", user1.body.token)
             .expect(200)
             .expect("Content-Type", /application\/json/)
-            
-        assert.strictEqual(filteredInvoice.body.success, true);
-        assert.strictEqual(filteredInvoice.body.filteredInvoices.invoiceId, invoice1.body.invoiceId);
-        assert.strictEqual(filteredInvoice.body.filteredInvoices.invoiceName, mockInvoice1.file.title);
-        assert.strictEqual(filteredInvoice.body.filteredInvoices.trashed, false);
+        
+        assert.strictEqual(filteredInvoice1.body.success, true);
+        assert.strictEqual(filteredInvoice1.body.filteredInvoices.invoiceId, invoice1.body.invoiceId);
+        assert.strictEqual(filteredInvoice1.body.filteredInvoices.invoiceName, mockInvoice1.file.title);
+        assert.strictEqual(filteredInvoice1.body.filteredInvoices.trashed, false);
 
+        // 401 error case invalid token
         await request(app)
             .get(`/invoices/search/${filteredWord}`)
             .set("token", invalidToken)
@@ -93,6 +97,7 @@ describe("Testing filtering of invoices", function() {
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": "Token is empty or invalid"});
             
+        // 401 error case no token
         await request(app)
             .get(`/invoices/search/${filteredWord}`)
             .set("token", emptyString)

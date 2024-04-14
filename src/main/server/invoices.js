@@ -267,8 +267,8 @@ function AreValidEntries(newAmount, newDate) {
 
 function filterInvoice(token, filteredWord) {
     const tokenValidation = auth.tokenIsValid(token);
-
     const jsonData = other.getInvoiceData();
+
     const filteredInvoices = jsonData.find(invoice => {
         return invoice.invoiceName.toLowerCase().includes(filteredWord.toLowerCase());
     });
@@ -284,6 +284,7 @@ function filterInvoice(token, filteredWord) {
     }
 
     if (filteredWord === "") {
+        console.log("EMPTYKNHJADEJ");
         return {
             code: 400,
             ret: {
@@ -292,10 +293,6 @@ function filterInvoice(token, filteredWord) {
             }
         };
     }
-
-    
-    // console.log(jsonData);
-    // console.log(filteredInvoices);
 
     return {
         code: 200,
