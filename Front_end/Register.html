@@ -8,32 +8,76 @@
                 <link rel="stylesheet" href="Register_style.css" />
         </head>
         <body>
+        <div class="dropdown">
+                <button class="dropbtn">Languages</button>
+                <div class="dropdown-content">
+                        <a href="Register_jap.html">日本語</a>
+                        <a href="Register_cn.html">中国人</a>
+                        <a href="Register_a.html">عربي</a>  
+                </div>
+        </div>
         <h1 class="glow">Anemone</h1>
         <div class="wrapper">
                 <div class="form-wrapper sign-in">
-                        <form action="">
+                        <form>
                                 <h2>Register</h2>
                                 <div class="input-group">
-                                        <input type="text" required>
-                                        <label for="">Username</label>
+                                        <input type="text" name="username" id="username" required>
+                                        <label for="username">Username</label>
                                  </div>
                                 <div class="input-group">
-                                        <input type="email" required>
-                                        <label for="">Email</label>
+                                        <input type="email" name="email" id="email" required>
+                                        <label for="email">Email</label>
                                 </div>
                                 <div class="input-group">
-                                        <input type="password" required>
-                                        <label for="">Password</label>
+                                        <input type="password" name="password" id="password"  required>
+                                        <label for="password">Password</label>
                                 </div>
                                 <div class="remember">
                                         <label><input type="checkbox"> I agree to the terms & conditions</label>
                                 </div>
-                                <button type="submit">Sign Up</button>
+                                <button type="submit" id="register">Register</button>
+               
                                 <div class="signUp-link">
-                                        <p>Already have an account? <a href="#" class="signInBtn-link">Sign In</a></p>
+                                        <p>Already have an account? <a href="Login.html" class="signInBtn-link">Login</a></p>
                                 </div>
                         </form>
                 </div>
               </div>
+        
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+
+                const postBtn = document.getElementById("register");
+
+
+                const baseUrl = 'http://localhost:3103'
+
+                
+                postBtn.addEventListener('click', postinfo);
+                async function postinfo(e){
+
+                        const usernameId = document.getElementById('username');
+                        let username = usernameId.value;
+                        const passwordId = document.getElementById('password');
+                        let password = passwordId.value;
+                        const emailId = document.getElementById('email');
+                        let email = emailId.value;
+                        e.preventDefault()
+                        axios.post(`${baseUrl}/usersV2`, {
+                                username: username,
+                                email: email,
+                                password: password
+                        })
+                        .then(function (response) {
+                                console.log(response);
+                                window.location.replace("main.html")
+                        })
+                        .catch(function (error) {
+                                console.log(error);
+                        })
+                }
+                
+        </script>
         </body>
 </html>

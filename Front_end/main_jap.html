@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>main_page</title>
+    <link rel="stylesheet" href="main_style.css" />
+    <script src="main_script.js"></script>
+</head>
+<body>
+    <div class="dropdown">
+        <button class="dropbtn">Languages</button>
+        <div class="dropdown-content">
+                <a href="main.html">English</a>
+                <a href="main_cn.html">中国人</a>
+                <a href="main_a.html">عربي</a>  
+        </div>
+    </div>
+    <h1>Anemone ファイルストレージ</h1>
+
+    <form id="form" onsubmit="return false;">
+        <label for="fileInput" class="btn">ファイル選択</label>
+        <input type='file' id="fileInput" />
+        <input type="submit" value="アップロード" id="uploadButton" onclick="addItem();" />
+    </form>
+
+    <div class="progress-bar" id="pass-bar">
+        <div class="label" data-count="100">0%</div>
+        <div class="line"style="width:500px">
+          <span></span>
+        </div>
+      </div>
+      
+    
+    <div id="list-container">
+        <input type="text" id="search" placeholder="検索..." />
+        <button id="retrieveButton" onclick="searchItem()">取得</button>
+        <ul id="list"></ul>
+    </div>
+
+</body>
+</html>

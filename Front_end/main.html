@@ -6,13 +6,22 @@
     <title>main_page</title>
     <link rel="stylesheet" href="main_style.css" />
     <script src="main_script.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 </head>
 <body>
+    <div class="dropdown">
+        <button class="dropbtn">Languages</button>
+        <div class="dropdown-content">
+                <a href="main_jap.html">日本語</a>
+                <a href="main_cn.html">中国人</a>
+                <a href="main_a.html">عربي</a>  
+        </div>
+    </div>
     <h1>Anemone File storage</h1>
 
     <form id="form" onsubmit="return false;">
         <input type='file' id="fileInput" />
-        <input type="submit" value="Upload" id="uploadButton" onclick="addItem();" />
+        <button type="submit" id="uploadButton">Upload</button>
     </form>
 
     <div class="progress-bar" id="pass-bar">
@@ -29,5 +38,58 @@
         <ul id="list"></ul>
     </div>
 
+    
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const postBtn = document.getElementById("uploadButton");
+        const getBtn = document.getElementById("retrieveButton");
+
+        const token = window.location.href.split('=')[1];
+        console.log(token);
+
+        const baseUrl = 'http://localhost:3103';
+    
+        let invoiceId = 0;
+
+        postBtn.addEventListener('click', postinfo);
+        postBtn.addEventListener('click', getinfo);
+
+        async function getinfo(e){
+
+            e.preventDefault()
+            axios.get(`${baseUrl}/invoicesV2/${invoiceId}`, {
+                headers: {
+                'token': token
+                }
+            })
+            .then(function (response) {
+                    console.log(response);
+                    addItem();
+            })
+            .catch(function (error) {
+                    console.log(error);
+            })
+        }
+        async function postinfo(e){
+            var input = document.getElementById('fileInput');
+            var userInput = input.files[0].name;
+            e.preventDefault()
+            axios.post(`${baseUrl}/invoicesV2`, {
+                    invoice: userInput,
+            }, {
+                headers: {
+                'token': token
+                }
+            })
+            .then(function (response) {
+                    invoiceId = response.ret.invoiceId;
+                    console.log(response);
+                    addItem();
+            })
+            .catch(function (error) {
+                    console.log(error);
+            })
+        }
+    </script>
 </body>
 </html>

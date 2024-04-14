@@ -8,6 +8,15 @@
                 <link rel="stylesheet" href="Login_style.css" />
         </head>
         <body>
+        <div class="dropdown">
+                <button class="dropbtn">Languages</button>
+                <div class="dropdown-content">
+                        <a href="Login_jap.html">日本語</a>
+                        <a href="Login_cn.html">中国人</a>
+                        <a href="Login_a.html">عربي</a>  
+                </div>
+        </div>
+        
         <h1 class="glow">Anemone</h1>
 
         <div class="wrapper">
@@ -15,23 +24,52 @@
                         <form action="">
                                 <h2>Login</h2>
                                 <div class="input-group">
-                                        <input type="text" required>
-                                        <label for="">Username</label>
+                                        <input type="text" id="username" required>
+                                        <label for="username">Username</label>
                                 </div>
                                 <div class="input-group">
-                                        <input type="password" required>
-                                        <label for="">Password</label>
+                                        <input type="password" id="password" required>
+                                        <label for="password">Password</label>
                                 </div>
                                 <div class="remember">
                                         <label><input type="checkbox"> Remember me</label>
                                 </div>
-                                <button type="submit">Login</button>
+                                <button type="submit" id="login">Login</button>
                                 <div class="signUp-link">
                                         <p>Don't have an account? <a href="Register.html" class="signUpBtn-link">Sign Up</a></p>
                                 </div>
                         </form>
                 </div>
         </div>
-        <script src="script.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+
+                const postBtn = document.getElementById("login");
+
+                const baseUrl = 'http://localhost:3103'
+
+                
+                postBtn.addEventListener('click', postinfo);
+                async function postinfo(e){
+
+                        const usernameId = document.getElementById('username');
+                        let username = usernameId.value;
+                        const passwordId = document.getElementById('password');
+                        let password = passwordId.value;
+                        e.preventDefault()
+                        axios.post(`${baseUrl}/usersV2/login`, {
+                                username: username,
+                                password: password
+                        })
+                        .then(function (response) {
+                                console.log(response);
+                                window.location.replace(`main.html?token=${response.data.token}`);
+                        })
+                        .catch(function (error) {
+                                console.log(error);
+                        })
+                }
+                
+        </script>
         </body>
 </html>
