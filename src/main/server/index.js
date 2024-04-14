@@ -7,6 +7,7 @@ const users = require("./users.js");
 const invoices = require("./invoices.js");
 const trash = require("./trash.js");
 const other = require("./other.js");
+const sending = require("./sending.js");
 
 // Create an Express application
 const app = express();
@@ -205,6 +206,15 @@ app.post("/trashV2/:invoiceId/restore", async (req, res) => {
     const { invoiceId } = req.params;
     const token = req.headers.token;
     const response = await trash.restoreTrashV2(invoiceId, token);
+    return res.status(response.code).json(response.ret);
+});
+
+// Sending Invoice API Integration
+app.post("/invoicesV2/:invoiceId/send", async (req, res) => {
+    const { invoiceId } = req.params;
+    const { recipient } = req.body;
+    const token = req.headers.token;
+    const response = await sending.invoiceSending(token, recipient, invoiceId);
     return res.status(response.code).json(response.ret);
 });
 
