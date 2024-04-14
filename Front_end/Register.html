@@ -64,7 +64,7 @@
                         const emailId = document.getElementById('email');
                         let email = emailId.value;
                         e.preventDefault()
-                        axios.post(`${baseUrl}/users`, {
+                        axios.post(`${baseUrl}/usersV2`, {
                                 username: username,
                                 email: email,
                                 password: password
