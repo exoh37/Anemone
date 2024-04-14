@@ -1,5 +1,6 @@
 const auth = require("./auth.js");
 const other = require("./other.js");
+const validate = require("./validate.js");
 const pool = require("./database.js");
 
 function uploadFile(invoice, token) {
@@ -281,6 +282,26 @@ async function uploadFileV2(invoice, token) {
                 ret: {
                     success: false,
                     error: "Token is empty or invalid"
+                }
+            };
+        }
+
+        // Invoice Validation Stuff
+        const validation = await validate.invoiceValidation(invoice);
+        if (validation.status === "offline") {
+            return {
+                code: 400,
+                ret: {
+                    success: false,
+                    error: "Validation API is offline"
+                }
+            };
+        } else if (validation.status === "invalid") {
+            return {
+                code: 400,
+                ret: {
+                    success: false,
+                    error: "Invoice is of invalid format"
                 }
             };
         }
