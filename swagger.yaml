@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Anemone Invoice Storage API 3.2
+  title: Anemone Invoice Storage API 3.2.1
   description: |-
     API description for Team Anemone's Invoice Storage.
     All error strings are placeholders for more detailed messages.
@@ -1353,7 +1353,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
-  /users/logoout:
+  /users/logout:
     post:
       tags:
         - users v2
