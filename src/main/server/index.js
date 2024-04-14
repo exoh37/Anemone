@@ -29,9 +29,26 @@ app.use((req, res, next) => {
 });
 
 // Root URL
+app.get("/", (req, res) => {
+    res.send(`
+    <p>Welcome to SENG2021 24T1 W09A_ANEMONE's root directory!</p>
+    <p>Click <a href="/user">here</a> to get started.</p>
+  `);
+});
+
 app.get("/v1", (req, res) => {
     res.send(`
-    <p> Welcome! Click here to get started  <a href="/users">Register</a>.</p>
+    <p>Welcome to SENG2021 24T1 W09A_ANEMONE!</p>
+    <p>This is an old version of our frontend page, please do not use this anymore.</p>
+    <p>Go back to <a href="/">root directory</a></p>
+  `);
+});
+
+app.get("/v2", (req, res) => {
+    res.send(`
+    <p>Welcome to SENG2021 24T1 W09A_ANEMONE!</p>
+    <p>Looks like you shouldn't be here...</a></p>
+    <p>Go back to <a href="/">root directory</a></p>
   `);
 });
 
