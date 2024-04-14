@@ -272,7 +272,7 @@ function filterInvoice(token, filteredWord) {
     const filteredInvoices = jsonData.find(invoice => {
         return invoice.invoiceName.toLowerCase().includes(filteredWord.toLowerCase());
     });
-    
+
     if (!tokenValidation.valid) {
         return {
             code: 401,
@@ -284,7 +284,6 @@ function filterInvoice(token, filteredWord) {
     }
 
     if (filteredWord === "") {
-        console.log("EMPTYKNHJADEJ");
         return {
             code: 400,
             ret: {

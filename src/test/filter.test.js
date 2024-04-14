@@ -6,11 +6,10 @@ const validUsername1 = "validUsername1",
     validPassword2 = "lessSecure2@",
 
     mockInvoice1 = { file: { amount: 125.45,
-                            title: "Business" } },
+        title: "Business" } },
     mockInvoice2 = { file: { amount: 130.05,
-                            title: "NotBusiness" } },
+        title: "NotBusiness" } },
     filteredWord = "Business",
-    OtherFilteredWord = "BadBusiness",
     emptyString = "",
     invalidToken = 0;
 const request = require("supertest");
@@ -67,8 +66,8 @@ describe("Testing filtering of invoices", function() {
         assert.strictEqual(invoice1.body.success, true);
         assert.strictEqual(typeof invoice1.body.invoiceId, "number");
 
-         // 1: create invoice2
-         const invoice2 = await request(app)
+        // 1: create invoice2
+        const invoice2 = await request(app)
             .post("/invoices")
             .set("token", user2.body.token)
             .send({ invoice: mockInvoice2 })
@@ -82,8 +81,8 @@ describe("Testing filtering of invoices", function() {
             .get(`/invoices/search/${filteredWord}`)
             .set("token", user1.body.token)
             .expect(200)
-            .expect("Content-Type", /application\/json/)
-        
+            .expect("Content-Type", /application\/json/);
+
         assert.strictEqual(filteredInvoice1.body.success, true);
         assert.strictEqual(filteredInvoice1.body.filteredInvoices.invoiceId, invoice1.body.invoiceId);
         assert.strictEqual(filteredInvoice1.body.filteredInvoices.invoiceName, mockInvoice1.file.title);
@@ -96,7 +95,7 @@ describe("Testing filtering of invoices", function() {
             .expect(401)
             .expect("Content-Type", /application\/json/)
             .expect({"success": false, "error": "Token is empty or invalid"});
-            
+
         // 401 error case no token
         await request(app)
             .get(`/invoices/search/${filteredWord}`)
