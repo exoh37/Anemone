@@ -1,11 +1,11 @@
 openapi: 3.0.3
 info:
-  title: Anemone Invoice Storage API 3.2.1
+  title: Anemone Invoice Storage API
   description: |-
     API description for Team Anemone's Invoice Storage.
     All error strings are placeholders for more detailed messages.
     We have split our API to v1 and v2, check all the endpoints for more details
-  version: 1.0.11
+  version: 3.2.1
 externalDocs:
   description: Anemone's Confluence Pages
   url: https://unswcse.atlassian.net/wiki/spaces/W09AANEMON/overview?homepageId=363987217
