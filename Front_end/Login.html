@@ -57,7 +57,7 @@
                         const passwordId = document.getElementById('password');
                         let password = passwordId.value;
                         e.preventDefault()
-                        axios.post(`${baseUrl}/users/login`, {
+                        axios.post(`${baseUrl}/usersV2/login`, {
                                 username: username,
                                 password: password
                         })

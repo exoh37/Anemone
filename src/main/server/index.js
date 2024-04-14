@@ -1,7 +1,7 @@
 // Import required modules
 const express = require("express");
 const bodyParser = require("body-parser");
-const path = require("path"); 
+const path = require("path");
 const cors = require("cors");
 const users = require("./users.js");
 const invoices = require("./invoices.js");
@@ -10,7 +10,7 @@ const other = require("./other.js");
 const sending = require("./sending.js");
 
 // Create an Express application
-app = express();
+const app = express();
 app.use(cors());
 
 // Middleware ( AI-Generated )
@@ -23,10 +23,10 @@ app.use((req, res, next) => {
     ${req.method} 
     ${req.url} 
     ${req.ip}
-    ${res.statusCode}`); 
+    ${res.statusCode}`);
     console.log(req.body);
-    next(); 
-})
+    next();
+});
 
 // Root URL
 app.get("/v1", (req, res) => {

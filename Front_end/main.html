@@ -57,7 +57,7 @@
         async function getinfo(e){
 
             e.preventDefault()
-            axios.get(`${baseUrl}/invoices/${invoiceId}`, {
+            axios.get(`${baseUrl}/invoicesV2/${invoiceId}`, {
                 headers: {
                 'token': token
                 }
@@ -74,7 +74,7 @@
             var input = document.getElementById('fileInput');
             var userInput = input.files[0].name;
             e.preventDefault()
-            axios.post(`${baseUrl}/invoices`, {
+            axios.post(`${baseUrl}/invoicesV2`, {
                     invoice: userInput,
             }, {
                 headers: {
