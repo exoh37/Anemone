@@ -297,4 +297,220 @@ async function restoreTrashV2 (invoiceId, token) {
     }
 }
 
-module.exports = { listTrashItems, deleteTrash, restoreTrash, listTrashItemsV2, deleteTrashV2, restoreTrashV2 };
+async function deleteAllTrash(invoiceIds, token) {
+    const client = await pool.connect();
+    try {
+        const tokenValidation = await auth.tokenIsValidV2(token);
+        if (!tokenValidation.valid) {
+            return {
+                code: 401,
+                ret: {
+                    success: false,
+                    error: "Token is empty or invalid"
+                }
+            };
+        }
+
+        const inputInvoices = invoiceIds.split(",");
+        if (inputInvoices.length === 0) {
+            return {
+                code: 400,
+                ret: {
+                    success: false,
+                    error: "InvoiceIds cannot be an empty array"
+                }
+            };
+        }
+
+        // Checks that all invoiceIds in the array are valid before interacting with the database
+        for (let i = 0; i < inputInvoices.length; i++) {
+            const invoiceItems = await client.query("SELECT * FROM invoiceinfo i WHERE i.invoiceid = $1", [inputInvoices[i]]);
+            const trashItems = await client.query("SELECT * FROM trashinfo i WHERE i.invoiceid = $1", [inputInvoices[i]]);
+            if (trashItems.rows.length === 0 && invoiceItems.rows.length === 0) { // If invoice does not exist
+                return {
+                    code: 400,
+                    ret: {
+                        success: false,
+                        error: `${inputInvoices[i]} does not refer to an existing invoice`
+                    }
+                };
+            } else if (trashItems.rows.length === 0 && invoiceItems.rows.length !== 0) { // If invoice exists, but is not in the trash
+                return {
+                    code: 400,
+                    ret: {
+                        success: false,
+                        error: `${inputInvoices[i]} refers to an invoice not in the trash`
+                    }
+                };
+            } else if (trashItems.rows[0].owner !== tokenValidation.username) {
+                return {
+                    code: 403,
+                    ret: {
+                        success: false,
+                        error: `Not owner of this invoice '${inputInvoices[i]}'`
+                    }
+                };
+            }
+        }
+
+        const duplicateCheck = await auth.findDuplicates(inputInvoices);
+        if (!duplicateCheck.valid) {
+            return {
+                code: 400,
+                ret: {
+                    success: false,
+                    error: `${duplicateCheck.id} is a duplicate`
+                }
+            };
+        }
+
+        // Add trashed invoice into trash + remove from invoices
+        for (let i = 0; i < inputInvoices.length; i++) {
+            // Remove from current invoices
+            await client.query(`
+            DELETE FROM trash
+            WHERE invoiceid = $1
+            `, [inputInvoices[i]]);
+
+            // Remove from current invoice information
+            await client.query(`
+            DELETE FROM trashinfo
+            WHERE invoiceid = $1
+            `, [inputInvoices[i]]);
+        }
+
+        return {
+            code: 200,
+            ret: {
+                success: true
+            }
+        };
+
+    } catch (error) {
+        console.error("Failed to delete all trashed invoice:", error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function restoreAllTrash (invoiceIds, token) {
+    const client = await pool.connect();
+    try {
+        const tokenValidation = await auth.tokenIsValidV2(token);
+        if (!tokenValidation.valid) {
+            return {
+                code: 401,
+                ret: {
+                    success: false,
+                    error: "Token is empty or invalid"
+                }
+            };
+        }
+
+        const inputInvoices = invoiceIds.split(",");
+        if (inputInvoices.length === 0) {
+            return {
+                code: 400,
+                ret: {
+                    success: false,
+                    error: "InvoiceIds cannot be an empty array"
+                }
+            };
+        }
+
+        // Checks that all invoiceIds in the array are valid before interacting with the database
+        for (let i = 0; i < inputInvoices.length; i++) {
+            const invoiceItems = await client.query("SELECT * FROM invoiceinfo i WHERE i.invoiceid = $1", [inputInvoices[i]]);
+            const trashItems = await client.query("SELECT * FROM trashinfo i WHERE i.invoiceid = $1", [inputInvoices[i]]);
+            if (trashItems.rows.length === 0 && invoiceItems.rows.length === 0) { // If invoice does not exist
+                return {
+                    code: 400,
+                    ret: {
+                        success: false,
+                        error: `invoiceId '${inputInvoices[i]}' does not refer to an existing invoice`
+                    }
+                };
+            } else if (trashItems.rows.length === 0 && invoiceItems.rows.length !== 0) { // If invoice exists, but is not in the trash
+                return {
+                    code: 400,
+                    ret: {
+                        success: false,
+                        error: `invoiceId '${inputInvoices[i]}' refers to an invoice not in the trash`
+                    }
+                };
+            } else if (trashItems.rows[0].owner !== tokenValidation.username) {
+                return {
+                    code: 403,
+                    ret: {
+                        success: false,
+                        error: `Not owner of this invoice '${inputInvoices[i]}'`
+                    }
+                };
+            }
+        }
+
+        const duplicateCheck = await auth.findDuplicates(inputInvoices);
+        if (!duplicateCheck.valid) {
+            return {
+                code: 400,
+                ret: {
+                    success: false,
+                    error: `'${duplicateCheck.id}' is a duplicate invoiceId`
+                }
+            };
+        }
+
+        // Restore trashed invoice + remove from trash
+        for (let i = 0; i < inputInvoices.length; i++) {
+            // Gets invoices and information that are owned by user
+            const invoices = await client.query(`
+            SELECT * FROM trash i
+            JOIN trashInfo info ON info.invoiceid = i.invoiceid
+            WHERE info.invoiceid = $1
+            `, [inputInvoices[i]]);
+            const invoiceId = invoices.rows[0].invoiceid;
+            const invoice  = invoices.rows[0].invoice;
+            const name = invoices.rows[0].invoicename;
+            const owner = invoices.rows[0].owner;
+            const amount = invoices.rows[0].amount;
+            const date = invoices.rows[0].date;
+
+            await client.query(`
+            INSERT INTO invoices (invoiceid, invoice) 
+            VALUES ($1, $2)`,
+            [invoiceId, invoice]);
+
+            await client.query(`
+            INSERT INTO invoiceInfo (invoiceId, invoiceName, owner, amount, date)
+            VALUES ($1, $2, $3, $4, $5)
+            `, [invoiceId, name, owner, amount, date]);
+
+            // Remove from current invoices
+            await client.query(`
+            DELETE FROM trash
+            WHERE invoiceid = $1
+            `, [inputInvoices[i]]);
+
+            // Remove from current invoice information
+            await client.query(`
+            DELETE FROM trashinfo
+            WHERE invoiceid = $1
+            `, [inputInvoices[i]]);
+        }
+        return {
+            code: 200,
+            ret: {
+                success: true
+            }
+        };
+
+    } catch (error) {
+        console.error("Failed to list trashed invoice:", error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+module.exports = { listTrashItems, deleteTrash, restoreTrash, listTrashItemsV2, deleteTrashV2, restoreTrashV2, deleteAllTrash, restoreAllTrash };
