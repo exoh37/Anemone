@@ -558,7 +558,7 @@ async function modifyFileV2(invoiceId, token, newName, newAmount, newDate) {
     }
 }
 
-async function moveAllInvoiceToTrash(invoiceIds, token) {
+async function moveInvoicesToTrash(invoiceIds, token) {
     const client = await pool.connect();
     try {
         const tokenValidation = await auth.tokenIsValidV2(token);
@@ -678,4 +678,4 @@ async function moveAllInvoiceToTrash(invoiceIds, token) {
     }
 }
 
-module.exports = { uploadFile, retrieveFile, moveInvoiceToTrash, modifyFile, fileList, uploadFileV2, retrieveFileV2, moveInvoiceToTrashV2, fileListV2, modifyFileV2, moveAllInvoiceToTrash };
+module.exports = { uploadFile, retrieveFile, moveInvoiceToTrash, modifyFile, fileList, uploadFileV2, retrieveFileV2, moveInvoiceToTrashV2, fileListV2, modifyFileV2, moveInvoicesToTrash };

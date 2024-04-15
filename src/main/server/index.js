@@ -212,7 +212,7 @@ app.post("/trashV2/:invoiceId/restore", async (req, res) => {
 app.delete("/invoices/:invoiceIds/trash", async (req, res) => {
     const { invoiceIds } = req.params;
     const token = req.headers.token;
-    const response = await invoices.moveAllInvoiceToTrash(invoiceIds, token);
+    const response = await invoices.moveInvoicesToTrash(invoiceIds, token);
     return res.status(response.code).json(response.ret);
 });
 
@@ -220,7 +220,7 @@ app.delete("/invoices/:invoiceIds/trash", async (req, res) => {
 app.delete("/trash/:invoiceIds/delete", async (req, res) => {
     const { invoiceIds } = req.params;
     const token = req.headers.token;
-    const response = await trash.deleteAllTrash(invoiceIds, token);
+    const response = await trash.deleteTrashes(invoiceIds, token);
     return res.status(response.code).json(response.ret);
 });
 
@@ -228,7 +228,7 @@ app.delete("/trash/:invoiceIds/delete", async (req, res) => {
 app.post("/trash/:invoiceIds/batch/restore", async (req, res) => {
     const { invoiceIds } = req.params;
     const token = req.headers.token;
-    const response = await trash.restoreAllTrash(invoiceIds, token);
+    const response = await trash.restoreTrashes(invoiceIds, token);
     return res.status(response.code).json(response.ret);
 });
 

@@ -297,7 +297,7 @@ async function restoreTrashV2 (invoiceId, token) {
     }
 }
 
-async function deleteAllTrash(invoiceIds, token) {
+async function deleteTrashes(invoiceIds, token) {
     const client = await pool.connect();
     try {
         const tokenValidation = await auth.tokenIsValidV2(token);
@@ -394,7 +394,7 @@ async function deleteAllTrash(invoiceIds, token) {
     }
 }
 
-async function restoreAllTrash (invoiceIds, token) {
+async function restoreTrashes (invoiceIds, token) {
     const client = await pool.connect();
     try {
         const tokenValidation = await auth.tokenIsValidV2(token);
@@ -513,4 +513,4 @@ async function restoreAllTrash (invoiceIds, token) {
     }
 }
 
-module.exports = { listTrashItems, deleteTrash, restoreTrash, listTrashItemsV2, deleteTrashV2, restoreTrashV2, deleteAllTrash, restoreAllTrash };
+module.exports = { listTrashItems, deleteTrash, restoreTrash, listTrashItemsV2, deleteTrashV2, restoreTrashV2, deleteTrashes, restoreTrashes };
