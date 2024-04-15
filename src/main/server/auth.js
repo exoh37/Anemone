@@ -178,4 +178,22 @@ async function modifyXMLDate(invoiceId, NewDate) {
     }
 }
 
-module.exports = { generateToken, tokenIsValid, generateTokenV2, tokenIsValidV2, fetchXMLData, modifyXMLAmount, modifyXMLName, modifyXMLDate };
+async function findDuplicates(invoiceIds) {
+    const invoiceId = new Set();
+
+    for (const id of invoiceIds) {
+        if (invoiceId.has(id)) {
+            return {
+                valid: false,
+                id: id
+            };
+        } else {
+            invoiceId.add(id);
+        }
+    }
+    return {
+        valid: true
+    };
+}
+
+module.exports = { generateToken, tokenIsValid, generateTokenV2, tokenIsValidV2, fetchXMLData, modifyXMLAmount, modifyXMLName, modifyXMLDate, findDuplicates };
