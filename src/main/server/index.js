@@ -2,7 +2,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
-
+const cors = require("cors");
 const users = require("./users.js");
 const invoices = require("./invoices.js");
 const trash = require("./trash.js");
@@ -11,16 +11,44 @@ const sending = require("./sending.js");
 
 // Create an Express application
 const app = express();
+app.use(cors());
 
 // Middleware ( AI-Generated )
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../../../Front_end")));
 
+app.use((req, res, next) => {
+    console.log(`
+    ${req.method} 
+    ${req.url} 
+    ${req.ip}
+    ${res.statusCode}`);
+    console.log(req.body);
+    next();
+});
+
 // Root URL
+app.get("/", (req, res) => {
+    res.send(`
+    <p>Welcome to SENG2021 24T1 W09A_ANEMONE's root directory!</p>
+    <p>Click <a href="/user">here</a> to get started.</p>
+  `);
+});
+
 app.get("/v1", (req, res) => {
     res.send(`
-    <p> Welcome! Click here to get started  <a href="/users">Register</a>.</p>
+    <p>Welcome to SENG2021 24T1 W09A_ANEMONE!</p>
+    <p>This is an old version of our frontend page, please do not use this anymore.</p>
+    <p>Go back to <a href="/">root directory</a></p>
+  `);
+});
+
+app.get("/v2", (req, res) => {
+    res.send(`
+    <p>Welcome to SENG2021 24T1 W09A_ANEMONE!</p>
+    <p>Looks like you shouldn't be here...</a></p>
+    <p>Go back to <a href="/">root directory</a></p>
   `);
 });
 
@@ -30,7 +58,7 @@ app.get("/main", (req, res) => {
 });
 
 // User registration form (route)
-app.get("/users", (req, res) => {
+app.get("/user", (req, res) => {
     const filePath = path.join(__dirname, "../../../Front_end/Register.html");
     res.sendFile(filePath);
 });
@@ -39,6 +67,7 @@ app.get("/users", (req, res) => {
 app.post("/users", (req, res) => {
     const { username, email, password } = req.body,
         response = users.registerUser(username, email, password);
+    console.log(response);
     return res.status(response.code).json(response.ret);
 });
 
@@ -51,6 +80,7 @@ app.get("/users/login", (req, res) => {
 app.post("/users/login", (req, res) => {
     const { username, password } = req.body,
         response = users.loginUser(username, password);
+    console.log(response);
     return res.status(response.code).json(response.ret);
 });
 

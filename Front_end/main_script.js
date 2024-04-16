@@ -2,13 +2,13 @@ function addItem() {
   var input = document.getElementById('fileInput');
   var userInput = input.files[0].name;
 
+
+
   var progressBar = document.querySelectorAll(".progress-bar");
   var progressBarStyle = document.getElementById("pass-bar");
   var displaySetting =  progressBarStyle.style.display;
 
   progressBarStyle.style.display = 'flex';
-
-  console.log(displaySetting);
 
   var time = 2000;
   
@@ -98,4 +98,7 @@ function searchItem() {
     alert("Search term not found!");
   }
 };
+
+
+
 
