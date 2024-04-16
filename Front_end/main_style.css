@@ -2,7 +2,7 @@ body {
     width: 100%;
     height: 100vh;
     margin: 0;
-    background-color: #1b1b32;
+    background: linear-gradient(60deg, rgba(84,58,183,1) 0%, rgba(0,172,193,1) 100%);
     color: #f5f6f7;
     font-family: Tahoma;
     font-size: 16px;
@@ -60,10 +60,15 @@ li {
 }
 
 button {
-    position: absolute;
+    position: relative;
     
 }
 
+#trash {
+    margin-left: 200px;
+    margin-top: -53px;
+    margin-bottom: 20px;
+}
 #list-container {
     width: 700px;
     margin: 0 auto;
@@ -115,7 +120,7 @@ input[type=file] {
     left: 0;
     top: 0;
     height: 100%;
-    background: red;
+    background: green;
     border-radius: 10px;
 }
 

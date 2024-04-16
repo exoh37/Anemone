@@ -1,0 +1,14 @@
+Username: 
+password: 
+Email: 
+Remember me: 
+Login: 
+Dont have an account:  
+Sign up: 
+I agree with terms and conditions:
+Choose file: 
+No file selected: 
+Upload: 
+search: 
+Retrieve: 
+File Storage: 

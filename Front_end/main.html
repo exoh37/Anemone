@@ -20,9 +20,17 @@
     <h1>Anemone File storage</h1>
 
     <form id="form" onsubmit="return false;">
-        <input type='file' id="fileInput" />
+        <input type='file' id="fileInput" onchange="previewFile()"/>
         <button type="submit" id="uploadButton">Upload</button>
     </form>
+
+    <form id="form">
+        <input type='text' id="send" placeholder="Send to"/>
+        <button type="submit" id="sendButton">Send</button>
+    </form>
+    
+    <button type="submit" id="trash" onclick="window.location.href='trash.html'">Trash</button>
+
 
     <div class="progress-bar" id="pass-bar">
         <div class="label" data-count="100">0%</div>
@@ -34,29 +42,65 @@
     
     <div id="list-container">
         <input type="text" id="search" placeholder="Search..." />
-        <button id="retrieveButton" onclick="searchItem()">Retrieve</button>
+        <button id="retrieveButton">Retrieve</button>
         <ul id="list"></ul>
     </div>
 
-    
+    <button type="submit" id="logout" onclick="window.location.href='login.html'">logout</button>
+
+    <div id="root"></div>
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         const postBtn = document.getElementById("uploadButton");
         const getBtn = document.getElementById("retrieveButton");
+        const sendBtn = document.getElementById("sendButton");
+        const trashBth = document.getElementById("trash");
+ 
 
         const token = window.location.href.split('=')[1];
         console.log(token);
 
+        var invoiceId;
+        
         const baseUrl = 'http://localhost:3103';
-    
-        let invoiceId = 0;
+
+        var deleteBtn;
 
         postBtn.addEventListener('click', postinfo);
-        postBtn.addEventListener('click', getinfo);
+        getBtn.addEventListener('click', getinfo);
+        sendBtn.addEventListener('click', sendinfo);
+        trashBth.addEventListener('click', findTrash);
+        
+        async function findTrash(){
+            let trashInfo = document.getElementById('listItem').firstChild.nodeValue.trim();
+            localStorage.setItem("trash", trashInfo);
+            
+        }
+
+        async function sendinfo(e){
+            e.preventDefault();
+
+            try {
+
+                var sender = document.getElementById('send').value.trim().toLowerCase();
+                const response = await axios.post(`${baseUrl}/invoicesV2/${invoiceId}/send`, {
+                    recipient: sender,
+                }, {
+                    headers: {
+                        'token': token
+                    }
+                });
+
+                console.log(response.data);
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
 
         async function getinfo(e){
 
-            e.preventDefault()
+            e.preventDefault();
             axios.get(`${baseUrl}/invoicesV2/${invoiceId}`, {
                 headers: {
                 'token': token
@@ -64,32 +108,57 @@
             })
             .then(function (response) {
                     console.log(response);
-                    addItem();
+                    searchItem();
             })
             .catch(function (error) {
                     console.log(error);
             })
         }
-        async function postinfo(e){
-            var input = document.getElementById('fileInput');
-            var userInput = input.files[0].name;
-            e.preventDefault()
-            axios.post(`${baseUrl}/invoicesV2`, {
-                    invoice: userInput,
-            }, {
+        async function postinfo(e) {
+            e.preventDefault();
+
+            try {
+                const filecontent = await previewFile();
+                console.log(filecontent);
+
+                const response = await axios.post(`${baseUrl}/invoicesV2`, {
+                    invoice: filecontent,
+                }, {
+                    headers: {
+                        'token': token
+                    }
+                });
+
+                console.log(response.data);
+
+                invoiceId = response.data.invoiceId;
+                addItem();
+
+                deleteBtn = document.getElementsByClassName('Delete');
+                for(let i = 0; i < deleteBtn.length; i++){
+                    deleteBtn[i].addEventListener('click', deleteinfo);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+
+
+        async function deleteinfo(e){
+            e.preventDefault();
+            axios.delete(`${baseUrl}/trashV2/${invoiceId}`, {
                 headers: {
                 'token': token
                 }
             })
             .then(function (response) {
-                    invoiceId = response.ret.invoiceId;
                     console.log(response);
-                    addItem();
             })
             .catch(function (error) {
                     console.log(error);
             })
         }
+
     </script>
 </body>
 </html>
