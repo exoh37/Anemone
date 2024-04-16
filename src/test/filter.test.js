@@ -84,9 +84,9 @@ describe("Testing filtering of invoices", function() {
             .expect("Content-Type", /application\/json/);
 
         assert.strictEqual(filteredInvoice1.body.success, true);
-        assert.strictEqual(filteredInvoice1.body.filteredInvoices.invoiceId, invoice1.body.invoiceId);
-        assert.strictEqual(filteredInvoice1.body.filteredInvoices.invoiceName, mockInvoice1.file.title);
-        assert.strictEqual(filteredInvoice1.body.filteredInvoices.trashed, false);
+        assert.strictEqual(filteredInvoice1.body.filteredInvoices[0].invoiceId, invoice1.body.invoiceId);
+        assert.strictEqual(filteredInvoice1.body.filteredInvoices[0].invoiceName, mockInvoice1.file.title);
+        assert.strictEqual(filteredInvoice1.body.filteredInvoices[0].trashed, false);
 
         // 401 error case invalid token
         await request(app)
