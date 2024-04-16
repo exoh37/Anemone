@@ -766,7 +766,6 @@ async function filterInvoiceV2(token, filteredWord) {
         const filteredInvoices = invoices.rows.find(invoice => {
             return invoice.invoicename.toLowerCase().includes(filteredWord.toLowerCase());
         });
-        console.log(filteredInvoices)
 
         return {
             code: 200,
