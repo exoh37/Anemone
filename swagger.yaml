@@ -1,11 +1,11 @@
 openapi: 3.0.3
 info:
-  title: Anemone Invoice Storage API 3.2
+  title: Anemone Invoice Storage API
   description: |-
     API description for Team Anemone's Invoice Storage.
     All error strings are placeholders for more detailed messages.
     We have split our API to v1 and v2, check all the endpoints for more details
-  version: 1.0.11
+  version: 3.2.1
 externalDocs:
   description: Anemone's Confluence Pages
   url: https://unswcse.atlassian.net/wiki/spaces/W09AANEMON/overview?homepageId=363987217
@@ -1325,6 +1325,12 @@ paths:
               $ref: '#/components/schemas/invoiceSendingRequestBodyV2'
         required: true
       responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/okReturnObject'
         '400':
           description: |-
             If any of the following is true:
@@ -1343,6 +1349,31 @@ paths:
                 $ref: '#/components/schemas/error'
         '403':
           description: Valid token and invoiceId are provided, but user is not owner of this invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /users/logout:
+    post:
+      tags:
+        - users v2
+      summary: Logout a currently logged in user
+      parameters:
+        - name: token
+          in: header
+          description: The token used for user login
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/okReturnObject'
+        '401':
+          description: Token is empty or invalid
           content:
             application/json:
               schema:
