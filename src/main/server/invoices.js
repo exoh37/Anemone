@@ -19,10 +19,11 @@ function uploadFile(invoice, token) {
     const invoiceId = Date.now();
     const jsonData = other.getInvoiceData();
     const { amount } = data.file;
+    const invoiceName = invoice.file.title;
 
     jsonData.push({
         invoiceId: invoiceId,
-        invoiceName: "PLACEHOLDER_NAME",
+        invoiceName: invoiceName ?? "PLACEHOLDER_NAME",
         amount,
         date: Date.now(),
         trashed: false,
@@ -270,6 +271,44 @@ function AreValidEntries(newName, newAmount, newDate) {
         return true;
     }
     return false;
+}
+
+function filterInvoice(token, filteredWord) {
+    const tokenValidation = auth.tokenIsValid(token);
+    const jsonData = other.getInvoiceData();
+
+    const filteredInvoices = jsonData.find(invoice => {
+        return invoice.invoiceName.toLowerCase().includes(filteredWord.toLowerCase());
+    });
+
+    if (!tokenValidation.valid) {
+        return {
+            code: 401,
+            ret: {
+                success: false,
+                error: "Token is empty or invalid"
+            }
+        };
+    }
+
+    if (filteredWord === "") {
+        return {
+            code: 400,
+            ret: {
+                success: false,
+                error: "filteredWord is an empty string "/""
+            }
+        };
+    }
+
+    return {
+        code: 200,
+        ret: {
+            success: true,
+            filteredInvoices: filteredInvoices,
+        }
+    };
+
 }
 
 async function uploadFileV2(invoice, token) {
@@ -580,4 +619,4 @@ async function modifyFileV2(invoiceId, token, newName, newAmount, newDate) {
     }
 }
 
-module.exports = { uploadFile, retrieveFile, moveInvoiceToTrash, modifyFile, fileList, uploadFileV2, retrieveFileV2, moveInvoiceToTrashV2, fileListV2, modifyFileV2 };
+module.exports = { uploadFile, retrieveFile, moveInvoiceToTrash, modifyFile, fileList, filterInvoice, uploadFileV2, retrieveFileV2, moveInvoiceToTrashV2, fileListV2, modifyFileV2 };
