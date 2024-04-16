@@ -224,6 +224,14 @@ app.put("/invoicesV2/:invoiceId", async (req, res) => {
     return res.status(response.code).json(response.ret);
 });
 
+// Filter invoice
+app.get("/invoicesV2/search/:filteredWord", async (req, res) => {
+    const { filteredWord } = req.params,
+        { token } = req.headers,
+        response = await invoices.filterInvoiceV2(token, filteredWord);
+    return res.status(response.code).json(response.ret);
+});
+
 // List trash items
 app.get("/trashV2", async (req, res) => {
     const token = req.headers.token;
