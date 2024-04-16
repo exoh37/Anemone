@@ -100,6 +100,14 @@ app.get("/invoices/:invoiceId", (req, res) => {
     return res.status(response.code).json(response.ret);
 });
 
+// Filter invoice
+app.get("/invoices/search/:filteredWord", (req, res) => {
+    const { filteredWord } = req.params,
+        { token } = req.headers,
+        response = invoices.filterInvoice(token, filteredWord);
+    return res.status(response.code).json(response.ret);
+});
+
 // Invoice list
 app.get("/invoices", (req, res) => {
     const token = req.headers.token;
