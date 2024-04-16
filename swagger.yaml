@@ -125,6 +125,24 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/invoiceV2'
+    listFilteredObject:
+      type: object
+      properties:
+        success:
+          $ref: '#/components/schemas/success_true'
+        filteredInvoices:
+          type: array
+          items:
+            $ref: '#/components/schemas/invoice'
+    listFilteredObjectV2:
+      type: object
+      properties:
+        success:
+          $ref: '#/components/schemas/success_true'
+        filteredInvoices:
+          type: array
+          items:
+            $ref: '#/components/schemas/invoiceV2'
     trashedInvoice:
       type: object
       properties:
@@ -276,7 +294,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/listReturnObject'
+                $ref: '#/components/schemas/listFilteredObject'
         '401':
           description: Token is empty or invalid
           content:
@@ -457,7 +475,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/listReturnObject'
+                $ref: '#/components/schemas/listFilteredObject'
         '401':
           description: Token is empty or invalid
           content:
@@ -1107,7 +1125,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/listReturnObjectV2'
+                $ref: '#/components/schemas/listFilteredObjectV2'
         '401':
           description: Token is empty or invalid
           content:
