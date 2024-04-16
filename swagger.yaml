@@ -432,6 +432,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
+  /invoices/search/{filteredWord}:
+    get:
+      tags:
+        - invoices v1
+      summary: Filters invoices on search
+      description: This will provide the user with all invoices that match their filter word exactly. The invoices appearing when searched needs to exist outside of the trash, and must be their own.
+      parameters:
+        - name: token
+          in: header
+          description: The token used for user login
+          required: true
+          schema:
+            type: string
+        - name: filteredWord
+          in: path
+          description: The word to filter for
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invoiceFetchReturnObject'
+        '401':
+          description: Token is empty or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
   /users:
     post:
       tags:
@@ -1078,68 +1110,6 @@ paths:
                 $ref: '#/components/schemas/invoiceRetrieveReturnObjectV2'
         '401':
           description: Token is empty or invalid
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-  /invoicesV2/{invoiceIds}:
-    put:
-      tags:
-        - invoices v2
-      summary: Updates a batch of invoices
-      description: Given a set of invoiceIds, update each of them to the corresponding fields. If any of the fields are left empty, this will not edit the existing information of that field. For example, an empty string for newInvoiceName would mean that the existing invoiceName is not edited, across all invoices that were specified to be modified.
-      parameters:
-        - name: token
-          in: header
-          description: The token used for user login
-          required: true
-          schema:
-            type: string
-        - name: invoiceIds
-          in: path
-          description: The invoiceIds to be trashed
-          required: true
-          schema:
-            type: array
-            items:
-              type: number
-              example: 42
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/invoiceModifyRequestBody'
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/okReturnObject'
-        '400':
-          description: |-
-            If any of the following is true:
-            - invoiceIds is an empty array
-            - invoiceIds contains a duplicate invoiceId
-            - at least 1 invoiceId in invoiceIds does not refer to an existing invoice
-            - at least 1 invoiceId in invoiceIds refers to an invoice in the trash
-            - newAmount is not a positive number and not an empty string ""
-            - newDate is an invalid date and not an empty string ""
-            - newDate refers to a time in the future
-            - all 3 newInvoiceName, newAmount and newDate are empty strings ""
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '401':
-          description: Token is empty or invalid
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '403':
-          description: Valid token and invoiceId are provided, but user is not owner of at least 1 invoice
           content:
             application/json:
               schema:
