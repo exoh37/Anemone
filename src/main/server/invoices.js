@@ -738,4 +738,50 @@ async function moveInvoicesToTrash(invoiceIds, token) {
     }
 }
 
-module.exports = { uploadFile, retrieveFile, moveInvoiceToTrash, modifyFile, fileList, filterInvoice, uploadFileV2, retrieveFileV2, moveInvoiceToTrashV2, fileListV2, modifyFileV2, moveInvoicesToTrash };
+async function filterInvoiceV2(token, filteredWord) {
+    const client = await pool.connect();
+    try {
+        const tokenValidation = await auth.tokenIsValidV2(token);
+        if (!tokenValidation.valid) {
+            return {
+                code: 401,
+                ret: {
+                    success: false,
+                    error: "Token is empty or invalid"
+                }
+            };
+        }
+
+        if (filteredWord === "") {
+            return {
+                code: 400,
+                ret: {
+                    success: false,
+                    error: "filteredWord is an empty string "/""
+                }
+            };
+        }
+
+        const invoices = await client.query("SELECT * FROM invoiceInfo");
+        const filteredInvoices = invoices.rows.find(invoice => {
+            return invoice.invoicename.toLowerCase().includes(filteredWord.toLowerCase());
+        });
+        console.log(filteredInvoices)
+
+        return {
+            code: 200,
+            ret: {
+                success: true,
+                filteredInvoices: filteredInvoices,
+            }
+        };
+
+    } catch (error) {
+        console.error("Failed to filter invoices:", error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+module.exports = { uploadFile, retrieveFile, moveInvoiceToTrash, modifyFile, fileList, filterInvoice, uploadFileV2, retrieveFileV2, moveInvoiceToTrashV2, fileListV2, modifyFileV2, moveInvoicesToTrash, filterInvoiceV2 };
