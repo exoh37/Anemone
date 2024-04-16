@@ -457,7 +457,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/invoiceFetchReturnObject'
+                $ref: '#/components/schemas/listReturnObject'
         '401':
           description: Token is empty or invalid
           content:
@@ -1107,7 +1107,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/invoiceRetrieveReturnObjectV2'
+                $ref: '#/components/schemas/listReturnObjectV2'
         '401':
           description: Token is empty or invalid
           content:
