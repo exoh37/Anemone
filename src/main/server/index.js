@@ -247,6 +247,30 @@ app.post("/trashV2/:invoiceId/restore", async (req, res) => {
     return res.status(response.code).json(response.ret);
 });
 
+// Trashing the batch from invoices
+app.delete("/invoices/:invoiceIds/trash", async (req, res) => {
+    const { invoiceIds } = req.params;
+    const token = req.headers.token;
+    const response = await invoices.moveInvoicesToTrash(invoiceIds, token);
+    return res.status(response.code).json(response.ret);
+});
+
+// Deleting the batch from trash
+app.delete("/trash/:invoiceIds/delete", async (req, res) => {
+    const { invoiceIds } = req.params;
+    const token = req.headers.token;
+    const response = await trash.deleteTrashes(invoiceIds, token);
+    return res.status(response.code).json(response.ret);
+});
+
+// Restore from the batch from trash
+app.post("/trash/:invoiceIds/batch/restore", async (req, res) => {
+    const { invoiceIds } = req.params;
+    const token = req.headers.token;
+    const response = await trash.restoreTrashes(invoiceIds, token);
+    return res.status(response.code).json(response.ret);
+});
+
 // Sending Invoice API Integration
 app.post("/invoicesV2/:invoiceId/send", async (req, res) => {
     const { invoiceId } = req.params;

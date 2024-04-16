@@ -1248,8 +1248,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
-  /trashV2/{invoiceIds}/restore:
-    put:
+  /trashV2/{invoiceIds}/batch/restore:
+    post:
       tags:
         - trash v2
       summary: Restores a batch of trashed invoices
