@@ -30,4 +30,20 @@ const mockInvoice4 = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
     </invoice>
 `;
 
-module.exports = { mockInvoice1, mockInvoice2, mockInvoice3, mockInvoice4 };
+const mockInvoice5 = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    <invoice>
+        <invoiceName>Business</invoiceName>
+        <amount>67.89</amount>
+        <date>2024-04-08</date>
+    </invoice>
+`;
+
+const mockInvoice6 = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    <invoice>
+        <invoiceName>NotBusiness</invoiceName>
+        <amount>67.89</amount>
+        <date>2024-04-08</date>
+    </invoice>
+`;
+
+module.exports = { mockInvoice1, mockInvoice2, mockInvoice3, mockInvoice4, mockInvoice5, mockInvoice6 };

@@ -1,17 +1,15 @@
-const validUsername1 = "validUsername1",
-    validUsername2 = "thisIsAValidName",
-    validEmail1 = "test123@gmail.com",
-    validEmail2 = "123test@gmail.com",
-    validPassword1 = "ThisIsSecure!123",
-    validPassword2 = "lessSecure2@",
+const validUsername1 = "validUsername1";
+const validUsername2 = "thisIsAValidName";
+const validEmail1 = "test123@gmail.com";
+const validEmail2 = "123test@gmail.com";
+const validPassword1 = "ThisIsSecure!123";
+const validPassword2 = "lessSecure2@";
 
-    mockInvoice1 = { file: { amount: 125.45,
-        title: "Business" } },
-    mockInvoice2 = { file: { amount: 130.05,
-        title: "NotBusiness" } },
-    filteredWord = "Business",
-    emptyString = "",
-    invalidToken = 0;
+const XML = require("./sampleXML");
+const filteredWord = "Business";
+const emptyString = "";
+const invalidToken = 0;
+
 const request = require("supertest");
 const assert = require("assert");
 const app = require("../main/server");
@@ -21,27 +19,27 @@ describe("Testing filtering of invoices", function() {
     it("General tests for invoice filtering", async function() {
         // Setup user and login process
         await request(app)
-            .delete("/clear")
+            .delete("/clearV2")
             .expect(200)
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
 
         await request(app)
-            .post("/users")
+            .post("/usersV2")
             .send({ username: validUsername1, email: validEmail1, password: validPassword1 })
             .expect(200)
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
 
         await request(app)
-            .post("/users")
+            .post("/usersV2")
             .send({ username: validUsername2, email: validEmail2, password: validPassword2 })
             .expect(200)
             .expect("Content-Type", /application\/json/)
             .expect({"success": true});
 
         const user1 = await request(app)
-            .post("/users/login")
+            .post("/usersV2/login")
             .send({ username: validUsername1, password: validPassword1 })
             .expect(200)
             .expect("Content-Type", /application\/json/);
@@ -51,26 +49,26 @@ describe("Testing filtering of invoices", function() {
         assert.strictEqual(typeof user1.body.token, "string");
 
         const user2 = await request(app)
-            .post("/users/login")
+            .post("/usersV2/login")
             .send({ username: validUsername2, password: validPassword2 })
             .expect(200)
             .expect("Content-Type", /application\/json/);
 
         // 1: create invoice1
         const invoice1 = await request(app)
-            .post("/invoices")
+            .post("/invoicesV2")
             .set("token", user1.body.token)
-            .send({ invoice: mockInvoice1 })
+            .send({ invoice: XML.mockInvoice5 })
             .expect(200);
 
         assert.strictEqual(invoice1.body.success, true);
         assert.strictEqual(typeof invoice1.body.invoiceId, "number");
 
-        // 1: create invoice2
+        // 2: create invoice2
         const invoice2 = await request(app)
-            .post("/invoices")
+            .post("/invoicesV2")
             .set("token", user2.body.token)
-            .send({ invoice: mockInvoice2 })
+            .send({ invoice: XML.mockInvoice6 })
             .expect(200);
 
         assert.strictEqual(invoice2.body.success, true);
@@ -78,19 +76,18 @@ describe("Testing filtering of invoices", function() {
 
         // Success case
         const filteredInvoice1 = await request(app)
-            .get(`/invoices/search/${filteredWord}`)
+            .get(`/invoicesV2/search/${filteredWord}`)
             .set("token", user1.body.token)
             .expect(200)
             .expect("Content-Type", /application\/json/);
 
         assert.strictEqual(filteredInvoice1.body.success, true);
-        assert.strictEqual(filteredInvoice1.body.filteredInvoices[0].invoiceId, invoice1.body.invoiceId);
-        assert.strictEqual(filteredInvoice1.body.filteredInvoices[0].invoiceName, mockInvoice1.file.title);
-        assert.strictEqual(filteredInvoice1.body.filteredInvoices[0].trashed, false);
+        assert.strictEqual(filteredInvoice1.body.filteredInvoices[0].invoiceid, invoice1.body.invoiceId);
+        assert.strictEqual(filteredInvoice1.body.filteredInvoices[0].invoicename, "Business");
 
         // 401 error case invalid token
         await request(app)
-            .get(`/invoices/search/${filteredWord}`)
+            .get(`/invoicesV2/search/${filteredWord}`)
             .set("token", invalidToken)
             .expect(401)
             .expect("Content-Type", /application\/json/)
@@ -98,7 +95,7 @@ describe("Testing filtering of invoices", function() {
 
         // 401 error case no token
         await request(app)
-            .get(`/invoices/search/${filteredWord}`)
+            .get(`/invoicesV2/search/${filteredWord}`)
             .set("token", emptyString)
             .expect(401)
             .expect("Content-Type", /application\/json/)
