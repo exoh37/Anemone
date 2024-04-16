@@ -277,7 +277,7 @@ function filterInvoice(token, filteredWord) {
     const tokenValidation = auth.tokenIsValid(token);
     const jsonData = other.getInvoiceData();
 
-    const filteredInvoices = jsonData.find(invoice => {
+    const filteredInvoices = jsonData.filter(invoice => {
         return invoice.invoiceName.toLowerCase().includes(filteredWord.toLowerCase());
     });
 
@@ -763,7 +763,7 @@ async function filterInvoiceV2(token, filteredWord) {
         }
 
         const invoices = await client.query("SELECT * FROM invoiceInfo");
-        const filteredInvoices = invoices.rows.find(invoice => {
+        const filteredInvoices = invoices.rows.filter(invoice => {
             return invoice.invoicename.toLowerCase().includes(filteredWord.toLowerCase());
         });
 
