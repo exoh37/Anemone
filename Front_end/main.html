@@ -28,6 +28,9 @@
         <input type='text' id="send" placeholder="Send to"/>
         <button type="submit" id="sendButton">Send</button>
     </form>
+    
+    <button type="submit" id="trash" onclick="window.location.href='trash.html'">Trash</button>
+
 
     <div class="progress-bar" id="pass-bar">
         <div class="label" data-count="100">0%</div>
@@ -51,8 +54,8 @@
         const postBtn = document.getElementById("uploadButton");
         const getBtn = document.getElementById("retrieveButton");
         const sendBtn = document.getElementById("sendButton");
+        const trashBth = document.getElementById("trash");
  
-
 
         const token = window.location.href.split('=')[1];
         console.log(token);
@@ -62,18 +65,24 @@
         const baseUrl = 'http://localhost:3103';
 
         var deleteBtn;
-    
 
         postBtn.addEventListener('click', postinfo);
         getBtn.addEventListener('click', getinfo);
+        sendBtn.addEventListener('click', sendinfo);
+        trashBth.addEventListener('click', findTrash);
         
+        async function findTrash(){
+            let trashInfo = document.getElementById('listItem').firstChild.nodeValue.trim();
+            localStorage.setItem("trash", trashInfo);
+            
+        }
+
         async function sendinfo(e){
             e.preventDefault();
 
             try {
 
                 var sender = document.getElementById('send').value.trim().toLowerCase();
-                console.log(sender);
                 const response = await axios.post(`${baseUrl}/invoicesV2/${invoiceId}/send`, {
                     recipient: sender,
                 }, {
@@ -123,6 +132,7 @@
 
                 invoiceId = response.data.invoiceId;
                 addItem();
+
                 deleteBtn = document.getElementsByClassName('Delete');
                 for(let i = 0; i < deleteBtn.length; i++){
                     deleteBtn[i].addEventListener('click', deleteinfo);

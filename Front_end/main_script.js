@@ -35,13 +35,16 @@ function addItem() {
 
   setTimeout(function() {
     var listItem = document.createElement('li');
+    listItem.setAttribute("id", "listItem")
     listItem.textContent = userInput;
-
+    input.value = '';
     var deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
     deleteButton.className = 'Delete';
     deleteButton.onclick = function() {
-        listItem.remove();
+      let trashInfo = document.getElementById('listItem').firstChild.nodeValue.trim();
+      localStorage.setItem("trash", trashInfo);
+      listItem.remove();
     };
 
     listItem.appendChild(deleteButton);
