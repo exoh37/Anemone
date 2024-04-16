@@ -1341,7 +1341,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
-  /users/logout:
+  /usersV2/logout:
     post:
       tags:
         - users v2

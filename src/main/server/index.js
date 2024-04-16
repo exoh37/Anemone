@@ -184,6 +184,13 @@ app.post("/usersV2/login", async (req, res) => {
     return res.status(response.code).json(response.ret);
 });
 
+// Logout user
+app.post("/usersV2/logout", async (req, res) => {
+    const {token} = req.headers;
+    const response = await users.logoutUser(token);
+    return res.status(response.code).json(response.ret);
+});
+
 // Upload invoice
 app.post("/invoicesV2", async (req, res) => {
     const { invoice } = req.body,
