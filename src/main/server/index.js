@@ -164,6 +164,7 @@ app.post("/invoicesV2", async (req, res) => {
     const { invoice } = req.body,
         {token} = req.headers,
         response = await invoices.uploadFileV2(invoice, token);
+        console.log(response);
     return res.status(response.code).json(response.ret);
 });
 

@@ -39,6 +39,7 @@ function addItem() {
 
     var deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
+    deleteButton.className = 'Delete';
     deleteButton.onclick = function() {
         listItem.remove();
     };
@@ -49,7 +50,6 @@ function addItem() {
     input.value = '';
     
     progressBarStyle.style.display = 'none';
-    progressBar.style.width = '0%'; // Reset progress to 0%
     
   }, 2000);
 
@@ -63,11 +63,9 @@ function readURL(input, callback) {
 
     reader.onload = function (e) {
       var userInput = e.target.result;
-      // Call the callback function with the result
       callback(userInput);
     };
 
-    // Read the file as text
     reader.readAsText(input.files[0]);
   }
 }
@@ -102,3 +100,31 @@ function searchItem() {
 
 
 
+function previewFile() {
+  return new Promise((resolve, reject) => {
+    const [file] = document.querySelector("input[type=file]").files;
+    const reader = new FileReader();
+
+    reader.addEventListener(
+      "load",
+      () => {
+        resolve(reader.result);
+      },
+      false
+    );
+
+    reader.addEventListener(
+      "error",
+      () => {
+        reject(reader.error);
+      },
+      false
+    );
+
+    if (file) {
+      reader.readAsText(file);
+    } else {
+      reject(new Error("No file selected"));
+    }
+  });
+}

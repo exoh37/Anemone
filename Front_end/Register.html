@@ -43,10 +43,14 @@
                                 </div>
                         </form>
                 </div>
-              </div>
+        </div>
+
+        
+        <div id="ocean"></div>
         
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script>
+
 
                 const postBtn = document.getElementById("register");
 
@@ -71,7 +75,7 @@
                         })
                         .then(function (response) {
                                 console.log(response);
-                                window.location.replace("main.html")
+                                window.location.replace("Login.html")
                         })
                         .catch(function (error) {
                                 console.log(error);
