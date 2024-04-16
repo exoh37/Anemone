@@ -260,4 +260,34 @@ async function loginUserV2(username, password) {
     }
 }
 
-module.exports = { registerUser, loginUser, registerUserV2, loginUserV2 };
+async function logoutUser(token) {
+    const client = await pool.connect();
+    try {
+        const tokenValidation = await auth.tokenIsValidV2(token);
+        if (!tokenValidation.valid) {
+            return {
+                code: 401,
+                ret: {
+                    success: false,
+                    error: "Token is empty or invalid"
+                }
+            };
+        }
+
+        await client.query("DELETE FROM tokens WHERE username = $1", [tokenValidation.username]);
+
+        return {
+            code: 200,
+            ret: {
+                success: true
+            }
+        };
+    } catch (error) {
+        console.error("Failed to logout user:", error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+module.exports = { registerUser, loginUser, registerUserV2, loginUserV2, logoutUser };
